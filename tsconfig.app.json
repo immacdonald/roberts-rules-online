@@ -1,0 +1,13 @@
+{
+    "extends": "phantom-config/tsconfig",
+    "compilerOptions": {
+        "outDir": "dist",
+        "baseUrl": ".",
+        "noEmit": true,
+        "skipLibCheck": true,
+        "paths": {
+            "@views": ["./src/views"]
+        }
+    },
+    "include": ["src"]
+}
