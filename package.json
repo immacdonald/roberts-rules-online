@@ -1,32 +1,36 @@
 {
-  "name": "csci432-final-project",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "node ./server.js",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "express": "^4.21.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.2",
-    "vite-express": "^0.19.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.9.0",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^9.9.0",
-    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-    "eslint-plugin-react-refresh": "^0.4.9",
-    "globals": "^15.9.0",
-    "typescript": "^5.5.3",
-    "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
-  }
+    "name": "csci432-final-project",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "node ./server.js",
+        "build": "tsc -b && vite build",
+        "preview": "vite preview",
+        "lint": "eslint . --report-unused-disable-directives && tsc --noEmit --emitDeclarationOnly false",
+        "lint:fix": "eslint . --report-unused-disable-directives --fix && tsc --noEmit --emitDeclarationOnly false",
+        "prettier": "prettier ./ --check --ignore-path ./node_modules/phantom-config/.prettierignore",
+        "prettier:fix": "prettier ./ --write --ignore-path ./node_modules/phantom-config/.prettierignore",
+        "stylelint": "npx stylelint '**/*.{css,scss}'",
+        "stylelint:fix": "npx stylelint '**/*.{css,scss}' --fix",
+        "format": "npm run lint:fix && npm run stylelint:fix && npm run prettier:fix"
+    },
+    "dependencies": {
+        "express": "^4.21.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-router-dom": "^6.26.2",
+        "vite-express": "^0.19.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.3.3",
+        "@types/react-dom": "^18.3.0",
+        "@vitejs/plugin-react": "^4.3.1",
+        "globals": "^15.9.0",
+        "phantom-config": "^0.5.2",
+        "sass": "^1.78.0",
+        "typescript": "^5.5.3",
+        "typescript-eslint": "^8.0.1",
+        "vite": "^5.4.1"
+    }
 }

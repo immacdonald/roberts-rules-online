@@ -1,13 +1,11 @@
-import { FC } from "react";
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom"
-import { Home, Login, NotFound } from "./views";
+import { FC } from 'react';
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { Home, Login, NotFound } from './views';
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: (
-            <Outlet />
-        ),
+        element: <Outlet />,
         children: [
             {
                 path: '/login',
@@ -27,4 +25,4 @@ const router = createBrowserRouter([
 
 const App: FC = () => <RouterProvider router={router} />;
 
-export { App }
+export { App };

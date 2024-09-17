@@ -1,0 +1,18 @@
+:root {
+    --color-primary: #09bc8a;
+    --color-primary-dark: #004346;
+    --color-text: #222;
+    --color-page: #fcfcfc;
+    --color-background: #f0f0f0;
+
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light dark;
+    color: var(--color-text);
+    background-color: var(--color-page);
+    font-synthesis: none;
+    text-rendering: optimizelegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
