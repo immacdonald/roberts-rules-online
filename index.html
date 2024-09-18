@@ -1,13 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Vite + React + TS</title>
-    </head>
-    <body>
-        <div id="root"></div>
-        <script type="module" src="/src/main.tsx"></script>
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+
+<body>
+<h2>Login</h2>
+<form id="loginForm">
+    <p>Username: <label for="username"></label><input type="text" name="username" id="username" required></p>
+    <p>Password: <label for="password"></label><input type="password" name="password" id="password" required></p>
+    <button type="submit">Login</button>
+</form>
+<a href="src/404.html" id="forgotPassword">Forgot Password?</a>
+<script>
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        console.log('Username:', username);
+        console.log('Password:', password);
+    });
+</script>
+</body>
+
 </html>
