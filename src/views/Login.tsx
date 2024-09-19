@@ -16,7 +16,7 @@ const Login: FC = () => {
                                                                           required/></p>
                     <button type="submit" id={style.loginButton} className="btn">Login</button>
                 </form>
-                <a href="src/404.html" id="forgotPassword">Forgot Password?</a>
+                <a href="./NotFound.tsx" id="forgotPassword">Forgot Password?</a>
             </div>
             {/*<script>
                 const form = document.getElementById('loginForm');
