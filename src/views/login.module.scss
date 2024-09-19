@@ -1,30 +1,65 @@
-/* Title styling */
+/* background styling */
+body {
+  background-image: radial-gradient(lightgreen, white); /* Change this to your desired color */
+  margin: 0; /* Remove default margin */
+  height: 100vh; /* Ensure it covers the full viewport height */
+  display: flex; /* Flexbox layout */
+  justify-content: center; /* x-axis centering */
+  align-items: center; /* y-axis centering */
+}
+
+/* title styling */
 .title {
-    font-family: Arial, sans-serif;
-    font-size: 24px;
-    font-weight: bold;
-    color: #4CAF50;
-    margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #4CAF50;
+  margin: 0;
 }
 
-/* Form group styling */
+/* form group styling */
 .formGroup {
-    border: 10px solid #4CAF50;
-    margin: 50px;
-    padding: 10px;
-    text-align: center;
+  border: 5px solid transparent;
+  border-image: radial-gradient(#4CAF50, #8BC34A) 1;
+  margin: auto;
+  padding: 50px;
+  text-align: center;
+  background-color: #f2f2f2;
+  border-radius: 8px; /* rounded edges */
 }
 
-/* Button styling */
+/* input group styling */
+.inputGroup {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+  border-radius: 8px; /* rounded edges */
+  border: 1px solid #ccc;
+}
+
+/* button styling */
 #loginButton {
-    margin: 0 auto;
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    cursor: pointer;
+  margin: 0 auto;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 320px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px; /* rounded edges */
 }
