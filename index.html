@@ -1,33 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Robert's Rules</title>
 </head>
-
 <body>
-<div class="form-group">
-<h2 class="title">Login</h2>
-<form id="loginForm">
-        <p>Username: <label for="username"></label><input type="text" name="username" id="username" required></p>
-        <p>Password: <label for="password"></label><input type="password" name="password" id="password" required></p>
-    <button type="submit" id="loginButton" class="btn">Login</button>
-</form>
-<a href="src/404.html" id="forgotPassword">Forgot Password?</a>
-</div>
-<script>
-    const form = document.getElementById('loginForm');
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        console.log('Username:', username);
-        console.log('Password:', password);
-    });
-</script>
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
 </body>
-
 </html>
