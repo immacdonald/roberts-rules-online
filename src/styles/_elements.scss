@@ -1,3 +1,22 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+html {
+    height: 100%;
+    display: block;
+    box-sizing: border-box;
+    overflow-y: overlay;
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -9,4 +28,18 @@ body {
     text-rendering: optimizelegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-primary);
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+main {
+    padding-block: 3rem;
+    padding-inline: 1rem;
 }

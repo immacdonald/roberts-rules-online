@@ -6,7 +6,8 @@
         "noEmit": true,
         "skipLibCheck": true,
         "paths": {
-            "@views": ["./src/views"]
+            "@views": ["./src/views"],
+            "@components": ["./src/components"]
         }
     },
     "include": ["src"]
