@@ -3,7 +3,7 @@ import style from './login.module.scss';
 
 const Login: FC = () => {
     return (
-        <main>
+        <main className={style.loginContainer}>
             <div className={style.formGroup}>
                 <h2 className={style.title}>Login</h2>
                 <form id='loginForm'>
