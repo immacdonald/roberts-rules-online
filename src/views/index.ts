@@ -1,5 +1,3 @@
-import { Home } from './Home';
-import { Login } from './Login';
-import { NotFound } from './NotFound';
-
-export { Home, Login, NotFound };
+export * from './Home';
+export * from './Login';
+export * from './NotFound';
