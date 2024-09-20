@@ -1,12 +1,13 @@
 import { FC } from 'react';
-import { Page } from '../components';
+import style from './Home.module.scss';
 
 const NotFound: FC = () => {
     return (
-        <Page>
-            <h1>Not Found</h1>
-            <p>This is the 404 page.</p>
-        </Page>
+        <main>
+            <h1 className={style.title}>Whoops!</h1>
+            <h2>That page could not be found.</h2>
+            <a href=".">Return to the home page.</a>
+        </main>
     );
 };
 

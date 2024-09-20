@@ -1,0 +1,65 @@
+/* background styling */
+.loginContainer {
+    background-image: radial-gradient(lightgreen, white); /* Change this to your desired color */
+    margin: 0; /* Remove default margin */
+    height: 100vh; /* Ensure it covers the full viewport height */
+    display: flex; /* Flexbox layout */
+    justify-content: center; /* x-axis centering */
+    align-items: center; /* y-axis centering */
+}
+
+/* title styling */
+.title {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #4caf50;
+    margin: 0;
+}
+
+/* form group styling */
+.formGroup {
+    border: 5px solid transparent;
+    border-image: radial-gradient(#4caf50, #8bc34a) 1;
+    margin: auto;
+    padding: 50px;
+    text-align: center;
+    background-color: #f2f2f2;
+    border-radius: 8px; /* rounded edges */
+}
+
+/* input group styling */
+.inputGroup {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.inputGroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.inputGroup input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+    border-radius: 8px; /* rounded edges */
+    border: 1px solid #ccc;
+}
+
+/* button styling */
+#button {
+    margin: 0 auto;
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 15px 320px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px; /* rounded edges */
+}
