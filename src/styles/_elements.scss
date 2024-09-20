@@ -33,12 +33,6 @@ body {
     > div {
         min-height: 100vh;
     }
-
-    main {
-        min-height: calc(100vh - 64px - 192px);
-        padding-block: 3rem;
-        padding-inline: 1rem;
-    }
 }
 
 a {
