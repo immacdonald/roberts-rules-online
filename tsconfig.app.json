@@ -4,11 +4,7 @@
         "outDir": "dist",
         "baseUrl": ".",
         "noEmit": true,
-        "skipLibCheck": true,
-        "paths": {
-            "@views": ["./src/views"],
-            "@components": ["./src/components"]
-        }
+        "skipLibCheck": true
     },
     "include": ["src"]
 }

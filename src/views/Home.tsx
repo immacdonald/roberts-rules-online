@@ -1,6 +1,6 @@
 import { FC } from 'react';
+import { Header, Footer } from '../components';
 import style from './Home.module.scss';
-import { Header } from '../components/Header/Header';
 
 const Home: FC = () => {
     return (
@@ -11,6 +11,7 @@ const Home: FC = () => {
                 <h2>Test Page</h2>
                 <p>This is a test page.</p>
             </main>
+            <Footer />
         </>
     );
 };
