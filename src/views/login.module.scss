@@ -1,6 +1,6 @@
 /* background styling */
 .loginContainer {
-    background-image: radial-gradient(lightgreen, white); /* Change this to your desired color */
+    background-image: radial-gradient(var(--color-primary), white); /* Change this to your desired color */
     margin: 0; /* Remove default margin */
     height: 100vh; /* Ensure it covers the full viewport height */
     display: flex; /* Flexbox layout */
@@ -13,14 +13,13 @@
     font-family: Arial, sans-serif;
     font-size: 24px;
     font-weight: bold;
-    color: #4caf50;
+    color: var(--color-primary);
     margin: 0;
 }
 
 /* form group styling */
 .formGroup {
-    border: 5px solid transparent;
-    border-image: radial-gradient(#4caf50, #8bc34a) 1;
+    border: var(--border);
     margin: auto;
     padding: 50px;
     text-align: center;
@@ -50,9 +49,9 @@
 }
 
 /* button styling */
-#button {
+.loginButton {
     margin: 0 auto;
-    background-color: #4caf50;
+    background-color: var(--color-primary);
     border: none;
     color: white;
     padding: 15px 320px;

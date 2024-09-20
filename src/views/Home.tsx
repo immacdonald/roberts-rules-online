@@ -2,11 +2,12 @@ import { FC } from 'react';
 import book from '../images/book.png';
 import lines from '../images/lines.png';
 import miniWebsite from '../images/miniWebsite.png';
+import { Page } from '../components';
 import style from './Home.module.scss';
 
 const Home: FC = () => {
     return (
-        <main>
+        <Page>
             <h1 className={style.title}>Robert's Rules Online</h1>
             <h2>Organized And Efficient Meetings─every time</h2>
             <p>Robert’s Rules Online gives you the tools to manage, record, and streamline meetings so that no time is wasted </p>
@@ -30,7 +31,7 @@ const Home: FC = () => {
 
             <h4>Pages</h4>
             <p>links to pages will go here</p>
-        </main>
+        </Page>
     );
 };
 
