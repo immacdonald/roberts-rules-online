@@ -30,9 +30,15 @@ The project is then accessible at `localhost:3000`. Note that quick refreshing i
 
 #### Linting & Formatting
 
-For the frontend, linting is done with [ESLint](https://eslint.org/) while code formatting is done with [Prettier](https://prettier.io/) and [Stylelint](https://stylelint.io/). These can be triggered by executing `npm run format`.
+Linting is done with [ESLint](https://eslint.org/) while code formatting is done with [Prettier](https://prettier.io/) and [Stylelint](https://stylelint.io/). These can be triggered by executing `npm run format`.
 
 ### Best Practices
+
+#### Pre-Commit Hooks
+
+All linting, formatting, and TypeScript checking is automatically ran using Husky and lint-staged upon each commit.
+
+#### Branches
 
 While developing, to keep the repository more organized, try to work on a seperate branch following the naming convention of {_name or username_}/{_short description of issue / feature_}. This will be helpful for writing weekly progress reports to get a sense of what everyone has been working on. The `main` branch has branch protection enabled, so just make a pull request to merge in the feature branch when done.
 
