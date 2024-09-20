@@ -13,7 +13,8 @@
         "prettier:fix": "prettier ./ --write --ignore-path ./node_modules/phantom-config/.prettierignore",
         "stylelint": "npx stylelint --ignore-path .gitignore '**/*.{css,scss}'",
         "stylelint:fix": "npx stylelint --ignore-path .gitignore '**/*.{css,scss}' --fix",
-        "format": "npm run lint:fix && npm run stylelint:fix && npm run prettier:fix"
+        "format": "npm run lint:fix && npm run stylelint:fix && npm run prettier:fix",
+        "prepare": "husky install"
     },
     "dependencies": {
         "express": "^4.21.0",
@@ -33,6 +34,7 @@
         "tsx": "^4.19.1",
         "typescript": "^5.5.3",
         "typescript-eslint": "^8.0.1",
-        "vite": "^5.4.1"
+        "vite": "^5.4.1",
+        "husky": "^8.0.0"
     }
 }
