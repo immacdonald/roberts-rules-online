@@ -8,7 +8,7 @@ const Home: FC = () => {
             <Header />
             <main>
                 <h1 className={style.title}>Robert's Rules of Order</h1>
-                <h2>Test Page</h2>
+                    <h2>Test Page</h2>
                 <p>This is a test page.</p>
             </main>
             <Footer />
