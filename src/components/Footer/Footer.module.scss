@@ -1,0 +1,51 @@
+.footer {
+    width: 100%;
+    min-height: 192px;
+    background-color: var(--color-primary-dark);
+    color: var(--color-text-inverse);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    padding-inline: 2rem;
+    padding-top: 1rem;
+    border-bottom: var(--border);
+
+    a {
+        color: inherit;
+    }
+
+    .details {
+        width: 100%;
+        min-height: 96px;
+        display: flex;
+        align-items: start;
+        justify-content: space-evenly;
+        gap: 16px;
+
+        > div {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+
+            > span {
+                display: block;
+                font-weight: bold;
+            }
+
+            p,
+            a {
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (width <= 720px) {
+            flex-direction: column;
+        }
+    }
+
+    .copyright {
+        margin-top: auto;
+        margin-bottom: 1rem;
+    }
+}

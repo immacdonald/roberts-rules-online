@@ -1,19 +1,17 @@
 {
     "name": "csci432-final-project",
     "private": true,
-    "version": "0.0.2",
+    "version": "0.1.1",
     "type": "module",
     "scripts": {
         "dev": "npx tsx server.ts",
         "build": "tsc -b && vite build",
         "preview": "vite preview",
-        "lint": "eslint . --report-unused-disable-directives && tsc --noEmit --emitDeclarationOnly false",
-        "lint:fix": "eslint . --report-unused-disable-directives --fix && tsc --noEmit --emitDeclarationOnly false",
-        "prettier": "prettier ./ --check --ignore-path ./node_modules/phantom-config/.prettierignore",
-        "prettier:fix": "prettier ./ --write --ignore-path ./node_modules/phantom-config/.prettierignore",
-        "stylelint": "npx stylelint --ignore-path .gitignore '**/*.{css,scss}'",
-        "stylelint:fix": "npx stylelint --ignore-path .gitignore '**/*.{css,scss}' --fix",
-        "format": "npm run lint:fix && npm run stylelint:fix && npm run prettier:fix"
+        "prepare": "husky install",
+        "lint": "eslint . --report-unused-disable-directives --fix && tsc --noEmit --emitDeclarationOnly false",
+        "prettier": "prettier ./ --write --ignore-path ./node_modules/phantom-config/.prettierignore",
+        "stylelint": "npx stylelint --ignore-path .gitignore '**/*.{css,scss}' --fix",
+        "format": "npm run lint && npm run stylelint && npm run prettier"
     },
     "dependencies": {
         "bcrypt": "^5.1.1",
@@ -33,6 +31,8 @@
         "@types/react-dom": "^18.3.0",
         "@vitejs/plugin-react": "^4.3.1",
         "globals": "^15.9.0",
+        "husky": "^8.0.0",
+        "lint-staged": "^15.2.10",
         "phantom-config": "^0.5.2",
         "sass": "^1.78.0",
         "tsx": "^4.19.1",
