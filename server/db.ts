@@ -1,37 +1,38 @@
 import mysql from 'mysql';
-import {wrap} from 'node-mysql-wrapper';
+import { wrap } from 'node-mysql-wrapper';
 
 export class MySQL {
-	public connection: any;
-	public db: any;
+    public connection: any;
+    public db: any;
 
     constructor() {
-        console.log('New MySQL instance created')
+        console.log('New MySQL instance created');
         this.connection = mysql.createConnection({
             host: '147.135.31.128',
             user: 'CSCI432FinalProject',
             password: 'FBEe8rDd8HCQ0bls',
             database: 'csci432project'
         });
-        console.log('Database is connecting')
-        let db = wrap(this.connection);
+        console.log('Database is connecting');
+        const db = wrap(this.connection);
         this.db = db;
-        db.ready(function(){
-            console.log('Database is ready')
+        db.ready(function () {
+            console.log('Database is ready');
         });
     }
     ready(callback) {
-        this.db.ready(callback)
+        this.db.ready(callback);
     }
-	query(query, callback) {
-		return new Promise((resolve, reject) => {
-			this.db.query(query, function(err, rows, fields) {
-				callback(err, rows, fields);
-				if (err) {
-					reject(err);
-				}
-				resolve(rows);
-			});
-		});
-	}
+    query(query);
+    query(query, callback) {
+        return new Promise((resolve, reject) => {
+            this.db.query(query, function (err, rows, fields) {
+                if (callback) callback(err, rows, fields);
+                if (err) {
+                    reject(err);
+                }
+                resolve(rows);
+            });
+        });
+    }
 }

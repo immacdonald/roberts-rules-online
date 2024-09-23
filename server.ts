@@ -1,6 +1,6 @@
-import express, {Express, Request, Response} from 'express';
+import express, { Express, Request, Response } from 'express';
 import ViteExpress from 'vite-express';
-import {createDatabase} from './server/createDBTables';
+import { createDatabase } from './server/createDBTables';
 createDatabase();
 
 const app: Express = express();

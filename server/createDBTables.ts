@@ -1,8 +1,8 @@
-import {MySQL} from '../db';
-const db = new MySQL;
+import { MySQL } from './db';
+const db = new MySQL();
 
 async function createUsersTable() {
-	let res = await db.query(`
+    const res = await db.query(`
 		CREATE TABLE IF NOT EXISTS 'users' (
 			'id' varchar(64) NOT NULL,
 			'username' varchar(32) NOT NULL,
@@ -11,10 +11,10 @@ async function createUsersTable() {
 			'displayname' varchar(32) NOT NULL,
 			'creationDate' int(11) NOT NULL
 		) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-	`)
-	if (res) {
-		console.log(res)
-		await db.query(`
+	`);
+    if (res) {
+        console.log(res);
+        await db.query(`
 			ALTER TABLE 'users'
 			  ADD PRIMARY KEY ('id'),
 			  ADD UNIQUE KEY 'email_2' ('email'),
@@ -22,13 +22,13 @@ async function createUsersTable() {
 			  ADD KEY 'username' ('username');
 			COMMIT;
 		`);
-	}
+    }
 }
 
 function createDatabase() {
-	db.ready(async function () {
-		await createUsersTable()
-	});
+    db.ready(async function () {
+        await createUsersTable();
+    });
 }
 
-export {createDatabase}
+export { createDatabase };
