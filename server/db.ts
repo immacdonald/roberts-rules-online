@@ -1,7 +1,10 @@
 import mysql from 'mysql';
-import {wrap} from "node-mysql-wrapper";
+import {wrap} from 'node-mysql-wrapper';
 
 export class MySQL {
+	public connection: any;
+	public db: any;
+
     constructor() {
         console.log('New MySQL instance created')
         this.connection = mysql.createConnection({
@@ -15,20 +18,20 @@ export class MySQL {
         this.db = db;
         db.ready(function(){
             console.log('Database is ready')
-            // db.query(`
-            //     INSERT INTO users
-            //         (id, username, email, password, displayname, creationDate)
-            //     VALUES
-            //         ('912783ysdb-huda273iuj', 'admin', 'admin@localhost', 'admin', 'Admin', ${Date.now()});
-            // `, function(err, rows, fields){
-            //     console.log(err, rows, fields)
-            // })
         });
     }
     ready(callback) {
         this.db.ready(callback)
     }
+	query(query, callback) {
+		return new Promise((resolve, reject) => {
+			this.db.query(query, function(err, rows, fields) {
+				callback(err, rows, fields);
+				if (err) {
+					reject(err);
+				}
+				resolve(rows);
+			});
+		});
+	}
 }
-
-
-export default MySQL;
