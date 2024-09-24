@@ -2,10 +2,12 @@ import express, { Express, Request, Response, static as eStatic } from 'express'
 import ViteExpress from 'vite-express';
 import { createServer as createViteServer  } from "vite";
 import { createServer } from 'http';
-import { Server } from 'socket.io';
+import {Server, Socket} from 'socket.io';
 import { createDatabase } from './server/createDBTables';
+import {Users as UsersClass} from './server/interfaces/users';
+import {User} from "./server/interfaces/user";
 createDatabase();
-
+const Users:UsersClass = new UsersClass();
 
 
 const app: Express = express();
@@ -45,7 +47,7 @@ app.get(`${API}/test`, (req: Request, res: Response) => {
 
 
 
-io.on('connection', (socket) => {
+io.on('connection', (socket:Socket) => {
 	console.log('a user connected');
 
 	socket.on('chatMessage', (msg) => {
@@ -57,8 +59,24 @@ io.on('connection', (socket) => {
 		console.log("Logging in...");
 		console.log(username);
 		console.log(password);
+		Users.loginUser(username, password).then(r => {
+			console.log(r);
+			if (r instanceof User) {
+				socket.emit('login', r.username, r.email, r.displayname);
+				r.setSocket(socket);
+			}
+		});
 	});
 	socket.emit('chatMessage', "wow");
+});
+
+Users.dbReady(async () => {
+	console.log("Users Database is ready");
+	Users.createUser('PeterG', 'peter@localhost.local', 'AdminPassword', 'Peter G').then(r => {
+		console.log(r);
+	}).catch(e => {
+		console.log(e);
+	});
 });
 
 

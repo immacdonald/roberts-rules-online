@@ -23,8 +23,8 @@ export class MySQL {
     ready(callback):void {
         this.db.ready(callback);
     }
-    query(query);
-    query(query, callback):Promise<any> {
+    public query(query):Promise<any>;
+	public query(query, callback):Promise<any> {
         return new Promise((resolve, reject) => {
             this.db.query(query, function (err, rows, fields) {
                 if (callback) callback(err, rows, fields);

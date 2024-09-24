@@ -41,6 +41,10 @@ function App() : JSX.Element{
 		socket.on("chatMessage", (msg) => {
 			console.log("Message:" + msg);
 		});
+
+		socket.on("login", (username, email, displayname) => {
+			console.log("Logged in as", username, email, displayname);
+		});
 	}, []);
 
 
