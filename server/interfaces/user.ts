@@ -20,7 +20,7 @@ export class User {
         this.creationDate = creationDate;
     }
 
-    async isPasswordCorrect(password: string) {
+    async isPasswordCorrect(password: string): Promise<boolean> {
         return await bcrypt.compare(password, this.password);
     }
 }

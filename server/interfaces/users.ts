@@ -15,7 +15,7 @@ sql.ready(async function () {
     // createUser('admin', 'admin@localhost', 'thisIsPassword', 'Admin')
 });
 
-async function createUser(username, email, password, displayname) {
+async function createUser(username, email, password, displayname): Promise<[string, number] | boolean> {
     return new Promise((resolve, reject) => {
         if (!displayname) displayname = username;
         if (!dbReady) return reject(false);
@@ -89,14 +89,14 @@ export class Users {
     constructor() {
         this.users = [];
     }
-    async createUser(username, email, password, displayname) {
+    async createUser(username, email, password, displayname): Promise<User | boolean> {
         const res = await createUser(username, email, password, displayname);
         if (!res) return false;
         const user = new User(res[0], username, email, password, displayname, res[1]);
         this.users.push(user);
         return user;
     }
-    async loginUser(email: string, password: string) {
+    async loginUser(email: string, password: string): Promise<User | [boolean, string]> {
         const user: User | null = this.findUserByEmail(email);
         if (user == null) {
             const user = await this.getUserFromEmail(email);
@@ -112,7 +112,7 @@ export class Users {
     }
 
     // Get Names are to query the database for the user
-    getUserFromEmail(email: string) {
+    getUserFromEmail(email: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
             if (!dbReady) return reject(false);
             if (!email) return reject(false);
@@ -134,13 +134,13 @@ export class Users {
     }
 
     // Find Names are to search the users array
-    findUserById(id: string) {
+    findUserById(id: string): User | undefined {
         return this.users.find((user) => user.id === id);
     }
-    findUserByUsername(username: string) {
+    findUserByUsername(username: string): User | undefined {
         return this.users.find((user) => user.username === username);
     }
-    findUserByEmail(email: string) {
+    findUserByEmail(email: string): User | undefined {
         return this.users.find((user) => user.email === email);
     }
 }

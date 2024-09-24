@@ -1,13 +1,13 @@
-import mysql from 'mysql';
+import {createConnection, Connection} from 'mysql';
 import { wrap } from 'node-mysql-wrapper';
 
 export class MySQL {
-    public connection: any;
+    public connection: Connection;
     public db: any;
 
     constructor() {
         console.log('New MySQL instance created');
-        this.connection = mysql.createConnection({
+        this.connection = createConnection({
             host: '147.135.31.128',
             user: 'CSCI432FinalProject',
             password: 'FBEe8rDd8HCQ0bls',
@@ -20,11 +20,11 @@ export class MySQL {
             console.log('Database is ready');
         });
     }
-    ready(callback) {
+    ready(callback):void {
         this.db.ready(callback);
     }
     query(query);
-    query(query, callback) {
+    query(query, callback):Promise<any> {
         return new Promise((resolve, reject) => {
             this.db.query(query, function (err, rows, fields) {
                 if (callback) callback(err, rows, fields);
