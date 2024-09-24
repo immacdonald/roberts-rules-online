@@ -11,7 +11,7 @@ async function createUsersTable() : Promise<void> {
 				email varchar(32) NOT NULL,
 				password varchar(255) NOT NULL,
 				displayname varchar(32) NOT NULL,
-				creationDate int(11) NOT NULL
+				creationDate bigint(32) NOT NULL
 			) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 		`);
 		if (res) {
