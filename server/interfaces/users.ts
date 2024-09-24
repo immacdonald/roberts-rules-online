@@ -4,15 +4,12 @@ import { MySQL } from '../db';
 import { User } from './user';
 
 const saltRounds = 10; // Typically a value between 10 and 12
-const red = '\\x1b[31m';
-// const green = '\\x1b[32m';
-const reset = '\\x1b[0m';
 const sql = new MySQL();
 let dbReady = false;
 
 sql.ready(async function () {
     dbReady = true;
-    // createUser('admin', 'admin@localhost', 'thisIsPassword', 'Admin')
+	Users.dbReady = dbReady;
 });
 
 async function createUser(username, email, password, displayname): Promise<[string, number] | boolean> {
@@ -24,8 +21,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                 // Handle error
                 return reject(err);
             }
-            const userPassword = 'user_password'; // Replace with the actual password
-            bcrypt.hash(userPassword, salt, (err, hash) => {
+            bcrypt.hash(password, salt, (err, hash) => {
                 if (err) {
                     // Handle error
                     return reject(err);
@@ -33,18 +29,18 @@ async function createUser(username, email, password, displayname): Promise<[stri
                 let id = nanoid(16);
                 // check if id or email is taken already if id is then make new one if email then error
 
-                sql.db.query(`SELECT * FROM users WHERE email = '${email}'`, function (err, rows) {
+                sql.db.query(`SELECT * FROM users WHERE email = '${email}'`, async function (err, rows) {
                     if (!err) {
                         if (rows.length > 0) {
-                            console.log(red + 'Email already exists' + reset);
                             return reject('Email already exists');
                         } else {
                             let idTaken: boolean = true;
                             let wasError: boolean = false;
                             while (idTaken && !wasError) {
-                                sql.db.query(`SELECT * FROM users WHERE id = '${id}'`, function (err, rows) {
+                                let res = await sql.query(`SELECT * FROM users WHERE id = '${id}'`, function (err, rows) {
                                     if (!err) {
                                         if (rows.length > 0) {
+											console.log('ID already exists');
                                             id = nanoid(16);
                                         } else {
                                             idTaken = false;
@@ -85,6 +81,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
 }
 
 export class Users {
+	public static dbReady = dbReady;
     private users: User[];
     constructor() {
         this.users = [];
@@ -97,9 +94,9 @@ export class Users {
         return user;
     }
     async loginUser(email: string, password: string): Promise<User | [boolean, string]> {
-        const user: User | null = this.findUserByEmail(email);
+        let user: User | null = this.findUserByEmail(email);
         if (user == null) {
-            const user = await this.getUserFromEmail(email);
+            user = await this.getUserFromEmail(email);
             if (user == null) {
                 return [false, 'User not found'];
             }
@@ -111,10 +108,14 @@ export class Users {
         }
     }
 
+	dbReady(callback):void {
+		sql.ready(callback);
+	}
+
     // Get Names are to query the database for the user
     getUserFromEmail(email: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            if (!dbReady) return reject(false);
+            if (!Users.dbReady) return reject(false);
             if (!email) return reject(false);
             sql.query(`SELECT * FROM users WHERE email = '${email}'`, function (err, rows) {
                 if (!err) {
