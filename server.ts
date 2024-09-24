@@ -1,23 +1,73 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request, Response, static as eStatic } from 'express';
 import ViteExpress from 'vite-express';
+import { createServer as createViteServer  } from "vite";
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import { createDatabase } from './server/createDBTables';
 createDatabase();
 
+
+
 const app: Express = express();
+const server = createServer(app);
 const port: number = 3000;
+const io = new Server(server, {
+	cors: {
+		origin: "http://localhost:3000"
+	}
+});
+
+const vite = await createViteServer({
+	server: {
+		middlewareMode: true,
+		hmr: {
+			server,
+			ViteExpress
+		}
+	},
+	appType: "spa"
+});
+
+app.use(vite.middlewares);
+app.use(eStatic("static"));
+
 
 const API = '/api/v1';
-
 app.get(`${API}/ping`, (_: Request, res: Response) => {
-    // Sends a friendly message and a 200 status (implicitly)
-    res.send('Hello, this is the Express API.');
+	// Sends a friendly message and a 200 status (implicitly)
+	res.send('Hello, this is the Express API.');
 });
 
 app.get(`${API}/test`, (req: Request, res: Response) => {
-    // Sends test JSON data
-    res.json([1, 2, 3, 4, 5]);
+	// Sends test JSON data
+	res.json([1, 2, 3, 4, 5]);
 });
 
-ViteExpress.listen(app, port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
+
+
+io.on('connection', (socket) => {
+	console.log('a user connected');
+
+	socket.on('chatMessage', (msg) => {
+
+		console.log('message: ' + msg);
+	});
+	// login
+	socket.on('login', (username, password) => {
+		console.log("Logging in...");
+		console.log(username);
+		console.log(password);
+	});
+	socket.emit('chatMessage', "wow");
 });
+
+
+
+
+server.listen(port, () => {
+	console.log(`Example app listening at http://localhost:${port}`);
+});
+
+// ViteExpress.listen(app, port, () => {
+//     console.log(`[server]: Server is running at http://localhost:${port}`);
+// });
