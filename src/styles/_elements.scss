@@ -26,6 +26,7 @@ body {
     color: var(--color-text);
     background-color: var(--color-page);
     font-synthesis: none;
+    overflow-x: hidden;
     text-rendering: optimizelegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -41,5 +42,15 @@ a {
 
     &:hover {
         text-decoration: underline;
+    }
+}
+
+input {
+    background-color: var(--color-background);
+    border: var(--border);
+
+    &:active,
+    &:focus {
+        outline-color: var(--color-primary);
     }
 }

@@ -15,7 +15,7 @@ const Login: FC = (props) => {
 
     return (
         <Page>
-            <div className={style.loginContainer}>
+            <section className={style.loginContainer}>
                 <div className={style.formGroup}>
                     <h2 className={style.title}>Login</h2>
                     <form id="loginForm" onSubmit={handleLogIn}>
@@ -48,7 +48,8 @@ const Login: FC = (props) => {
                         Forgot Password?
                     </a>
                 </div>
-                {/*<script>
+            </section>
+            {/*<script>
                 const form = document.getElementById('loginForm');
                 form.addEventListener('submit', function (event) {
                 event.preventDefault();
@@ -58,7 +59,6 @@ const Login: FC = (props) => {
                 console.log('Password:', password);
             });
             </script>*/}
-            </div>
         </Page>
     );
 };
