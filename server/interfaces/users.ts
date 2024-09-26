@@ -29,7 +29,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                 let id = nanoid(16);
                 // check if id or email is taken already if id is then make new one if email then error
 
-                sql.db.query(`SELECT * FROM users WHERE email = '${email}'`, async function (err, rows) {
+                sql.query(`SELECT * FROM users WHERE email = '${email}'`, async function (err, rows) {
                     if (!err) {
                         if (rows.length > 0) {
                             return reject('Email already exists');
@@ -53,7 +53,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                                 });
                             }
                             const cDate = Date.now();
-                            sql.db.query(
+                            await sql.query(
                                 `
 								INSERT INTO users
 									(id, username, email, password, displayname, creationDate)
