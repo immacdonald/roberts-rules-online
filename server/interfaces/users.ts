@@ -29,7 +29,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                 let id = nanoid(16);
                 // check if id or email is taken already if id is then make new one if email then error
 
-                sql.query(`SELECT * FROM users WHERE email = '${email}'`, async function (err, rows) {
+                sql.query(`SELECT * FROM users WHERE email = ?`, [email], async function (err, rows) {
                     if (!err) {
                         if (rows.length > 0) {
                             return reject('Email already exists');
@@ -37,7 +37,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                             let idTaken: boolean = true;
                             let wasError: boolean = false;
                             while (idTaken && !wasError) {
-                                let res = await sql.query(`SELECT * FROM users WHERE id = '${id}'`, function (err, rows) {
+                                let res = await sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
                                     if (!err) {
                                         if (rows.length > 0) {
 											console.log('ID already exists');
@@ -58,8 +58,8 @@ async function createUser(username, email, password, displayname): Promise<[stri
 								INSERT INTO users
 									(id, username, email, password, displayname, creationDate)
 								VALUES
-									('${id}', '${username}', '${email}', '${hash}', '${displayname}', ${cDate});
-							`,
+									(?, ?, ?, ?, ?, ?)
+							`, [id, username, email, hash, displayname, cDate],
                                 function (err) {
                                     if (!err) {
                                         return resolve([id, cDate]);
@@ -117,7 +117,7 @@ export class Users {
         return new Promise((resolve, reject) => {
             if (!Users.dbReady) return reject(false);
             if (!email) return reject(false);
-            sql.query(`SELECT * FROM users WHERE email = '${email}'`, function (err, rows) {
+            sql.query(`SELECT * FROM users WHERE email = ?`, [email], function (err, rows) {
                 if (!err) {
                     if (rows.length > 0) {
                         const row = rows[0];
@@ -143,5 +143,38 @@ export class Users {
     }
     findUserByEmail(email: string): User | undefined {
         return this.users.find((user) => user.email === email);
+    }
+
+
+    // Checkers
+    isEmailValid(email: string): boolean {
+        if (!email) return false;
+        if (email.length < 5) return false;
+        if (email.length > 320) return false;
+        // make sure there is text then an @ then text then a . then text
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+    }
+    isUsernameValid(username: string): boolean {
+        if (!username) return false;
+        if (username.length < 3) return false;
+        if (username.length > 32) return false;
+        if (!/^[a-zA-Z0-9_]*$/.test(username)) return false;
+        return true;
+    }
+    isPasswordValid(password: string): boolean {
+        if (!password) return false;
+        if (password.length < 3) return false;
+        if (password.length > 64) return false;
+        // make sure no spaces
+        if (password.includes(' ')) return false;
+        // make sure only english letters and numbers and some special characters
+        if (!/^[a-zA-Z0-9!@#$%^&*()_+-=]*$/.test(password)) return false;
+        return true;
+    }
+    isDisplayNameValid(displayname: string): boolean {
+        if (!displayname) return false;
+        if (displayname.length < 3) return false;
+        if (displayname.length > 32) return false;
+        return true;
     }
 }

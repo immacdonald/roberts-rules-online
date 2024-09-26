@@ -30,12 +30,13 @@ export class MySQL {
         })
     }
 
-    query(query: string, p: (err, rows, fields) => void = function () {}):Promise<any>;
-	query(query:string, p: (err, rows, fields) => void):Promise<any> {
+    query(query: string, data:object = [], p: (err, rows, fields) => void = function () {}):Promise<any>;
+	query(query:string, data: object = [], p: (err, rows, fields) => void):Promise<any> {
+        if (data && typeof data === 'function' && p == undefined) {p = data; data = undefined;}
         return new Promise((resolve, reject) => {
             this.pool.getConnection((err, connection) => {
                 this.db = wrap(connection)
-                connection.query(query, function (err, rows, fields) {
+                connection.query(query, data, function (err, rows, fields) {
                     if (p) p(err, rows, fields);
                     if (err) {
                         reject(err);
