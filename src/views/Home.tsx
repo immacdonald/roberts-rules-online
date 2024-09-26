@@ -8,10 +8,15 @@ import style from './Home.module.scss';
 const Home: FC = () => {
     return (
         <Page>
+            <div className={style.headerImage}>
+                <div className={style.headline}>
+                    <h2 className={style.headlineTitle}>Organized and efficient meetings, every time.</h2>
+                    <br />
+                    <p className={style.headlineSubtitle}>Robert's Rules Online gives you the tools to manage, record, and streamline meetings so that no time is wasted.</p>
+                </div>
+                <img className={style.book} src={book} alt="robert's rules book" />
+            </div>
             <h1 className={style.title}>Robert's Rules Online</h1>
-            <h2>Organized And Efficient Meetings─every time</h2>
-            <p>Robert’s Rules Online gives you the tools to manage, record, and streamline meetings so that no time is wasted </p>
-            <img src={book} alt="robert rule's book" />
             <h3>Welcome to Robert’s Rules Online</h3>
             <p>
                 Streamline your meetings and enhance collaboration with Robert Rules Online, the comprehensive digital platform designed to make parliamentary procedure accessible and efficient.
