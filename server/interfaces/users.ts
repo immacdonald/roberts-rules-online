@@ -9,7 +9,7 @@ let dbReady = false;
 
 sql.ready(async function () {
     dbReady = true;
-	Users.dbReady = dbReady;
+    Users.dbReady = dbReady;
 });
 
 async function createUser(username, email, password, displayname): Promise<[string, number] | boolean> {
@@ -26,7 +26,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                     // Handle error
                     return reject(err);
                 }
-                let id = nanoid(16);
+                const id = nanoid(16);
                 // check if id or email is taken already if id is then make new one if email then error
 
                 sql.query(`SELECT * FROM users WHERE email = ?`, [email], async function (err, rows) {
@@ -37,11 +37,11 @@ async function createUser(username, email, password, displayname): Promise<[stri
                             let idTaken: boolean = true;
                             let wasError: boolean = false;
                             while (idTaken && !wasError) {
-                                let res = await sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
+                                await sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
                                     if (!err) {
                                         if (rows.length > 0) {
-											console.log('ID already exists');
-                                            id = nanoid(16);
+                                            console.log('ID already exists');
+                                            //id = nanoid(16);
                                         } else {
                                             idTaken = false;
                                         }
@@ -59,7 +59,8 @@ async function createUser(username, email, password, displayname): Promise<[stri
 									(id, username, email, password, displayname, creationDate)
 								VALUES
 									(?, ?, ?, ?, ?, ?)
-							`, [id, username, email, hash, displayname, cDate],
+							`,
+                                [id, username, email, hash, displayname, cDate],
                                 function (err) {
                                     if (!err) {
                                         return resolve([id, cDate]);
@@ -81,7 +82,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
 }
 
 export class Users {
-	public static dbReady = dbReady;
+    public static dbReady = dbReady;
     private users: User[];
     constructor() {
         this.users = [];
@@ -94,8 +95,8 @@ export class Users {
         return user;
     }
     async loginUser(email: string, password: string): Promise<User | [boolean, string]> {
-        let user: User | null = this.findUserByEmail(email);
-        if (user == null) {
+        let user: User | undefined | null = this.findUserByEmail(email);
+        if (!user) {
             user = await this.getUserFromEmail(email);
             if (user == null) {
                 return [false, 'User not found'];
@@ -108,9 +109,9 @@ export class Users {
         }
     }
 
-	dbReady(callback):void {
-		sql.ready(callback);
-	}
+    dbReady(callback): void {
+        sql.ready(callback);
+    }
 
     // Get Names are to query the database for the user
     getUserFromEmail(email: string): Promise<User | null> {
@@ -145,7 +146,6 @@ export class Users {
         return this.users.find((user) => user.email === email);
     }
 
-
     // Checkers
     isEmailValid(email: string): boolean {
         if (!email) return false;
@@ -153,6 +153,7 @@ export class Users {
         if (email.length > 320) return false;
         // make sure there is text then an @ then text then a . then text
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+        return true;
     }
     isUsernameValid(username: string): boolean {
         if (!username) return false;

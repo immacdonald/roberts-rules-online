@@ -1,8 +1,7 @@
 /* background styling */
 .loginContainer {
+    width: 100%;
     background-image: radial-gradient(var(--color-primary), white); /* Change this to your desired color */
-    margin: 0; /* Remove default margin */
-    height: 100vh; /* Ensure it covers the full viewport height */
     display: flex; /* Flexbox layout */
     justify-content: center; /* x-axis centering */
     align-items: center; /* y-axis centering */
@@ -19,11 +18,11 @@
 
 /* form group styling */
 .formGroup {
+    width: 600px;
     border: var(--border);
-    margin: auto;
-    padding: 50px;
+    padding: var(--space-lg);
     text-align: center;
-    background-color: #f2f2f2;
+    background-color: var(--color-foreground);
     border-radius: 8px; /* rounded edges */
 }
 
@@ -41,11 +40,6 @@
 
 .inputGroup input {
     width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    font-size: 16px;
-    border-radius: 8px; /* rounded edges */
-    border: 1px solid #ccc;
 }
 
 /* button styling */
@@ -54,7 +48,6 @@
     background-color: var(--color-primary);
     border: none;
     color: white;
-    padding: 15px 320px;
     text-align: center;
     text-decoration: none;
     display: inline-block;

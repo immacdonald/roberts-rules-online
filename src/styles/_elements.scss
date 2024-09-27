@@ -18,7 +18,7 @@ html {
 }
 
 body {
-    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-family: var(--font);
     min-height: 100vh;
     line-height: 1.5;
     font-weight: 400;
@@ -26,6 +26,7 @@ body {
     color: var(--color-text);
     background-color: var(--color-page);
     font-synthesis: none;
+    overflow-x: hidden;
     text-rendering: optimizelegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -35,6 +36,15 @@ body {
     }
 }
 
+section {
+    $min-padding: max(5%, 8px);
+    $max-width: 1280px;
+
+    width: 100%;
+    padding-inline: max(calc((100% - #{$max-width}) / 2), #{$min-padding});
+    padding-block: 2rem;
+}
+
 a {
     text-decoration: none;
     color: var(--color-primary);
@@ -42,4 +52,53 @@ a {
     &:hover {
         text-decoration: underline;
     }
+}
+
+input {
+    height: 42px;
+    font-family: var(--font);
+    font-size: 1rem;
+    padding-inline: var(--space);
+    background-color: var(--color-background);
+    border: var(--border);
+
+    &:active,
+    &:focus {
+        outline-color: var(--color-primary);
+    }
+}
+
+button {
+    height: 42px;
+    background-color: var(--color-background);
+    border: none;
+    padding: var(--space-sm);
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    font-family: var(--font);
+    transition: linear 0.5s filter;
+
+    &[data-button-type='primary'] {
+        background-color: var(--color-primary);
+        color: var(--color-text-inverse);
+        border: none;
+    }
+
+    &[data-button-type='secondary'] {
+        border: var(--border);
+        background-color: var(--color-foreground);
+    }
+
+    &:hover {
+        filter: brightness(0.95);
+    }
+}
+
+h1 {
+    font-size: 2.5rem;
 }
