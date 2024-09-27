@@ -67,6 +67,34 @@ io.on('connection', (socket:Socket) => {
 			}
 		});
 	});
+	socket.on('register', (username, email, password, displayname) => {
+		console.log("Registering...");
+		console.log(username);
+		console.log(email);
+
+		if (! Users.isUsernameValid(username) ) {
+			socket.emit('failedRegister', "Username is not valid.")
+			return false;
+		}
+		if (! Users.isEmailValid(email) ) {
+			socket.emit('failedRegister', "Email is not valid.")
+			return false;
+		}
+		if (! Users.isPasswordValid(password) ) {
+			socket.emit('failedRegister', "Password is not valid.")
+			return false;
+		}
+		if (! Users.isDisplayNameValid(displayname) ) {
+			socket.emit('failedRegister', "Display name is not valid.")
+			return false;
+		}
+
+		Users.createUser(username, email, password, displayname).then(r => {
+			console.log(r);
+		}).catch(e => {
+			console.log(e);
+		});
+	});
 	socket.emit('chatMessage', "wow");
 });
 
