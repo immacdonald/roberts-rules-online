@@ -34,14 +34,14 @@ async function createUser(username, email, password, displayname): Promise<[stri
                         if (rows.length > 0) {
                             return reject('Email already exists');
                         } else {
-                            const idTaken: boolean = true;
-                            const wasError: boolean = false;
+                            let idTaken: boolean = true;
+                            let wasError: boolean = false;
                             while (idTaken && !wasError) {
-                                let res = await sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
+                                await sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
                                     if (!err) {
                                         if (rows.length > 0) {
-											console.log('ID already exists');
-                                            id = nanoid(16);
+                                            console.log('ID already exists');
+                                            //id = nanoid(16);
                                         } else {
                                             idTaken = false;
                                         }
@@ -50,7 +50,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                                         console.log('Error while performing Query ' + err);
                                         return reject(err);
                                     }
-                                });*/
+                                });
                             }
                             const cDate = Date.now();
                             await sql.query(
@@ -59,7 +59,8 @@ async function createUser(username, email, password, displayname): Promise<[stri
 									(id, username, email, password, displayname, creationDate)
 								VALUES
 									(?, ?, ?, ?, ?, ?)
-							`, [id, username, email, hash, displayname, cDate],
+							`,
+                                [id, username, email, hash, displayname, cDate],
                                 function (err) {
                                     if (!err) {
                                         return resolve([id, cDate]);
@@ -145,7 +146,6 @@ export class Users {
         return this.users.find((user) => user.email === email);
     }
 
-
     // Checkers
     isEmailValid(email: string): boolean {
         if (!email) return false;
@@ -153,6 +153,7 @@ export class Users {
         if (email.length > 320) return false;
         // make sure there is text then an @ then text then a . then text
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+        return true;
     }
     isUsernameValid(username: string): boolean {
         if (!username) return false;

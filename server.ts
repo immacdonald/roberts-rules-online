@@ -23,6 +23,7 @@ const vite = await createViteServer({
         middlewareMode: true,
         hmr: {
             server,
+            // @ts-expect-error when connecting ViteExpress
             ViteExpress
         }
     },
@@ -46,52 +47,53 @@ app.get(`${API}/test`, (req: Request, res: Response) => {
 io.on('connection', (socket: Socket) => {
     console.log('a user connected');
 
-	socket.on('chatMessage', (msg) => {
+    socket.on('chatMessage', (msg) => {
+        console.log('message: ' + msg);
+    });
+    // login
+    socket.on('login', (username, password) => {
+        console.log('Logging in...');
+        console.log(username);
+        console.log(password);
+        Users.loginUser(username, password).then((r) => {
+            console.log(r);
+            if (r instanceof User) {
+                socket.emit('login', r.username, r.email, r.displayname);
+                r.setSocket(socket);
+            }
+        });
+    });
+    socket.on('register', (username, email, password, displayname) => {
+        console.log('Registering...');
+        console.log(username);
+        console.log(email);
 
-		console.log('message: ' + msg);
-	});
-	// login
-	socket.on('login', (username, password) => {
-		console.log("Logging in...");
-		console.log(username);
-		console.log(password);
-		Users.loginUser(username, password).then(r => {
-			console.log(r);
-			if (r instanceof User) {
-				socket.emit('login', r.username, r.email, r.displayname);
-				r.setSocket(socket);
-			}
-		});
-	});
-	socket.on('register', (username, email, password, displayname) => {
-		console.log("Registering...");
-		console.log(username);
-		console.log(email);
+        if (!Users.isUsernameValid(username)) {
+            socket.emit('failedRegister', 'Username is not valid.');
+            return false;
+        }
+        if (!Users.isEmailValid(email)) {
+            socket.emit('failedRegister', 'Email is not valid.');
+            return false;
+        }
+        if (!Users.isPasswordValid(password)) {
+            socket.emit('failedRegister', 'Password is not valid.');
+            return false;
+        }
+        if (!Users.isDisplayNameValid(displayname)) {
+            socket.emit('failedRegister', 'Display name is not valid.');
+            return false;
+        }
 
-		if (! Users.isUsernameValid(username) ) {
-			socket.emit('failedRegister', "Username is not valid.")
-			return false;
-		}
-		if (! Users.isEmailValid(email) ) {
-			socket.emit('failedRegister', "Email is not valid.")
-			return false;
-		}
-		if (! Users.isPasswordValid(password) ) {
-			socket.emit('failedRegister', "Password is not valid.")
-			return false;
-		}
-		if (! Users.isDisplayNameValid(displayname) ) {
-			socket.emit('failedRegister', "Display name is not valid.")
-			return false;
-		}
-
-		Users.createUser(username, email, password, displayname).then(r => {
-			console.log(r);
-		}).catch(e => {
-			console.log(e);
-		});
-	});
-	socket.emit('chatMessage', "wow");
+        Users.createUser(username, email, password, displayname)
+            .then((r) => {
+                console.log(r);
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    });
+    socket.emit('chatMessage', 'wow');
 });
 
 Users.dbReady(async () => {
