@@ -18,9 +18,9 @@
 
 /* form group styling */
 .formGroup {
+    width: 600px;
     border: var(--border);
-    margin: auto;
-    padding: 50px;
+    padding: var(--space-lg);
     text-align: center;
     background-color: var(--color-foreground);
     border-radius: 8px; /* rounded edges */
@@ -40,10 +40,6 @@
 
 .inputGroup input {
     width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    font-size: 16px;
-    border-radius: 8px; /* rounded edges */
 }
 
 /* button styling */
@@ -52,7 +48,6 @@
     background-color: var(--color-primary);
     border: none;
     color: white;
-    padding: 15px 320px;
     text-align: center;
     text-decoration: none;
     display: inline-block;

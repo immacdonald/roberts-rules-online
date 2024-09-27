@@ -1,7 +1,7 @@
 import { FC } from 'react';
-import book from '../images/book.png';
-import lines from '../images/lines.png';
-import miniWebsite from '../images/miniWebsite.png';
+import book from '../assets/images/book.png';
+import lines from '../assets/images/lines.png';
+import miniWebsite from '../assets/images/miniWebsite.png';
 import { Page } from '../components';
 import style from './Home.module.scss';
 

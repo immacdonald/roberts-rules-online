@@ -9,7 +9,7 @@ let dbReady = false;
 
 sql.ready(async function () {
     dbReady = true;
-	Users.dbReady = dbReady;
+    Users.dbReady = dbReady;
 });
 
 async function createUser(username, email, password, displayname): Promise<[string, number] | boolean> {
@@ -26,7 +26,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                     // Handle error
                     return reject(err);
                 }
-                let id = nanoid(16);
+                const id = nanoid(16);
                 // check if id or email is taken already if id is then make new one if email then error
 
                 sql.query(`SELECT * FROM users WHERE email = ?`, [email], async function (err, rows) {
@@ -34,8 +34,8 @@ async function createUser(username, email, password, displayname): Promise<[stri
                         if (rows.length > 0) {
                             return reject('Email already exists');
                         } else {
-                            let idTaken: boolean = true;
-                            let wasError: boolean = false;
+                            const idTaken: boolean = true;
+                            const wasError: boolean = false;
                             while (idTaken && !wasError) {
                                 let res = await sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
                                     if (!err) {
@@ -50,7 +50,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                                         console.log('Error while performing Query ' + err);
                                         return reject(err);
                                     }
-                                });
+                                });*/
                             }
                             const cDate = Date.now();
                             await sql.query(
@@ -81,7 +81,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
 }
 
 export class Users {
-	public static dbReady = dbReady;
+    public static dbReady = dbReady;
     private users: User[];
     constructor() {
         this.users = [];
@@ -94,8 +94,8 @@ export class Users {
         return user;
     }
     async loginUser(email: string, password: string): Promise<User | [boolean, string]> {
-        let user: User | null = this.findUserByEmail(email);
-        if (user == null) {
+        let user: User | undefined | null = this.findUserByEmail(email);
+        if (!user) {
             user = await this.getUserFromEmail(email);
             if (user == null) {
                 return [false, 'User not found'];
@@ -108,9 +108,9 @@ export class Users {
         }
     }
 
-	dbReady(callback):void {
-		sql.ready(callback);
-	}
+    dbReady(callback): void {
+        sql.ready(callback);
+    }
 
     // Get Names are to query the database for the user
     getUserFromEmail(email: string): Promise<User | null> {

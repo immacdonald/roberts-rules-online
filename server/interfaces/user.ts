@@ -1,6 +1,6 @@
 // import {MySQL} from '../db';
 import * as bcrypt from 'bcrypt';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 // const saltRounds = 10; // Typically a value between 10 and 12
 
 export class User {
@@ -8,8 +8,8 @@ export class User {
     public username: string;
     public displayname: string;
     public readonly email: string;
-	public creationDate: number;
-	public socket: Socket;
+    public creationDate: number;
+    public socket: Socket;
 
     private readonly password: string;
 
@@ -26,7 +26,7 @@ export class User {
         return await bcrypt.compare(password, this.password);
     }
 
-	public setSocket(socket: Socket) {
-		this.socket = socket;
-	}
+    public setSocket(socket: Socket) {
+        this.socket = socket;
+    }
 }
