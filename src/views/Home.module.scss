@@ -34,3 +34,18 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     border-bottom: var(--border);
 }
+
+.welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 60%;
+    margin: 0 auto;
+    padding-top: 2em;
+    row-gap: 1em;
+}
+
+.welcomeHeader {
+    font-size: 250%;
+}
