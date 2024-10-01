@@ -29,16 +29,19 @@ const Home: FC = () => {
                 </p>
                 <img src={lines} alt="lines" />
             </div>
-            <p>
-                At Robert’s Rules Online, we believe that effective communication and democratic decision-making are the cornerstones of any successful organization. Our platform offers intuitive
-                features that simplify the process of making motions, conducting votes, and managing discussions. Say goodbye to confusion and hello to clarity as your team engages in meaningful
-                dialogue and reaches consensus with confidence.
-            </p>
-
-            <img src={miniWebsite} alt="mini website" />
-
-            <h4>Pages</h4>
-            <p>links to pages will go here</p>
+            <div className={style.card}>
+                <div className={style.cardContainer}>
+                    <div className={style.cardText}>
+                        <h3 className={style.cardTitle}>Empower Your Team</h3>
+                        <p className={style.cardSubtitle}>
+                            At Robert's Rules Online, we believe that effective communication and democratic decision-making are the cornerstones of any successful organization. Our platform offers
+                            intuitive features that simplify the process of making motions, conducting votes, and managing discussions. Say goodbye to confusion and hello to clarity as your team
+                            engages in meaningful dialogue and reaches consensus with confidence.
+                        </p>
+                    </div>
+                    <img className={style.cardImage} src={miniWebsite} alt="mini website" />
+                </div>
+            </div>
         </Page>
     );
 };

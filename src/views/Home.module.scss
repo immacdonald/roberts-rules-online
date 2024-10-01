@@ -1,5 +1,6 @@
 .title {
     color: var(--color-primary);
+    font-weight: bold;
 }
 
 .headline {
@@ -48,4 +49,35 @@
 
 .welcomeHeader {
     font-size: 250%;
+}
+
+.card {
+    background: var(--color-primary);
+    border-radius: 0.5em;
+    box-shadow: 0 2px #d3d3d3;
+    display: flex;
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2em;
+}
+
+.cardContainer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 50%));
+}
+
+.cardText {
+    color: var(--color-text-inverse);
+    font-weight: bold;
+    padding: 1em;
+}
+
+.cardImage {
+    width: 100%;
+    overflow: hidden;
+}
+
+.cardTitle {
+    font-size: 200%;
 }
