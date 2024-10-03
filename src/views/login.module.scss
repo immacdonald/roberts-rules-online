@@ -5,6 +5,7 @@
     display: flex; /* Flexbox layout */
     justify-content: center; /* x-axis centering */
     align-items: center; /* y-axis centering */
+    flex-grow: 1;
 }
 
 /* title styling */
