@@ -1,6 +1,12 @@
-import { FC } from 'react';
+import { useEffect } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
-import { Home, Login, NotFound } from './views';
+import { Home, Login, NotFound, ViewCommittees } from './views';
+import { MySocket } from './interfaces/socket';
+
+const socketExec = (name: string, ...args: any[]): void => {
+    console.log('Executing socket...', name, args);
+    MySocket.instance.socket.emit(name, ...args);
+};
 
 const router = createBrowserRouter([
     {
@@ -9,11 +15,15 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/login',
-                element: <Login />
+                element: <Login socketExec={socketExec} />
             },
             {
                 path: '/',
                 element: <Home />
+            },
+            {
+                path: '/committees',
+                element: <ViewCommittees socketExec={socketExec} />
             },
             {
                 path: '*',
@@ -23,6 +33,24 @@ const router = createBrowserRouter([
     }
 ]);
 
-const App: FC = () => <RouterProvider router={router} />;
+function App(): JSX.Element {
+    useEffect(() => {
+        const socket = MySocket.instance.socket;
+        setTimeout(() => {
+            console.log('lmaoooooo');
+            socket.emit('chatMessage', 'lmaoooooo');
+        }, 1000);
+
+        socket.on('chatMessage', (msg) => {
+            console.log('Message:' + msg);
+        });
+
+        socket.on('login', (username, email, displayname) => {
+            console.log('Logged in as', username, email, displayname);
+        });
+    }, []);
+
+    return <RouterProvider router={router} />;
+}
 
 export { App };
