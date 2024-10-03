@@ -1,3 +1,83 @@
 .title {
     color: var(--color-primary);
+    font-weight: bold;
+}
+
+.headline {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2em;
+}
+
+.headlineTitle {
+    font-size: 400%;
+}
+
+.headlineSubtitle {
+    font-size: 150%;
+    font-weight: bold;
+    padding-top: 1em;
+}
+
+.book {
+    max-width: 100%;
+    mask-image: rgb(241 241 241);
+    mask-image: linear-gradient(270deg, rgb(241 241 241 / 100%) 25%, rgb(241 241 241 / 100%) 60%, rgb(98 94 94 / 0%) 100%);
+    mask-image: linear-gradient(270deg, rgb(241 241 241 / 100%) 25%, rgb(241 241 241 / 100%) 60%, rgb(98 94 94 / 0%) 100%);
+    mask-image: linear-gradient(270deg, rgb(241 241 241 / 100%) 25%, rgb(241 241 241 / 100%) 60%, rgb(98 94 94 / 0%) 100%);
+}
+
+.headerImage {
+    display: grid;
+    background: rgb(241 241 241);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-bottom: var(--border);
+}
+
+.welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 60%;
+    margin: 0 auto;
+    padding-top: 2em;
+    row-gap: 1em;
+}
+
+.welcomeHeader {
+    font-size: 250%;
+}
+
+.card {
+    background: var(--color-primary);
+    border-radius: 0.5em;
+    box-shadow: 0 2px #d3d3d3;
+    display: flex;
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2em;
+}
+
+.cardContainer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 50%));
+}
+
+.cardText {
+    color: var(--color-text-inverse);
+    font-weight: bold;
+    padding: 1em;
+}
+
+.cardImage {
+    width: 100%;
+    overflow: hidden;
+}
+
+.cardTitle {
+    font-size: 200%;
 }
