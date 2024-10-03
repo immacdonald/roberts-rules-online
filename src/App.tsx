@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { Home, Login, NotFound, ViewCommittees } from './views';
 import { MySocket } from './interfaces/socket';
+import { Registration } from './views/Registration';
 
 const socketExec = (name: string, ...args: any[]): void => {
     console.log('Executing socket...', name, args);
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
             {
                 path: '/login',
                 element: <Login socketExec={socketExec} />
+            },
+            {
+                path: '/register',
+                element: <Registration socketExec={socketExec} />
             },
             {
                 path: '/',
