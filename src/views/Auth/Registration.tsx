@@ -16,9 +16,10 @@ const Registration: FC<RegistrationProps> = ({ socketExec }) => {
         return <Navigate to="/" />;
     }
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [email, setEmail] = useState('PeterGreek@gmail.com');
+    const [password, setPassword] = useState('thisisapassword');
+    const [confirmPassword, setConfirmPassword] = useState('thisisapassword');
+	const [username, setUsername] = useState('Peter Greek');
 
     const handleRegister = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
@@ -26,9 +27,9 @@ const Registration: FC<RegistrationProps> = ({ socketExec }) => {
             alert('Passwords do not match');
             return;
         }
-        console.log('Registering...', email, password);
+        console.log('Registering...', username, email, password);
         // Get the values from the form
-        socketExec('register', email, password);
+        socketExec('register', username, email, password);
     };
 
     return (
@@ -37,6 +38,11 @@ const Registration: FC<RegistrationProps> = ({ socketExec }) => {
                 <div className={style.formGroup}>
                     <h2 className={style.title}>Register</h2>
                     <form id="registrationForm" className={style.form} onSubmit={handleRegister}>
+                        <fieldset>
+							<label htmlFor="email">Username</label>
+							<input type="text" name="username" id="username" required={true}
+								   onChange={(ev) => setUsername(ev.target.value)} value={username}/>
+						</fieldset>
                         <fieldset>
                             <label htmlFor="email">Email</label>
                             <input type="email" name="email" id="email" required={true} onChange={(ev) => setEmail(ev.target.value)} value={email} />
@@ -56,8 +62,8 @@ const Registration: FC<RegistrationProps> = ({ socketExec }) => {
                     <Link to="/login">Already have an account? Log in</Link>
                 </div>
             </section>
-        </Page>
-    );
+		</Page>
+	);
 };
 
-export { Registration };
+export {Registration};
