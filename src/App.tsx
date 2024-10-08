@@ -27,6 +27,10 @@ const RoutedApp: FC = () => {
             localStorage.setItem('token', token);
             setUser(user);
         });
+
+        socket.on('failedRegister', (msg) => {
+			alert(msg);
+		});
     }, []);
 
     useEffect(() => {

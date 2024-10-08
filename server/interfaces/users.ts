@@ -32,7 +32,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                 sql.query(`SELECT * FROM users WHERE email = ?`, [email], async function (err, rows) {
                     if (!err) {
                         if (rows.length > 0) {
-                            return reject('Email already exists');
+                            return resolve([false, 'Email already exists']);
                         } else {
                             let idTaken: boolean = true;
                             let wasError: boolean = false;
@@ -63,7 +63,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
                                 [id, username, email, hash, displayname, cDate],
                                 function (err) {
                                     if (!err) {
-                                        return resolve([id, cDate]);
+                                        return resolve([true, id, cDate]);
                                     } else {
                                         console.log('Error while performing Query ' + err);
                                         return reject(err);
@@ -87,12 +87,12 @@ export class Users {
     constructor() {
         this.users = [];
     }
-    async createUser(username, email, password, displayname): Promise<User | boolean> {
+    async createUser(username, email, password, displayname): Promise<(boolean | string | number | User)[]> {
         const res = await createUser(username, email, password, displayname);
-        if (!res) return false;
-        const user = new User(res[0], username, email, password, displayname, res[1]);
+        if (!res || !res[0]) return [false, res[1]];
+        const user = new User(res[1], username, email, password, displayname, res[2]);
         this.users.push(user);
-        return user;
+        return [true, user];
     }
     async loginUser(email: string, password: string): Promise<[boolean, string | User]> {
         let user: User | undefined | null = this.findUserByEmail(email);
@@ -155,12 +155,12 @@ export class Users {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
         return true;
     }
-    isUsernameValid(username: string): boolean {
-        if (!username) return false;
-        if (username.length < 3) return false;
-        if (username.length > 32) return false;
-        if (!/^[a-zA-Z0-9_]*$/.test(username)) return false;
-        return true;
+    isUsernameValid(username: string): Array<boolean | string> {
+        if (!username) return [false, "Username must be at least 3 characters long"];
+        if (username.length < 3) return [false, "Username must be at least 3 characters long"];
+        if (username.length > 32) return [false, "Username must be at most 32 characters long"];
+        if ((/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/.test(username) == false)) return [false, "Username must only contain letters, numbers, underscores and periods"];
+        return [true, ""];
     }
     isPasswordValid(password: string): boolean {
         if (!password) return false;
