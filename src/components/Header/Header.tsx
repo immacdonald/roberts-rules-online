@@ -20,23 +20,13 @@ const Header: FC = () => {
                 <Link to="/committees" data-button-type="ghost">
                     Committees
                 </Link>
-                {isLoggedIn ? (
-                    <>
-                        <button onClick={() => logout()} data-button-type="primary">
-                            Logout
-                        </button>
-                        <Link to="/profile" className={style.profile} />
-                    </>
-                ) : (
-                    <>
-                        <Link to="/login" data-button-type="ghost">
-                            Login
-                        </Link>
-                        <Link to="/register" data-button-type="primary">
-                            Register
-                        </Link>
-                    </>
-                )}
+                <Link to="/login" data-button-type="ghost">
+                    Login
+                </Link>
+                <Link to="/register" data-button-type="primary">
+                    Register
+                </Link>
+                <Link to="/profile" className={style.profile} />
             </nav>
         </header>
     );

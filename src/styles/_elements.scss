@@ -53,7 +53,6 @@ a {
     }
 }
 
-/*
 input {
     width: 100%;
     height: 38px;
@@ -70,8 +69,9 @@ input {
         outline-color: var(--color-primary);
     }
 }
-*/
-button {
+
+button,
+[data-button-type] {
     height: 42px;
     background-color: var(--color-background);
     border: none;
@@ -107,20 +107,4 @@ button {
         filter: brightness(0.95);
         text-decoration: none;
     }
-}
-
-h1 {
-    font-size: 2.5rem;
-}
-
-h2 {
-    font-size: 2rem;
-}
-
-h3 {
-    font-size: 1.5rem;
-}
-
-hr {
-    margin-block: var(--space);
 }

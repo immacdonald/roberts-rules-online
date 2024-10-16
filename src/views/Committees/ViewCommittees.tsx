@@ -15,8 +15,6 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
     const [committeeName, setCommitteeName] = useState<string>('');
     const [committeeDesc, setCommitteeDesc] = useState<string>('');
 
-    const navigate = useNavigate();
-
     const createCommittee = (): void => {
         console.log('Create a new committeee');
         setCreateModal(true);
