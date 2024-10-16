@@ -1,7 +1,8 @@
-import type { SocketExec } from '../../types';
+import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
-import { Page } from '../components';
-import style from './login.module.scss';
+import { Link } from 'react-router-dom';
+import { Page } from '../../components';
+import style from './Login.module.scss';
 
 interface LoginProps {
     socketExec: SocketExec;
@@ -20,37 +21,25 @@ const Login: FC<LoginProps> = ({ socketExec }) => {
 
     return (
         <Page>
-            <section className={style.loginContainer}>
+            <section className={style.background}>
                 <div className={style.formGroup}>
                     <h2 className={style.title}>Login</h2>
-                    <form id="loginForm" onSubmit={handleLogIn}>
-                        <div className={style.inputGroup}>
+                    <form id="loginForm" className={style.form} onSubmit={handleLogIn}>
+                        <fieldset>
                             <label htmlFor="email">Email</label>
                             <input type="email" name="email" id="email" required={true} onChange={(ev) => setEmail(ev.target.value)} value={email} />
-                        </div>
-                        <div className={style.inputGroup}>
+                        </fieldset>
+                        <fieldset>
                             <label htmlFor="password">Password</label>
                             <input type="password" id="password" required={true} onChange={(ev) => setPassword(ev.target.value)} value={password} />
-                        </div>
-                        <button type="submit" id="login-button" className={style.loginButton}>
+                        </fieldset>
+                        <button type="submit" id="login-button" className={style.loginButton} data-button-type="primary">
                             Sign In
                         </button>
                     </form>
-                    <a href="./NotFound.tsx" id="forgotPassword">
-                        Forgot Password?
-                    </a>
+                    <Link to="/forgot-password">Forgot Password?</Link>
                 </div>
             </section>
-            {/*<script>
-                const form = document.getElementById('loginForm');
-                form.addEventListener('submit', function (event) {
-                event.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                console.log('Username:', username);
-                console.log('Password:', password);
-            });
-            </script>*/}
         </Page>
     );
 };

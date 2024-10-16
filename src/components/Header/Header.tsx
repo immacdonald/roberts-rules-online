@@ -11,12 +11,19 @@ const Header: FC = () => {
                 </span>
             </div>
             <nav className={style.nav}>
-                <Link to="/">Home</Link>
-                <Link to="/committees">Committees</Link>
-                <Link to="/login">Login</Link>
-                <Link to="/register" className={style.highlight}>
+                <Link to="/" data-button-type="ghost">
+                    Home
+                </Link>
+                <Link to="/committees" data-button-type="ghost">
+                    Committees
+                </Link>
+                <Link to="/login" data-button-type="ghost">
+                    Login
+                </Link>
+                <Link to="/register" data-button-type="primary">
                     Register
                 </Link>
+                <Link to="/profile" className={style.profile} />
             </nav>
         </header>
     );

@@ -13,12 +13,12 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
     const [committeeName, setCommitteeName] = useState<string>('');
     const [committeeDesc, setCommitteeDesc] = useState<string>('');
 
-    const createCommittee = () => {
+    const createCommittee = (): void => {
         console.log('Create a new committeee');
         setCreateModal(true);
     };
 
-    const getCommittee = (name: string, details?: string) => {
+    const getCommittee = (name: string, details?: string): JSX.Element => {
         return (
             <div className={styles.committee}>
                 <h3>{name}</h3>
@@ -36,7 +36,7 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
         );
     };
 
-    const populateCommittees = () => {
+    const populateCommittees = (): JSX.Element => {
         return (
             <>
                 {getCommittee('Committee 1')}

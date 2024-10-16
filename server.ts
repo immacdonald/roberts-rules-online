@@ -6,7 +6,9 @@ import { createServer } from 'http';
 import { createDatabase } from './server/createDBTables';
 import { Users as UsersClass } from './server/interfaces/users';
 import { User } from './server/interfaces/user';
+
 createDatabase();
+
 const Users: UsersClass = new UsersClass();
 
 const app: Express = express();
@@ -45,7 +47,7 @@ app.get(`${API}/test`, (req: Request, res: Response) => {
 });
 
 io.on('connection', (socket: Socket) => {
-    console.log('a user connected');
+    console.log('A user connected');
 
     socket.on('chatMessage', (msg) => {
         console.log('message: ' + msg);
@@ -60,6 +62,8 @@ io.on('connection', (socket: Socket) => {
             if (r instanceof User) {
                 socket.emit('login', r.username, r.email, r.displayname);
                 r.setSocket(socket);
+            } else {
+                console.log('Error logging in.');
             }
         });
     });
@@ -93,7 +97,6 @@ io.on('connection', (socket: Socket) => {
                 console.log(e);
             });
     });
-    socket.emit('chatMessage', 'wow');
 });
 
 Users.dbReady(async () => {
@@ -105,10 +108,17 @@ Users.dbReady(async () => {
         .catch((e) => {
             console.log(e);
         });
+    Users.createUser('test', 'test@example.com', 'password', 'Admin')
+        .then((r) => {
+            console.log(r);
+        })
+        .catch((e) => {
+            console.log(e);
+        });
 });
 
 server.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+    console.log(`Robert's Rules Online listening at http://localhost:${port}`);
 });
 
 // ViteExpress.listen(app, port, () => {

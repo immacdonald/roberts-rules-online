@@ -9,12 +9,4 @@ export class MySocket {
         console.log('Creating socket...');
         this.socket = io(URL);
     }
-
-    public doSomething() {
-        //...
-    }
-
-    public doOtherThings() {
-        //...
-    }
 }

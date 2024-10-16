@@ -1,4 +1,5 @@
 export * from './Home';
-export * from './Login';
+export * from './Auth';
 export * from './NotFound';
 export * from './Committees';
+export * from './Profile';

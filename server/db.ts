@@ -30,7 +30,7 @@ export class MySQL {
         });
     }
 
-    query(query: string, data: object | undefined = [], p: (err, rows, fields) => void = () => {}): Promise<any> {
+    query(query: string, data: object | undefined = [], p: (err, rows, fields) => void = (): void => {}): Promise<any> {
         if (data && typeof data === 'function' && p == undefined) {
             p = data as any;
             data = undefined;
