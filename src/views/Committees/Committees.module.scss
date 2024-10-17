@@ -45,41 +45,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 200;
-
-    > div {
-        width: max(50%, 600px);
-        height: auto;
-        background-color: var(--color-foreground);
-        border: var(--border);
-        border-radius: var(--border-radius);
-        padding: var(--space-lg);
-        display: flex;
-        flex-direction: column;
-        gap: var(--space);
-    }
-
-    .modalFooter {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: var(--space);
-    }
-}
-
-.inputGroup {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.inputGroup label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.inputGroup input {
-    width: 100%;
+    gap: var(--space);
 }
 
 .toggleSection {

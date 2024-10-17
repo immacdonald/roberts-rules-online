@@ -2,7 +2,7 @@ import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Page } from '../../components';
-import { Modal } from '../../components/Modal';
+import { Modal } from '../../components/Modal/Modal';
 import styles from './Committees.module.scss';
 
 interface ViewCommitteesProps {
