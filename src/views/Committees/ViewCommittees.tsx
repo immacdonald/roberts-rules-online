@@ -1,6 +1,7 @@
 import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { Page } from '../../components';
+import { Modal } from '../../components/Modal/Modal';
 import styles from './Committees.module.scss';
 
 interface ViewCommitteesProps {
@@ -68,27 +69,25 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
                 </section>
             </Page>
             {createModal && (
-                <div className={styles.modal}>
-                    <div>
-                        <h2>Create New Committee</h2>
-                        <form id="createCommittee" onSubmit={handleCreateCommittee}>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="committeeName">Committee Title</label>
-                                <input type="text" name="committeeName" id="committeeName" required={true} onChange={(ev) => setCommitteeName(ev.target.value)} value={committeeName} />
-                            </div>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="password">Committee Description</label>
-                                <input type="text" id="committeeDesc" required={true} onChange={(ev) => setCommitteeDesc(ev.target.value)} value={committeeDesc} />
-                            </div>
-                            <div className={styles.modalFooter}>
-                                <button onClick={() => setCreateModal(false)}>Cancel</button>
-                                <button type="submit" id="createButton" data-button-type="primary">
-                                    Create Committee
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <Modal>
+                    <h2>Create New Committee</h2>
+                    <form id="createCommittee" onSubmit={handleCreateCommittee}>
+                        <fieldset>
+                            <label htmlFor="committeeName">Committee Title</label>
+                            <input type="text" name="committeeName" id="committeeName" required={true} onChange={(ev) => setCommitteeName(ev.target.value)} value={committeeName} />
+                        </fieldset>
+                        <fieldset>
+                            <label htmlFor="password">Committee Description</label>
+                            <input type="text" id="committeeDesc" required={true} onChange={(ev) => setCommitteeDesc(ev.target.value)} value={committeeDesc} />
+                        </fieldset>
+                        <div className={styles.actions}>
+                            <button onClick={() => setCreateModal(false)}>Cancel</button>
+                            <button type="submit" id="createButton" data-button-type="primary">
+                                Create Committee
+                            </button>
+                        </div>
+                    </form>
+                </Modal>
             )}
         </>
     );
