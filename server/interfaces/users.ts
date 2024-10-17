@@ -1,5 +1,5 @@
-import { nanoid } from 'nanoid';
 import * as bcrypt from 'bcrypt';
+import { nanoid } from 'nanoid';
 import { MySQL } from '../db';
 import { User } from './user';
 

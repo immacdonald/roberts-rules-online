@@ -1,12 +1,12 @@
-import express, { Express, Request, Response, static as eStatic } from 'express';
-import ViteExpress from 'vite-express';
-import { createServer as createViteServer } from 'vite';
-import { Server, Socket } from 'socket.io';
-import jwt from 'jsonwebtoken';
 import { createServer } from 'http';
+import express, { Express, Request, Response, static as eStatic } from 'express';
+import jwt from 'jsonwebtoken';
+import { Server, Socket } from 'socket.io';
+import { createServer as createViteServer } from 'vite';
+import ViteExpress from 'vite-express';
 import { createDatabase } from './server/createDBTables';
-import { Users as UsersClass } from './server/interfaces/users';
 import { User } from './server/interfaces/user';
+import { Users as UsersClass } from './server/interfaces/users';
 
 createDatabase();
 
