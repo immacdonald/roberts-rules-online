@@ -32,44 +32,56 @@ async function createUser(username, email, password, displayname): Promise<[stri
                 sql.query(`SELECT * FROM users WHERE email = ?`, [email], async function (err, rows) {
                     if (!err) {
                         if (rows.length > 0) {
-                            return resolve([false, 'Email already exists']);
+                            return resolve([false, 'Email already exists!']);
                         } else {
-                            let idTaken: boolean = true;
-                            let wasError: boolean = false;
-                            while (idTaken && !wasError) {
-                                await sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
-                                    if (!err) {
-                                        if (rows.length > 0) {
-                                            console.log('ID already exists');
-                                            //id = nanoid(16);
-                                        } else {
-                                            idTaken = false;
-                                        }
-                                    } else {
-                                        wasError = true;
-                                        console.log('Error while performing Query ' + err);
-                                        return reject(err);
-                                    }
-                                });
-                            }
-                            const cDate = Date.now();
-                            await sql.query(
-                                `
-								INSERT INTO users
-									(id, username, email, password, displayname, creationDate)
-								VALUES
-									(?, ?, ?, ?, ?, ?)
-							`,
-                                [id, username, email, hash, displayname, cDate],
-                                function (err) {
-                                    if (!err) {
-                                        return resolve([true, id, cDate]);
-                                    } else {
-                                        console.log('Error while performing Query ' + err);
-                                        return reject(err);
-                                    }
-                                }
-                            );
+							sql.query(`SELECT * FROM users WHERE username = ?`, [username], async function (err, rows) {
+								if (!err) {
+									if (rows.length > 0) {
+										return resolve([false, 'Username already exists!']);
+									} else {
+										let idTaken: boolean = true;
+										let wasError: boolean = false;
+										while (idTaken && !wasError) {
+											await sql.query(`SELECT *
+															 FROM users
+															 WHERE id = ?`, [id], function (err, rows) {
+												if (!err) {
+													if (rows.length > 0) {
+														console.log('ID already exists');
+														//id = nanoid(16);
+													} else {
+														idTaken = false;
+													}
+												} else {
+													wasError = true;
+													console.log('Error while performing Query ' + err);
+													return reject(err);
+												}
+											});
+										}
+										const cDate = Date.now();
+										await sql.query(
+											`
+												INSERT INTO users
+													(id, username, email, password, displayname, creationDate)
+												VALUES (?, ?, ?, ?, ?, ?)
+											`,
+											[id, username, email, hash, displayname, cDate],
+											function (err) {
+												if (!err) {
+													return resolve([true, id, cDate]);
+												} else {
+													console.log('Error while performing Query ' + err);
+													return reject(err);
+												}
+											}
+										);
+									}
+								} else {
+									console.log('Error while performing Query ' + err);
+									return reject(err);
+								}
+							});
                         }
                     } else {
                         console.log('Error while performing Query ' + err);
@@ -82,9 +94,10 @@ async function createUser(username, email, password, displayname): Promise<[stri
 }
 
 export class Users {
+	public static instance: Users = new Users();
     public static dbReady = dbReady;
     private users: User[];
-    constructor() {
+    private constructor() {
         this.users = [];
     }
     async createUser(username, email, password, displayname): Promise<(boolean | string | number | User)[]> {
@@ -134,6 +147,27 @@ export class Users {
             });
         });
     }
+
+	getUserById(id: string): Promise<User | null> {
+		return new Promise((resolve, reject) => {
+			if (!Users.dbReady) return reject(false);
+			if (!id) return reject(false);
+			sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
+				if (!err) {
+					if (rows.length > 0) {
+						const row = rows[0];
+						const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
+						return resolve(user);
+					} else {
+						return resolve(null);
+					}
+				} else {
+					console.log('Error while performing Query: ' + err);
+					return reject(err);
+				}
+			});
+		});
+	};
 
     // Find Names are to search the users array
     findUserById(id: string): User | undefined {

@@ -39,14 +39,20 @@ export class MySQL {
         return new Promise((resolve, reject) => {
             this.pool.getConnection((err, connection) => {
                 this.db = wrap(connection);
-                connection.query(query, data, function (err, rows, fields) {
-                    if (p) p(err, rows, fields);
-                    if (err) {
-                        reject(err);
-                    }
-                    connection.release();
-                    resolve(rows);
-                });
+                try {
+					connection.query(query, data, function (err, rows, fields) {
+						if (p) p(err, rows, fields);
+						if (err) {
+							reject(err);
+						}
+						connection.release();
+						resolve(rows);
+					});
+				} catch (err) {
+					if (p) p(err, null, null);
+					reject(err);
+					connection.release();
+				}
             });
         });
     }

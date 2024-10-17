@@ -5,14 +5,16 @@ import { Server, Socket } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import ViteExpress from 'vite-express';
 import { createDatabase } from './server/createDBTables';
-import { User } from './server/interfaces/user';
 import { Users as UsersClass } from './server/interfaces/users';
-
-createDatabase();
+import { User } from './server/interfaces/user';
+import { Committees as CommitteesClass } from './server/interfaces/Committees';
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
-const Users: UsersClass = new UsersClass();
+createDatabase();
+const Users: UsersClass = UsersClass.instance;
+const Committees: CommitteesClass = CommitteesClass.instance;
+CommitteesClass.setUsersClass();
 
 const app: Express = express();
 const server = createServer(app);
@@ -146,6 +148,8 @@ Users.dbReady(async () => {
         .catch((e) => {
             console.log(e);
         });
+
+	Committees.createCommittee('Test Committee', 'lmao', 'EzdWsg7lDcA6n-AU', '{"EzdWsg7lDcA6n-AU": {"role": "admin"}}');
 });
 
 server.listen(port, () => {
