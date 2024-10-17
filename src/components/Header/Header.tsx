@@ -1,8 +1,11 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
+import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 import style from './Header.module.scss';
 
 const Header: FC = () => {
+    const { isLoggedIn, logout } = useWebsiteContext();
+
     return (
         <header className={style.header}>
             <div className={style.logo}>
@@ -17,13 +20,23 @@ const Header: FC = () => {
                 <Link to="/committees" data-button-type="ghost">
                     Committees
                 </Link>
-                <Link to="/login" data-button-type="ghost">
-                    Login
-                </Link>
-                <Link to="/register" data-button-type="primary">
-                    Register
-                </Link>
-                <Link to="/profile" className={style.profile} />
+                {isLoggedIn ? (
+                    <>
+                        <button onClick={() => logout()} data-button-type="primary">
+                            Logout
+                        </button>
+                        <Link to="/profile" className={style.profile} />
+                    </>
+                ) : (
+                    <>
+                        <Link to="/login" data-button-type="ghost">
+                            Login
+                        </Link>
+                        <Link to="/register" data-button-type="primary">
+                            Register
+                        </Link>
+                    </>
+                )}
             </nav>
         </header>
     );

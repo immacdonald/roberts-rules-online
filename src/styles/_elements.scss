@@ -13,7 +13,7 @@ html {
     height: 100%;
     display: block;
     box-sizing: border-box;
-    overflow-y: overlay;
+    overflow-y: scroll;
     scroll-behavior: smooth;
 }
 
@@ -124,4 +124,8 @@ button,
         filter: brightness(0.95);
         text-decoration: none;
     }
+}
+
+hr {
+    margin-block: var(--space);
 }

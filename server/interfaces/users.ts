@@ -94,7 +94,7 @@ export class Users {
         this.users.push(user);
         return user;
     }
-    async loginUser(email: string, password: string): Promise<User | [boolean, string]> {
+    async loginUser(email: string, password: string): Promise<[boolean, string | User]> {
         let user: User | undefined | null = this.findUserByEmail(email);
         if (!user) {
             user = await this.getUserFromEmail(email);
@@ -103,7 +103,7 @@ export class Users {
             }
         }
         if (await user.isPasswordCorrect(password)) {
-            return user;
+            return [true, user];
         } else {
             return [false, 'Password is incorrect'];
         }
