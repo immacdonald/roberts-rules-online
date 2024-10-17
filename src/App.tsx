@@ -3,6 +3,8 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { Home, Login, NotFound, ViewCommittees, ControlPanel, Profile } from './views';
 import { MySocket } from './interfaces/socket';
 import { Registration } from './views/Auth/Registration';
+import { WebsiteContextProvider } from './contexts/WebsiteContext';
+import { useWebsiteContext } from './contexts/useWebsiteContext';
 
 const socketExec = (name: string, ...args: any[]): void => {
     console.log('Executing socket...', name, args);
@@ -10,6 +12,26 @@ const socketExec = (name: string, ...args: any[]): void => {
 };
 
 const RoutedApp: FC = () => {
+    const { user, setUser } = useWebsiteContext();
+
+    useEffect(() => {
+        const socket = MySocket.instance.socket;
+
+        socket.on('chatMessage', (msg) => {
+            console.log('Message:' + msg);
+        });
+
+        socket.on('login', (user: { id: string; username: string; displayname: string; email: string }, token) => {
+            console.log(`Logged in as ${user.email}`);
+            localStorage.setItem('token', token);
+            setUser(user);
+        });
+    }, []);
+
+    useEffect(() => {
+        console.log('Set user to', user);
+    });
+
     return <Outlet />;
 };
 
@@ -51,19 +73,11 @@ const router = createBrowserRouter([
 ]);
 
 const App: FC = () => {
-    useEffect(() => {
-        const socket = MySocket.instance.socket;
-
-        socket.on('chatMessage', (msg) => {
-            console.log('Message:' + msg);
-        });
-
-        socket.on('login', (username, email, displayname) => {
-            console.log('Logged in as', username, email, displayname);
-        });
-    }, []);
-
-    return <RouterProvider router={router} />;
+    return (
+        <WebsiteContextProvider>
+            <RouterProvider router={router} />
+        </WebsiteContextProvider>
+    );
 };
 
 export { App };

@@ -1,3 +1,8 @@
+import express, { Express, Request, Response, static as eStatic } from 'express';
+import ViteExpress from 'vite-express';
+import { createServer as createViteServer } from 'vite';
+import { Server, Socket } from 'socket.io';
+import jwt from 'jsonwebtoken';
 import { createServer } from 'http';
 import express, { Express, Request, Response, static as eStatic } from 'express';
 import jwt from 'jsonwebtoken';
@@ -8,6 +13,8 @@ import { createDatabase } from './server/createDBTables';
 import { User } from './server/interfaces/user';
 
 createDatabase();
+
+const SECRET_KEY = 'DEV_SECRET_KEY';
 
 const Users: UsersClass = new UsersClass();
 
@@ -63,7 +70,7 @@ io.use((socket, next) => {
 });
 
 io.on('connection', (socket: Socket) => {
-    console.log('A user connected');
+    console.log('Client is connected');
 
     socket.on('chatMessage', (msg) => {
         console.log('message: ' + msg);
@@ -73,13 +80,14 @@ io.on('connection', (socket: Socket) => {
         console.log('Logging in...');
         console.log(username);
         console.log(password);
-        Users.loginUser(username, password).then((r) => {
-            console.log(r);
-            if (r instanceof User) {
-                socket.emit('login', r.username, r.email, r.displayname);
-                r.setSocket(socket);
+        Users.loginUser(username, password).then(([success, data]) => {
+            if (success) {
+                const user = data as User;
+                const token = jwt.sign({ id: user.id, username: user.username, displayname: user.displayname, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
+                socket.emit('login', user, token);
+                user.setSocket(socket);
             } else {
-                console.log('Error logging in.');
+                console.log(`Error logging in: ${data}`);
             }
         });
     });

@@ -16,7 +16,7 @@ interface WebsiteContextProviderProps {
 const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): ReactElement => {
     const [user, setUser] = useState<any>(null);
 
-    const logout = (): void => {
+    const logout = () => {
         setUser(null);
         localStorage.removeItem('token');
     };
