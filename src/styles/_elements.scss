@@ -54,10 +54,6 @@ a {
     }
 }
 
-h1 {
-    font-size: 2.5rem;
-}
-
 fieldset {
     margin-bottom: var(--space-lg);
     text-align: left;
@@ -124,6 +120,18 @@ button,
         filter: brightness(0.95);
         text-decoration: none;
     }
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
 }
 
 hr {
