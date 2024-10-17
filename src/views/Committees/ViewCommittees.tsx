@@ -1,7 +1,8 @@
 import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { Page } from '../../components';
-import { Modal } from '../../components/Modal/Modal';
+import { CommitteeNav } from '../../components/CommitteeNav';
+import { Modal } from '../../components/Modal';
 import styles from './Committees.module.scss';
 
 interface ViewCommitteesProps {
@@ -58,6 +59,7 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
     return (
         <>
             <Page>
+                <CommitteeNav />
                 <section>
                     <header className={styles.committeeViewTitle}>
                         <h1>My Committees</h1>
