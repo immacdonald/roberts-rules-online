@@ -25,9 +25,10 @@
     }
 }
 
-.highlight {
-    background-color: var(--color-primary);
-    color: var(--color-text-inverse) !important;
-    padding: 0.5rem;
-    border-radius: var(--border-radius);
+.profile {
+    width: 32px;
+    height: 32px;
+    background-color: var(--color-primary-dark);
+    border-radius: 50%;
+    margin-left: var(--space);
 }

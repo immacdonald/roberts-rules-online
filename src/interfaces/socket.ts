@@ -7,14 +7,17 @@ export class MySocket {
 
     private constructor() {
         console.log('Creating socket...');
-        this.socket = io(URL);
-    }
 
-    public doSomething() {
-        //...
-    }
+        // Retrieve the token from local storage
+        const token = localStorage.getItem('token');
 
-    public doOtherThings() {
-        //...
+        // Pass the token in the query when creating the Socket.IO connection
+        if (token) {
+            this.socket = io(URL, {
+                query: { token }
+            });
+        } else {
+            this.socket = io(URL);
+        }
     }
 }

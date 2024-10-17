@@ -8,41 +8,40 @@ import style from './Home.module.scss';
 const Home: FC = () => {
     return (
         <Page>
-            <section style={{ padding: 0 }}>
-                <div className={style.headerImage}>
-                    <div className={style.headline}>
-                        <h1 className={style.headlineTitle}>Organized and efficient meetings, every time.</h1>
-                        <br />
-                        <p className={style.headlineSubtitle}>
-                            <span className={style.title}>Robert's Rules Online</span> gives you the tools to manage, record, and streamline meetings so that no time is wasted.
-                        </p>
-                    </div>
-                    <img className={style.book} src={book} alt="robert's rules book" />
+            <section className={style.header}>
+                <div className={style.headline}>
+                    <h1 className={style.title}>Organized and efficient meetings, every time.</h1>
+                    <h3 className={style.subtitle}>
+                        <span className={style.highlight}>Robert's Rules Online</span> gives you the tools to manage, record, and streamline meetings so that no time is wasted.
+                    </h3>
                 </div>
+                <div className={style.book} style={{ backgroundImage: `url(${book})` }} />
             </section>
             <section>
                 <div className={style.welcome}>
-                    <h2 className={style.welcomeHeader}>
-                        Welcome to <span className={style.title}>Robert's Rules Online</span>
+                    <h2 className={style.title}>
+                        Welcome to <span className={style.highlight}>Robert's Rules Online</span>
                     </h2>
                     <p>
-                        Streamline your meetings and enhance collaboration with <span className={style.title}>Robert's Rules Online</span>, the comprehensive digital platform designed to make
+                        Streamline your meetings and enhance collaboration with <span className={style.highlight}>Robert's Rules Online</span>, the comprehensive digital platform designed to make
                         parliamentary procedure accessible and efficient. Whether you're a seasoned chairperson or new to the world of organized meetings, our user-friendly interface provides the
                         tools you need to navigate Robert's Rules of Order with ease.
                     </p>
-                    <img src={lines} alt="lines" />
+                    <img style={{ maxWidth: '100%' }} src={lines} alt="Lines smoothing out" />
                 </div>
                 <div className={style.card}>
-                    <div className={style.cardContainer}>
+                    <div className={style.content}>
                         <div className={style.cardText}>
-                            <h3 className={style.cardTitle}>Empower Your Team</h3>
-                            <p className={style.cardSubtitle}>
+                            <h2>Empower Your Team</h2>
+                            <p>
                                 At Robert's Rules Online, we believe that effective communication and democratic decision-making are the cornerstones of any successful organization. Our platform
                                 offers intuitive features that simplify the process of making motions, conducting votes, and managing discussions. Say goodbye to confusion and hello to clarity as your
                                 team engages in meaningful dialogue and reaches consensus with confidence.
                             </p>
                         </div>
-                        <img className={style.cardImage} src={miniWebsite} alt="mini website" />
+                        <div className={style.cardImage}>
+                            <img src={miniWebsite} alt="Committee page" />
+                        </div>
                     </div>
                 </div>
             </section>

@@ -26,7 +26,7 @@ export class User {
         return await bcrypt.compare(password, this.password);
     }
 
-    public setSocket(socket: Socket) {
+    public setSocket(socket: Socket): void {
         this.socket = socket;
     }
 }
