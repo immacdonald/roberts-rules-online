@@ -1,10 +1,10 @@
 import { FC, useEffect } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
-import { Home, Login, NotFound, ViewCommittees, ControlPanel, Profile } from './views';
-import { MySocket } from './interfaces/socket';
-import { Registration } from './views/Auth/Registration';
-import { WebsiteContextProvider } from './contexts/WebsiteContext';
 import { useWebsiteContext } from './contexts/useWebsiteContext';
+import { WebsiteContextProvider } from './contexts/WebsiteContext';
+import { MySocket } from './interfaces/socket';
+import { ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from './views';
+import { Registration } from './views/Auth/Registration';
 
 const socketExec = (name: string, ...args: any[]): void => {
     console.log('Executing socket...', name, args);
