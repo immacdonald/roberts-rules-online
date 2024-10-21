@@ -1,0 +1,43 @@
+.motionTable {
+    display: grid;
+    gap: var(--space);
+    width: 80%;
+}
+
+.motionTableHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space);
+    text-align: left;
+}
+
+.motion {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space);
+    text-align: left;
+}
+
+.motionTitle {
+    border: var(--border);
+    border-radius: var(--border-radius);
+    background-color: #00000040;
+    padding: var(--space);
+    width: 90%;
+}
+
+.motionAuthor {
+    padding-top: var(--space);
+}
+
+.motionDate {
+    padding-top: var(--space);
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: flex-start;
+    width: 80%;
+    margin-top: var(--space);
+    margin-bottom: var(--space);
+}

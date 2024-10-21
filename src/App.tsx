@@ -5,6 +5,7 @@ import { WebsiteContextProvider } from './contexts/WebsiteContext';
 import { MySocket } from './interfaces/socket';
 import { CommitteeHome, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from './views';
 import { Registration } from './views/Auth/Registration';
+import { ActiveMotions } from './views/Motions';
 
 const socketExec = (name: string, ...args: any[]): void => {
     console.log('Executing socket...', name, args);
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
             {
                 path: '/committees/control-panel',
                 element: <ControlPanel />
+            },
+            {
+                path: '/motions',
+                element: <ActiveMotions />
             },
             {
                 path: '*',
