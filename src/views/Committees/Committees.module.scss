@@ -47,3 +47,18 @@
     align-items: center;
     gap: var(--space);
 }
+
+.toggleSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggleText {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.toggle {
+    margin-right: 10px;
+}
