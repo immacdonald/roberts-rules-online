@@ -1,7 +1,6 @@
 import { FC, useEffect } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
-import { useWebsiteContext } from './contexts/useWebsiteContext';
-import { WebsiteContextProvider } from './contexts/WebsiteContext';
+import { Home, Login, NotFound, ViewCommittees, ControlPanel } from './views';
 import { MySocket } from './interfaces/socket';
 import { CommitteeHome, Home, Login, NotFound, Profile, ViewCommittees } from './views';
 import { Registration } from './views/Auth/Registration';
@@ -61,8 +60,8 @@ const router = createBrowserRouter([
                 element: <ViewCommittees socketExec={socketExec} />
             },
             {
-                path: '/committees/home',
-                element: <CommitteeHome />
+                path: '/committees/control-panel',
+                element: <ControlPanel />
             },
             {
                 path: '*',
