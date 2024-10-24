@@ -10,17 +10,17 @@ interface ActiveMotionsProps {
 const ActiveMotions: FC<ActiveMotionsProps> = ({ socketExec }) => {
     const [createModal, setCreateModal] = useState<boolean>(false);
 
-    const [motionTitle, setMotionTitle] = useState<string>("");
+    const [motionTitle, setMotionTitle] = useState<string>('');
 
     const createMotion = () => {
-        console.log("Create a new motion");
+        console.log('Create a new motion');
         setCreateModal(true);
     };
 
     const getMotion = (title: string, name: string, date?: string) => {
         let dateString;
         if (date === undefined) {
-            let currentDate = new Date();
+            const currentDate = new Date();
             dateString = currentDate.toISOString().slice(0, 10);
         } else dateString = date;
 
@@ -39,18 +39,18 @@ const ActiveMotions: FC<ActiveMotionsProps> = ({ socketExec }) => {
     const populateMotions = () => {
         return (
             <>
-                {getMotion("Motion to do something", "Alice", "2015/03/12")}
-                {getMotion("Motion to do something else", "Bob", "2023/02/10")}
-                {getMotion("Motion to get an A in this class", "Alex", "2024/10/24")}
+                {getMotion('Motion to do something', 'Alice', '2015/03/12')}
+                {getMotion('Motion to do something else', 'Bob', '2023/02/10')}
+                {getMotion('Motion to get an A in this class', 'Alex', '2024/10/24')}
             </>
         );
     };
 
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        console.log('Creating new motion:', motionTitle, "John Doe");
+        console.log('Creating new motion:', motionTitle, 'John Doe');
         // Create the committee
-        socketExec('createCommittee', motionTitle, "John Doe");
+        socketExec('createCommittee', motionTitle, 'John Doe');
     };
 
     return (
