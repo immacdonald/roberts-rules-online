@@ -1,7 +1,7 @@
 import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Page } from '../../components';
-import { CommitteeNav } from '../../components/CommitteeNav';
 import { Modal } from '../../components/Modal';
 import styles from './Committees.module.scss';
 
@@ -15,6 +15,8 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
     const [committeeName, setCommitteeName] = useState<string>('');
     const [committeeDesc, setCommitteeDesc] = useState<string>('');
 
+    const navigate = useNavigate();
+
     const createCommittee = (): void => {
         console.log('Create a new committeee');
         setCreateModal(true);
@@ -22,7 +24,7 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
 
     const getCommittee = (name: string, details?: string): JSX.Element => {
         return (
-            <div className={styles.committee}>
+            <div className={styles.committee} onClick={() => navigate('/committees/home')}>
                 <h3>{name}</h3>
                 <p>
                     {details ||
@@ -59,7 +61,6 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
     return (
         <>
             <Page>
-                <CommitteeNav />
                 <section>
                     <header className={styles.committeeViewTitle}>
                         <h1>My Committees</h1>

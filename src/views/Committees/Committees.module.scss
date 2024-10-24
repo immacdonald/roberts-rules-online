@@ -26,6 +26,11 @@
     background-color: var(--color-foreground);
     width: 100%;
     padding: var(--space);
+    transition: 0.25s linear box-shadow;
+
+    &:hover {
+        box-shadow: var(--shadow);
+    }
 }
 
 .committeeCardFooter {
