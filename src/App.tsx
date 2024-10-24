@@ -3,7 +3,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { useWebsiteContext } from './contexts/useWebsiteContext';
 import { WebsiteContextProvider } from './contexts/WebsiteContext';
 import { MySocket } from './interfaces/socket';
-import { ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from './views';
+import { CommitteeHome, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from './views';
 import { Registration } from './views/Auth/Registration';
 
 const socketExec = (name: string, ...args: any[]): void => {
@@ -63,6 +63,10 @@ const router = createBrowserRouter([
             {
                 path: '/committees/control-panel',
                 element: <ControlPanel />
+            },
+            {
+                path: '/committees/home',
+                element: <CommitteeHome />
             },
             {
                 path: '*',

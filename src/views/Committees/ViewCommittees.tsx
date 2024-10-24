@@ -2,7 +2,7 @@ import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Page } from '../../components';
-import { Modal } from '../../components/Modal/Modal';
+import { Modal } from '../../components/Modal';
 import styles from './Committees.module.scss';
 
 interface ViewCommitteesProps {
@@ -14,6 +14,8 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
 
     const [committeeName, setCommitteeName] = useState<string>('');
     const [committeeDesc, setCommitteeDesc] = useState<string>('');
+
+    const navigate = useNavigate();
 
     const createCommittee = (): void => {
         console.log('Create a new committeee');
