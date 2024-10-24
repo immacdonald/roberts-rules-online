@@ -1,8 +1,9 @@
 import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Page } from '../../components';
 import { Modal } from '../../components/Modal';
+import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 import styles from './Committees.module.scss';
 
 interface ViewCommitteesProps {
@@ -10,46 +11,49 @@ interface ViewCommitteesProps {
 }
 
 const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
-    const [createModal, setCreateModal] = useState<boolean>(false);
-
-    const [committeeName, setCommitteeName] = useState<string>('');
-    const [committeeDesc, setCommitteeDesc] = useState<string>('');
+    const { isLoggedIn, committees } = useWebsiteContext();
 
     const navigate = useNavigate();
 
-    const createCommittee = (): void => {
-        console.log('Create a new committeee');
-        setCreateModal(true);
-    };
+    if (!isLoggedIn) {
+        return <Navigate to="/login" />;
+    }
 
-    const getCommittee = (name: string, details?: string): JSX.Element => {
+    // Populating the committees
+    const getCommittee = (key: string, name: string, details: string, members: string) => {
+        console.log('Getting committee:', key, name, details, members)
         return (
-            <div className={styles.committee} onClick={() => navigate('/committees/home')}>
+            <div className={styles.committee} key={key} onClick={() => navigate('/committees/home')}>
                 <h3>{name}</h3>
                 <p>
                     {details ||
-                        'Description ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ....'}
+                        'No description provided for this committee. Please contact the committee chair for more information.'}
                 </p>
                 <br />
                 <div className={styles.committeeCardFooter}>
                     <p>
-                        <b>Members:</b> Person 1, Person 2, Person 3, and 5 others...
+                        <b>Members:</b> {members || "No Members"}
                     </p>
                 </div>
             </div>
         );
     };
 
-    const populateCommittees = (): JSX.Element => {
-        return (
-            <>
-                {getCommittee('Committee 1')}
-                {getCommittee('Committee 2')}
-                {getCommittee('Committee 3')}
-                {getCommittee('Committee 4')}
-            </>
-        );
+    /*User.instance.addOnLoginHook(function () {
+        console.log('creating hook')
+        Committees.instance.addHook(populateCommittees);
+    })*/
+
+    const [createModal, setCreateModal] = useState<boolean>(false);
+
+    const [committeeName, setCommitteeName] = useState<string>('');
+    const [committeeDesc, setCommitteeDesc] = useState<string>('');
+
+    const createCommittee = (): void => {
+        console.log('Create a new committeee');
+        setCreateModal(true);
     };
+
 
     const handleCreateCommittee = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
@@ -68,7 +72,13 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
                             Create New Committee +
                         </button>
                     </header>
-                    <div className={styles.committeeList}>{populateCommittees()}</div>
+                    <div className={styles.committeeList} id="committeeList">
+                        {committees.length > 0 ? committees.map((committee: any) => {
+                            return getCommittee(committee.id, committee.name, committee.description, ""/*committee.getMemberString()*/)
+                        }) : (
+                            <p>Loading committees... this process can take up to 30 seconds.</p>
+                        )}
+                    </div>
                 </section>
             </Page>
             {createModal && (

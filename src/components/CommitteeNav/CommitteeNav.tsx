@@ -15,16 +15,16 @@ const CommitteeNav: FC = () => {
                 <Link to="/committees/home" data-button-type="primary">
                     Overview
                 </Link>
-                <Link to="/committees/home" data-button-type="secondary">
+                <Link to="/committees/active-motions" data-button-type="secondary">
                     Active Motions
                 </Link>
-                <Link to="/committees/home" data-button-type="secondary">
+                <Link to="/committees/past-motions" data-button-type="secondary">
                     Past Motions
                 </Link>
-                <Link to="/committees/home" data-button-type="secondary">
+                <Link to="/committees/user" data-button-type="secondary">
                     View Users
                 </Link>
-                <Link to="/committees/home" data-button-type="secondary">
+                <Link to="/committees/control-panel" data-button-type="secondary">
                     Control Panel
                 </Link>
             </nav>

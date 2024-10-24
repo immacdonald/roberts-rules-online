@@ -16,8 +16,8 @@ const Login: FC<LoginProps> = ({ socketExec }) => {
         return <Navigate to="/" />;
     }
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('PeterGreek1@gmail.com');
+    const [password, setPassword] = useState('thisisapassword');
 
     const handleLogIn = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();

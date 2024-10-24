@@ -4,6 +4,8 @@ interface WebsiteContextInterface {
     user: any;
     setUser: (user: any) => void;
     isLoggedIn: boolean;
+    setCommittees: (committee: any) => void;
+    committees: any[];
     logout: () => void;
 }
 
@@ -15,6 +17,7 @@ interface WebsiteContextProviderProps {
 
 const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): ReactElement => {
     const [user, setUser] = useState<any>(null);
+    const [committees, setCommittees] = useState<any[]>([]);
 
     const logout = (): void => {
         setUser(null);
@@ -23,7 +26,7 @@ const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): 
 
     const isLoggedIn = useMemo(() => !!user, [user]);
 
-    return <WebsiteContext.Provider value={{ user, setUser, isLoggedIn, logout }}>{children}</WebsiteContext.Provider>;
+    return <WebsiteContext.Provider value={{ user, setUser, isLoggedIn, logout, committees, setCommittees }}>{children}</WebsiteContext.Provider>;
 };
 
 export { WebsiteContext, WebsiteContextProvider };
