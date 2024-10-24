@@ -1,12 +1,12 @@
 import { Socket } from 'socket.io-client';
-import { MySocket } from './socket';
 import { Committees } from './Committees';
+import { MySocket } from './socket';
 
 export class User {
 	public isLoggedIn: boolean;
-	public username: string;
-	public email: string;
-	public displayname: string;
+	public username: string | undefined;
+	public email: string | undefined;
+	public displayname: string | undefined;
 	public socket: Socket;
 	public onLoginHooks: Function[];
 	public static instance: User = new User();
@@ -24,15 +24,15 @@ export class User {
 			this.onLoginHooks.forEach((func) => {
 				func();
 			});
-			setTimeout(() => {
+			/*setTimeout(() => {
 				this.socket.emit("getCommittees");
-			}, 1000);
+			}, 1000);*/
 		});
 
-		this.socket.on('setCommittees', (committees) => {
+		/*this.socket.on('setCommittees', (committees) => {
 			console.log(committees);
 			Committees.instance.setCommittees(committees);
-		});
+		});*/
 
 	}
 

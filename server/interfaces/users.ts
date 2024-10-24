@@ -12,7 +12,7 @@ sql.ready(async function () {
     Users.dbReady = dbReady;
 });
 
-async function createUser(username, email, password, displayname): Promise<[string, number] | boolean> {
+async function createUser(username, email, password, displayname): Promise<[boolean, string | number]> {
     return new Promise((resolve, reject) => {
         if (!displayname) displayname = username;
         if (!dbReady) return reject(false);
@@ -69,7 +69,7 @@ async function createUser(username, email, password, displayname): Promise<[stri
 											[id, username, email, hash, displayname, cDate],
 											function (err) {
 												if (!err) {
-													return resolve([true, id, cDate]);
+													return resolve([true, `${id}+${cDate}`]);
 												} else {
 													console.log('Error while performing Query ' + err);
 													return reject(err);
@@ -102,8 +102,11 @@ export class Users {
     }
     async createUser(username, email, password, displayname): Promise<(boolean | string | number | User)[]> {
         const res = await createUser(username, email, password, displayname);
-        if (!res || !res[0]) return [false, res[1]];
-        const user = new User(res[1], username, email, password, displayname, res[2]);
+        if (!res || !res[0]) {
+            return [false, res[1]];
+        }
+        const idAndDate: string = res[1] as string;
+        const user = new User(idAndDate.split('+')[0], username, email, password, displayname, idAndDate.split('+')[1]);
         this.users.push(user);
         return [true, user];
     }

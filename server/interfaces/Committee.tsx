@@ -1,5 +1,5 @@
-import { nanoid } from 'nanoid';
 import * as bcrypt from 'bcrypt';
+import { nanoid } from 'nanoid';
 import { MySQL } from '../db';
 
 export class Committee {
@@ -7,7 +7,7 @@ export class Committee {
 	public name: string;
 	public description: string;
 	public owner: string;
-	public members: Object;
+	public members: object;
 
 	constructor(id, name, owner, members) {
 		this.id = id;

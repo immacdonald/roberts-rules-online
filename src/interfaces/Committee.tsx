@@ -1,18 +1,24 @@
 import { Member } from './Member';
 
+interface CommitteeMember {
+	username: string;
+	displayname: string;
+	role: string;
+}
+
 export class Committee {
 	public id: string;
 	public name: string;
 	public description: string;
 	public members: Member[];
 
-	constructor(id: string, name: string, description: string, members: string[{username: string, displayname: string, role: string}]) {
+	constructor(id: string, name: string, description: string, members: CommitteeMember[]) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.members = [];
 		members.forEach((member) => {
-			let newM = new Member(member.username, member.displayname, member.role)
+			const newM = new Member(member.username, member.displayname, member.role)
 			this.members.push(newM);
 		});
 	}

@@ -1,7 +1,8 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { useWebsiteContext } from './contexts/useWebsiteContext';
 import { WebsiteContextProvider } from './contexts/WebsiteContext';
+import { Committees } from './interfaces/Committees';
 import { MySocket } from './interfaces/socket';
 import { CommitteeHome, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from './views';
 import { Registration } from './views/Auth/Registration';
@@ -13,29 +14,38 @@ const socketExec = (name: string, ...args: any[]): void => {
 };
 
 const RoutedApp: FC = () => {
-    const { user, setUser } = useWebsiteContext();
+    const { user, setUser, setCommittees } = useWebsiteContext();
 
-    useEffect(() => {
-        const socket = MySocket.instance.socket;
+    const socket = useRef<any>(MySocket.instance.socket);
 
-        socket.on('chatMessage', (msg) => {
-            console.log('Message:' + msg);
-        });
+    socket.current.on('chatMessage', (msg: any) => {
+        console.log('Message:' + msg);
+    });
 
-        socket.on('login', (user: { id: string; username: string; displayname: string; email: string }, token) => {
-            console.log(`Logged in as ${user.email}`);
-            localStorage.setItem('token', token);
-            setUser(user);
-        });
+    socket.current.on('login', (user: { id: string; username: string; displayname: string; email: string }, token: string) => {
+        console.log(`Logged in as ${user.email}`);
+        localStorage.setItem('token', token);
+        setUser(user);
 
-        socket.on('failedRegister', (msg) => {
-			alert(msg);
-		});
-    }, []);
+        setTimeout(() => {
+            socket.current.emit("getCommittees");
+        }, 1000 )
+    });
+
+    socket.current.on('setCommittees', (committees: any) => {
+        console.log("In RoutedApp", committees);
+        Committees.instance.setCommittees(committees);
+        setCommittees(committees);
+        
+    });
+
+    socket.current.on('failedRegister', (msg: any) => {
+        alert(msg);
+    });
 
     useEffect(() => {
         console.log('Set user to', user);
-    });
+    }, [user]);
 
     return <Outlet />;
 };
@@ -74,11 +84,7 @@ const router = createBrowserRouter([
                 element: <CommitteeHome />
             },
             {
-                path: '/committees/control-panel',
-                element: <ControlPanel />
-            },
-            {
-                path: '/motions',
+                path: '/committees/active-motions',
                 element: <ActiveMotions socketExec={socketExec} />
             },
             {

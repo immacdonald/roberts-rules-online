@@ -1,6 +1,7 @@
 import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { Page } from '../../components';
+import { CommitteeNav } from '../../components/CommitteeNav';
 import styles from './ActiveMotions.module.scss';
 
 interface ActiveMotionsProps {
@@ -56,6 +57,7 @@ const ActiveMotions: FC<ActiveMotionsProps> = ({ socketExec }) => {
     return (
         <>
             <Page>
+                <CommitteeNav />
                 <section>
                     <header className="">
                         <h1>Active Motions</h1>
@@ -67,12 +69,16 @@ const ActiveMotions: FC<ActiveMotionsProps> = ({ socketExec }) => {
                         </button>
                     </div>
                     <table id="activeMotionsTable" className={styles.motionTable}>
-                        <tr className={styles.motionTableHeader}>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Date</th>
-                        </tr>
-                        {populateMotions()}
+                        <thead>
+                            <tr className={styles.motionTableHeader}>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {populateMotions()}
+                        </tbody>
                     </table>
                 </section>
             </Page>

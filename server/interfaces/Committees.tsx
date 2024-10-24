@@ -1,9 +1,23 @@
-import { nanoid } from 'nanoid';
 import * as bcrypt from 'bcrypt';
+import { nanoid } from 'nanoid';
 import { MySQL } from '../db';
 import { Committee } from './Committee';
-import {Users as UsersClass} from "./users";
 import {User} from "./user";
+import {Users as UsersClass} from "./users";
+
+interface CommitteeMember {
+	username: string;
+	displayname: string;
+	role: string;
+}
+
+interface CommitteeData {
+	id: string;
+	name: string;
+	description: string;
+	owner: string;
+	members: CommitteeMember[]
+}
 
 
 const saltRounds = 10; // Typically a value between 10 and 12
@@ -40,7 +54,7 @@ export class Committees {
 				if (!err) {
 					if (res.length > 0) {
 						console.log('ID already exists');
-						Committees.createCommittee(name, description, owner, members);
+						//createCommittee(name, description, owner, members);
 					}else {
 						console.log('Creating committee: ', name, owner, members);
 						sql.query("INSERT INTO committees (id, name, description, owner, members) VALUES (?, ?, ?, ?, ?)", [id, name, description, owner, members], (err, res) => {
@@ -53,13 +67,13 @@ export class Committees {
 			});
 		}else {
 			setTimeout(() => {
-				Committees.createCommittee(name, description, owner, members);
+				//createCommittee(name, description, owner, members);
 			}, 1000);
 		}
 	}
 
-	public async getClientCommitteesVersion(committees): any {
-		let clientCommittees = [];
+	public async getClientCommitteesVersion(committees): Promise<CommitteeData[]> {
+		const clientCommittees: CommitteeData[] = [];
 		for (let i = 0; i < committees.length; i++) {
 			clientCommittees.push(await this.getClientCommittee(committees[i]));
 		}
@@ -67,10 +81,10 @@ export class Committees {
 		return clientCommittees;
 	}
 
-	public async getClientCommittee(committee): Promise<any> {
-		let members = [];
-		for (let i in committee.members) {
-			let user = Users.findUserById(i);
+	public async getClientCommittee(committee): Promise<CommitteeData> {
+		const members: CommitteeMember[] = [];
+		for (const i in committee.members) {
+			let user: User | undefined | null = Users.findUserById(i);
 			if (!user) {
 				user = await Users.getUserById(i);
 			}
@@ -90,7 +104,7 @@ export class Committees {
 			description: committee.description,
 			owner: committee.owner,
 			members: members
-		};
+		} as CommitteeData;
 	}
 
 	public static setUsersClass(): void {

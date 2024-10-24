@@ -5,9 +5,9 @@ import { Server, Socket } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import ViteExpress from 'vite-express';
 import { createDatabase } from './server/createDBTables';
-import { Users as UsersClass } from './server/interfaces/users';
-import { User } from './server/interfaces/user';
 import { Committees as CommitteesClass } from './server/interfaces/Committees';
+import { User } from './server/interfaces/user';
+import { Users as UsersClass } from './server/interfaces/users';
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
@@ -46,7 +46,7 @@ app.get(`${API}/ping`, (_: Request, res: Response) => {
     res.send('Hello, this is the Express API.');
 });
 
-io.use((socket, next) => {
+/*io.use((socket, next) => {
     const token = socket.handshake.query.token;
 
     // Proceed normally if no token is provided
@@ -59,13 +59,16 @@ io.use((socket, next) => {
     jwt.verify(token, SECRET_KEY, (err, decoded) => {
         if (err) {
             console.log('Failed to authenticate token:', err.message);
-            return next(new Error('Authentication error'));
+            //return next(new Error('Authentication error'));
+            return next();
+        } else {
+            console.log(`Successfully authenticated user ${decoded.email} from JWT`);
+            socket.emit('login', { id: decoded.id, displayname: decoded.displayname, username: decoded.username, email: decoded.email }, token);
         }
-        console.log(`Successfully authenticated user ${decoded.email} from JWT`);
-        socket.emit('login', { id: decoded.id, displayname: decoded.displayname, username: decoded.username, email: decoded.email }, token);
-        next();
     });
-});
+
+    return next();
+});*/
 
 io.on('connection', (socket: Socket) => {
     console.log('Client is connected');
@@ -93,10 +96,10 @@ io.on('connection', (socket: Socket) => {
         console.log('Registering...');
         console.log(username);
         console.log(email);
-		console.log(password);
-		if (!displayname) {displayname = username;}
+        console.log(password);
+        if (!displayname) { displayname = username; }
 
-		let [validUsername, err_msg_username] = Users.isUsernameValid(username);
+        const [validUsername, err_msg_username] = Users.isUsernameValid(username);
         if (!validUsername) {
             socket.emit('failedRegister', err_msg_username);
             return false;
@@ -115,20 +118,20 @@ io.on('connection', (socket: Socket) => {
         }
 
         Users.createUser(username, email, password, displayname).then((res) => {
-			let r = res[0];
-			let val = res[1];
-			if (r) {
-				if (val instanceof User) {
-					val.setSocket(socket);
-					socket.emit('login', val.username, val.email, val.displayname);
-				}
-			}else {
-				socket.emit('failedRegister', val);
-			}
-		}).catch((e) => {
-			console.log(e);
-			socket.emit('failedRegister', "An error occurred while registering.");
-		});
+            const r = res[0];
+            const val = res[1];
+            if (r) {
+                if (val instanceof User) {
+                    val.setSocket(socket);
+                    socket.emit('login', val.username, val.email, val.displayname);
+                }
+            } else {
+                socket.emit('failedRegister', val);
+            }
+        }).catch((e) => {
+            console.log(e);
+            socket.emit('failedRegister', "An error occurred while registering.");
+        });
     });
 });
 
@@ -149,7 +152,7 @@ Users.dbReady(async () => {
             console.log(e);
         });
 
-	Committees.createCommittee('Test Committee', 'lmao', 'EzdWsg7lDcA6n-AU', '{"EzdWsg7lDcA6n-AU": {"role": "admin"}}');
+    Committees.createCommittee('Test Committee', 'lmao', 'EzdWsg7lDcA6n-AU', '{"EzdWsg7lDcA6n-AU": {"role": "admin"}}');
 });
 
 server.listen(port, () => {

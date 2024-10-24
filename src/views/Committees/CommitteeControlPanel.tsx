@@ -1,6 +1,7 @@
 import { FC, useState } from 'react';
 import Toggle from 'react-toggle';
 import { Page } from '../../components';
+import { CommitteeNav } from '../../components/CommitteeNav';
 import styles from './Committees.module.scss';
 
 const ControlPanel: FC = () => {
@@ -17,6 +18,7 @@ const ControlPanel: FC = () => {
 
     return (
         <Page>
+            <CommitteeNav/>
             <section>
                 <div className={styles.toggleSection}>
                     <div className={styles.toggleText}>Allow any user to create a special motion</div>

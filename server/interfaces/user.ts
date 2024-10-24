@@ -2,8 +2,8 @@
 import * as bcrypt from 'bcrypt';
 import { Socket } from 'socket.io';
 import { MySQL } from '../db';
-import {Users} from "./users";
 import {Committees as CommitteesClass} from "./Committees";
+import {Users} from "./users";
 
 const sql = new MySQL();
 let dbReady = false;
@@ -41,14 +41,15 @@ export class User {
 		if (this.socket == null || this.socket !== socket) {
 			console.log("Setting socket...");
 			this.socket = socket;
-			let self = this;
+			const self = this;
 
 			this.socket.on("getCommittees", async () => {
-				console.log('Getting committees...');
+				console.log('Requested getCommittees');
 				await sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [self.id, self.id], async (err, res) => {
+                    console.log("Performed a query?")
 					if (!err) {
 						console.log("Got committees, getting client table...");
-						let clientTable = await Committees.getClientCommitteesVersion(res);
+						const clientTable = await Committees.getClientCommitteesVersion(res);
 						console.log("Got client table, sending to client...");
 						self.socket.emit("setCommittees", clientTable);
 					}

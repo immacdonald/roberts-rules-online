@@ -1,5 +1,19 @@
 import { Committee } from "./Committee";
 
+interface CommitteeMember {
+	username: string;
+	displayname: string;
+	role: string;
+}
+
+interface CommitteeData {
+	id: string;
+	name: string;
+	description: string;
+	owner: string;
+	members: CommitteeMember[]
+}
+
 export class Committees {
 	public static instance: Committees = new Committees();
 	public committees: Committee[] = [];
@@ -9,10 +23,11 @@ export class Committees {
 		this.committees = [];
 	}
 
-	public setCommittees(committees: Object[]): void {
+	public setCommittees(committees: CommitteeData[]): void {
+		console.log("Set committees!")
 		this.committees = [];
 		committees.forEach((committee) => {
-			let newC = new Committee(committee.id, committee.name, committee.description, committee.members);
+			const newC = new Committee(committee.id, committee.name, committee.description, committee.members);
 			this.committees.push(newC);
 		});
 		this.hooks.forEach((func) => {

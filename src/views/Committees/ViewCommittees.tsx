@@ -1,60 +1,48 @@
 import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Page } from '../../components';
 import { Modal } from '../../components/Modal';
+import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 import styles from './Committees.module.scss';
-import { Committees } from '../../interfaces/Committees';
 
 interface ViewCommitteesProps {
     socketExec: SocketExec;
 }
 
 const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
-	// Populating the committees
-	const getCommittee = (key: string, name: string, details: string, members: string) => {
+    const { isLoggedIn, committees } = useWebsiteContext();
+
+    const navigate = useNavigate();
+
+    if (!isLoggedIn) {
+        return <Navigate to="/login" />;
+    }
+
+    // Populating the committees
+    const getCommittee = (key: string, name: string, details: string, members: string) => {
         console.log('Getting committee:', key, name, details, members)
-		return (
-			<div className={styles.committee} key={key}>
-				<h3>{name}</h3>
-				<p>
-					{details ||
-						'No description provided for this committee. Please contact the committee chair for more information.'}
-				</p>
-				<br />
-				<div className={styles.committeeCardFooter}>
-					<p>
-						<b>Members:</b> {members || "No Members"}
-					</p>
-				</div>
-			</div>
-		);
-	};
+        return (
+            <div className={styles.committee} key={key} onClick={() => navigate('/committees/home')}>
+                <h3>{name}</h3>
+                <p>
+                    {details ||
+                        'No description provided for this committee. Please contact the committee chair for more information.'}
+                </p>
+                <br />
+                <div className={styles.committeeCardFooter}>
+                    <p>
+                        <b>Members:</b> {members || "No Members"}
+                    </p>
+                </div>
+            </div>
+        );
+    };
 
-	const populateCommittees = () => {
-        console.log('Populating committees');
-		// loop through the committees from User.instance.committees
-		let strx = [];
-		let committees = Committees.instance.committees;
-		for (let i = 0; i < committees.length; i++) {
-			strx.push(getCommittee(committees[i].id, committees[i].name, committees[i].description, committees[i].getMemberString()));
-		}
-
-		return (
-			<>
-				{strx}
-			</>
-		);
-	};
-
-    User.instance.addOnLoginHook(function () {
+    /*User.instance.addOnLoginHook(function () {
         console.log('creating hook')
         Committees.instance.addHook(populateCommittees);
-    })
-
-
-
-
-
+    })*/
 
     const [createModal, setCreateModal] = useState<boolean>(false);
 
@@ -84,7 +72,13 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
                             Create New Committee +
                         </button>
                     </header>
-                    <div className={styles.committeeList} id="committeeList">{populateCommittees()}</div>
+                    <div className={styles.committeeList} id="committeeList">
+                        {committees.length > 0 ? committees.map((committee: any) => {
+                            return getCommittee(committee.id, committee.name, committee.description, ""/*committee.getMemberString()*/)
+                        }) : (
+                            <p>Loading committees... this process can take up to 30 seconds.</p>
+                        )}
+                    </div>
                 </section>
             </Page>
             {createModal && (
