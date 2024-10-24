@@ -82,7 +82,8 @@ input {
     }
 }
 
-button {
+button,
+[data-button-type] {
     height: 42px;
     background-color: var(--color-background);
     border: none;
