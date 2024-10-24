@@ -7,7 +7,7 @@ import {Users} from "./users";
 
 const sql = new MySQL();
 let dbReady = false;
-const Committees: CommitteesClass = CommitteesClass.instance;
+
 sql.ready(async function () {
 	dbReady = true;
 	User.dbReady = dbReady;
@@ -42,6 +42,8 @@ export class User {
 			console.log("Setting socket...");
 			this.socket = socket;
 			const self = this;
+
+            const Committees: CommitteesClass = CommitteesClass.instance;
 
 			this.socket.on("getCommittees", async () => {
 				console.log('Requested getCommittees');
