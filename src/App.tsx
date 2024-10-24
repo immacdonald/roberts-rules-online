@@ -75,7 +75,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/motions',
-                element: <ActiveMotions />
+                element: <ActiveMotions socketExec={socketExec} />
             },
             {
                 path: '*',
