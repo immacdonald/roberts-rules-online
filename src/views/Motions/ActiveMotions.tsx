@@ -61,20 +61,20 @@ const ActiveMotions: FC<ActiveMotionsProps> = ({ socketExec }) => {
                         <h1>Active Motions</h1>
                     </header>
                     <div className=""></div>
+                    <div className={styles.buttonContainer}>
+                        <button className={styles.createButton} data-button-type="primary" onClick={() => createMotion()}>
+                            Create New Motion +
+                        </button>
+                    </div>
+                    <table id="activeMotionsTable" className={styles.motionTable}>
+                        <tr className={styles.motionTableHeader}>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Date</th>
+                        </tr>
+                        {populateMotions()}
+                    </table>
                 </section>
-                <div className={styles.buttonContainer}>
-                    <button className={styles.createButton} data-button-type="primary" onClick={() => createMotion()}>
-                        Create New Motion +
-                    </button>
-                </div>
-                <table id="activeMotionsTable" className={styles.motionTable}>
-                    <tr className={styles.motionTableHeader}>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Date</th>
-                    </tr>
-                    {populateMotions()}
-                </table>
             </Page>
             {createModal && (
                 <div className={styles.modal}>
