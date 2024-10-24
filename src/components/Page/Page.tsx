@@ -10,8 +10,10 @@ const Page: FC<PageProps> = ({ children }) => {
     return (
         <>
             <Header />
-            <main className={style.page}>{children}</main>
-            <Footer />
+            <main className={style.page}>
+                {children}
+                <Footer />
+            </main>
         </>
     );
 };
