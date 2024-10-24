@@ -70,7 +70,7 @@ export class Committees {
 	public async getClientCommittee(committee): Promise<any> {
 		let members = [];
 		for (let i in committee.members) {
-			let user = await Users.findUserById(i);
+			let user = Users.findUserById(i);
 			if (!user) {
 				user = await Users.getUserById(i);
 			}

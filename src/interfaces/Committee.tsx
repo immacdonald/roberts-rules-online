@@ -1,11 +1,13 @@
 import { Member } from './Member';
 
 export class Committee {
+	public id: string;
 	public name: string;
 	public description: string;
 	public members: Member[];
 
-	constructor(name: string, description: string, members: string[{username: string, displayname: string, role: string}]) {
+	constructor(id: string, name: string, description: string, members: string[{username: string, displayname: string, role: string}]) {
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.members = [];

@@ -8,17 +8,22 @@ export class User {
 	public email: string;
 	public displayname: string;
 	public socket: Socket;
+	public onLoginHooks: Function[];
 	public static instance: User = new User();
 
 	private constructor() { // private constructor avoids direct instantiation
 		this.socket = MySocket.instance.socket;
 		this.isLoggedIn = false;
+		this.onLoginHooks = [];
 		this.socket.on('login', (username, email, displayname) => {
 			console.log("User logged in!");
 			this.isLoggedIn = true;
 			this.username = username;
 			this.email = email;
 			this.displayname = displayname;
+			this.onLoginHooks.forEach((func) => {
+				func();
+			});
 			setTimeout(() => {
 				this.socket.emit("getCommittees");
 			}, 1000);
@@ -35,10 +40,16 @@ export class User {
 		this.socket = socket;
 	}
 
+	public addOnLoginHook(func: Function): void {
+		this.onLoginHooks.push(func);
+		if (this.isLoggedIn) {
+			func();
+		}
+	}
+
 	public static loginUser(username: string, password: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 			User.instance.socket.emit('login', username, password);
-
 		});
 	}
 }

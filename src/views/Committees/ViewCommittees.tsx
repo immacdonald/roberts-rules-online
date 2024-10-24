@@ -11,18 +11,19 @@ interface ViewCommitteesProps {
 
 const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
 	// Populating the committees
-	const getCommittee = (name: string, details?: string, members?: string) => {
+	const getCommittee = (key: string, name: string, details: string, members: string) => {
+        console.log('Getting committee:', key, name, details, members)
 		return (
-			<div className={styles.committee}>
+			<div className={styles.committee} key={key}>
 				<h3>{name}</h3>
 				<p>
 					{details ||
-						'Description ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ....'}
+						'No description provided for this committee. Please contact the committee chair for more information.'}
 				</p>
 				<br />
 				<div className={styles.committeeCardFooter}>
 					<p>
-						<b>Members:</b> {members || "Person 1, Person 2, Person 3, and 5 others..."}
+						<b>Members:</b> {members || "No Members"}
 					</p>
 				</div>
 			</div>
@@ -30,11 +31,12 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
 	};
 
 	const populateCommittees = () => {
+        console.log('Populating committees');
 		// loop through the committees from User.instance.committees
 		let strx = [];
 		let committees = Committees.instance.committees;
 		for (let i = 0; i < committees.length; i++) {
-			strx.push(getCommittee(committees[i].name, committees[i].description, committees[i].getMemberString()));
+			strx.push(getCommittee(committees[i].id, committees[i].name, committees[i].description, committees[i].getMemberString()));
 		}
 
 		return (
@@ -44,6 +46,10 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
 		);
 	};
 
+    User.instance.addOnLoginHook(function () {
+        console.log('creating hook')
+        Committees.instance.addHook(populateCommittees);
+    })
 
 
 
