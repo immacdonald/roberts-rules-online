@@ -1,16 +1,13 @@
-import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Page } from '../../components';
 import { Modal } from '../../components/Modal';
 import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { socket } from '../../socket';
+import { getMembersString } from '../../utility';
 import styles from './Committees.module.scss';
 
-interface ViewCommitteesProps {
-    socketExec: SocketExec;
-}
-
-const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
+const ViewCommittees: FC = () => {
     const { isLoggedIn, committees } = useWebsiteContext();
 
     const navigate = useNavigate();
@@ -18,31 +15,6 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
     if (!isLoggedIn) {
         return <Navigate to="/login" />;
     }
-
-    // Populating the committees
-    const getCommittee = (key: string, name: string, details: string, members: string) => {
-        console.log('Getting committee:', key, name, details, members)
-        return (
-            <div className={styles.committee} key={key} onClick={() => navigate('/committees/home')}>
-                <h3>{name}</h3>
-                <p>
-                    {details ||
-                        'No description provided for this committee. Please contact the committee chair for more information.'}
-                </p>
-                <br />
-                <div className={styles.committeeCardFooter}>
-                    <p>
-                        <b>Members:</b> {members || "No Members"}
-                    </p>
-                </div>
-            </div>
-        );
-    };
-
-    /*User.instance.addOnLoginHook(function () {
-        console.log('creating hook')
-        Committees.instance.addHook(populateCommittees);
-    })*/
 
     const [createModal, setCreateModal] = useState<boolean>(false);
 
@@ -54,12 +26,11 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
         setCreateModal(true);
     };
 
-
     const handleCreateCommittee = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         console.log('Creating new committee:', committeeName, committeeDesc);
         // Create the committee
-        socketExec('createCommittee', committeeName, committeeDesc);
+        socket.emit('createCommittee', committeeName, committeeDesc);
     };
 
     return (
@@ -73,9 +44,22 @@ const ViewCommittees: FC<ViewCommitteesProps> = ({ socketExec }) => {
                         </button>
                     </header>
                     <div className={styles.committeeList} id="committeeList">
-                        {committees.length > 0 ? committees.map((committee: any) => {
-                            return getCommittee(committee.id, committee.name, committee.description, ""/*committee.getMemberString()*/)
-                        }) : (
+                        {committees.length > 0 ? (
+                            committees.map((committee: any) => {
+                                return (
+                                    <div className={styles.committee} key={committee.id} onClick={() => navigate('/committees/home')}>
+                                        <h3>{committee.name}</h3>
+                                        <p>{committee.desc || 'No description provided for this committee. Please contact the committee chair for more information.'}</p>
+                                        <br />
+                                        <div className={styles.committeeCardFooter}>
+                                            <p>
+                                                <b>Members:</b> {committee.members && committee.members.length > 0 ? getMembersString(committee.members) : 'No Members'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
                             <p>Loading committees... this process can take up to 30 seconds.</p>
                         )}
                     </div>

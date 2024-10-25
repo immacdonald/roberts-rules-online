@@ -34,54 +34,58 @@ async function createUser(username, email, password, displayname): Promise<[bool
                         if (rows.length > 0) {
                             return resolve([false, 'Email already exists!']);
                         } else {
-							sql.query(`SELECT * FROM users WHERE username = ?`, [username], async function (err, rows) {
-								if (!err) {
-									if (rows.length > 0) {
-										return resolve([false, 'Username already exists!']);
-									} else {
-										let idTaken: boolean = true;
-										let wasError: boolean = false;
-										while (idTaken && !wasError) {
-											await sql.query(`SELECT *
+                            sql.query(`SELECT * FROM users WHERE username = ?`, [username], async function (err, rows) {
+                                if (!err) {
+                                    if (rows.length > 0) {
+                                        return resolve([false, 'Username already exists!']);
+                                    } else {
+                                        let idTaken: boolean = true;
+                                        let wasError: boolean = false;
+                                        while (idTaken && !wasError) {
+                                            await sql.query(
+                                                `SELECT *
 															 FROM users
-															 WHERE id = ?`, [id], function (err, rows) {
-												if (!err) {
-													if (rows.length > 0) {
-														console.log('ID already exists');
-														//id = nanoid(16);
-													} else {
-														idTaken = false;
-													}
-												} else {
-													wasError = true;
-													console.log('Error while performing Query ' + err);
-													return reject(err);
-												}
-											});
-										}
-										const cDate = Date.now();
-										await sql.query(
-											`
+															 WHERE id = ?`,
+                                                [id],
+                                                function (err, rows) {
+                                                    if (!err) {
+                                                        if (rows.length > 0) {
+                                                            console.log('ID already exists');
+                                                            //id = nanoid(16);
+                                                        } else {
+                                                            idTaken = false;
+                                                        }
+                                                    } else {
+                                                        wasError = true;
+                                                        console.log('Error while performing Query ' + err);
+                                                        return reject(err);
+                                                    }
+                                                }
+                                            );
+                                        }
+                                        const cDate = Date.now();
+                                        await sql.query(
+                                            `
 												INSERT INTO users
 													(id, username, email, password, displayname, creationDate)
 												VALUES (?, ?, ?, ?, ?, ?)
 											`,
-											[id, username, email, hash, displayname, cDate],
-											function (err) {
-												if (!err) {
-													return resolve([true, `${id}+${cDate}`]);
-												} else {
-													console.log('Error while performing Query ' + err);
-													return reject(err);
-												}
-											}
-										);
-									}
-								} else {
-									console.log('Error while performing Query ' + err);
-									return reject(err);
-								}
-							});
+                                            [id, username, email, hash, displayname, cDate],
+                                            function (err) {
+                                                if (!err) {
+                                                    return resolve([true, `${id}+${cDate}`]);
+                                                } else {
+                                                    console.log('Error while performing Query ' + err);
+                                                    return reject(err);
+                                                }
+                                            }
+                                        );
+                                    }
+                                } else {
+                                    console.log('Error while performing Query ' + err);
+                                    return reject(err);
+                                }
+                            });
                         }
                     } else {
                         console.log('Error while performing Query ' + err);
@@ -94,7 +98,7 @@ async function createUser(username, email, password, displayname): Promise<[bool
 }
 
 export class Users {
-	public static instance: Users = new Users();
+    public static instance: Users = new Users();
     public static dbReady = dbReady;
     private users: User[];
     private constructor() {
@@ -151,26 +155,26 @@ export class Users {
         });
     }
 
-	getUserById(id: string): Promise<User | null> {
-		return new Promise((resolve, reject) => {
-			if (!Users.dbReady) return reject(false);
-			if (!id) return reject(false);
-			sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
-				if (!err) {
-					if (rows.length > 0) {
-						const row = rows[0];
-						const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
-						return resolve(user);
-					} else {
-						return resolve(null);
-					}
-				} else {
-					console.log('Error while performing Query: ' + err);
-					return reject(err);
-				}
-			});
-		});
-	};
+    getUserById(id: string): Promise<User | null> {
+        return new Promise((resolve, reject) => {
+            if (!Users.dbReady) return reject(false);
+            if (!id) return reject(false);
+            sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
+                if (!err) {
+                    if (rows.length > 0) {
+                        const row = rows[0];
+                        const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
+                        return resolve(user);
+                    } else {
+                        return resolve(null);
+                    }
+                } else {
+                    console.log('Error while performing Query: ' + err);
+                    return reject(err);
+                }
+            });
+        });
+    }
 
     // Find Names are to search the users array
     findUserById(id: string): User | undefined {
@@ -193,11 +197,11 @@ export class Users {
         return true;
     }
     isUsernameValid(username: string): Array<boolean | string> {
-        if (!username) return [false, "Username must be at least 3 characters long"];
-        if (username.length < 3) return [false, "Username must be at least 3 characters long"];
-        if (username.length > 32) return [false, "Username must be at most 32 characters long"];
-        if ((/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/.test(username) == false)) return [false, "Username must only contain letters, numbers, underscores and periods"];
-        return [true, ""];
+        if (!username) return [false, 'Username must be at least 3 characters long'];
+        if (username.length < 3) return [false, 'Username must be at least 3 characters long'];
+        if (username.length > 32) return [false, 'Username must be at most 32 characters long'];
+        if (/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/.test(username) == false) return [false, 'Username must only contain letters, numbers, underscores and periods'];
+        return [true, ''];
     }
     isPasswordValid(password: string): boolean {
         if (!password) return false;

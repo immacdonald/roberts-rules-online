@@ -1,15 +1,11 @@
-import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { Page } from '../../components';
 import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { socket } from '../../socket';
 import style from './Login.module.scss';
 
-interface RegistrationProps {
-    socketExec: SocketExec;
-}
-
-const Registration: FC<RegistrationProps> = ({ socketExec }) => {
+const Registration: FC = () => {
     const { isLoggedIn } = useWebsiteContext();
 
     if (isLoggedIn) {
@@ -19,7 +15,7 @@ const Registration: FC<RegistrationProps> = ({ socketExec }) => {
     const [email, setEmail] = useState('PeterGreek@gmail.com');
     const [password, setPassword] = useState('thisisapassword');
     const [confirmPassword, setConfirmPassword] = useState('thisisapassword');
-	const [username, setUsername] = useState('Peter Greek');
+    const [username, setUsername] = useState('Peter Greek');
 
     const handleRegister = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
@@ -27,9 +23,11 @@ const Registration: FC<RegistrationProps> = ({ socketExec }) => {
             alert('Passwords do not match');
             return;
         }
-        console.log('Registering...', username, email, password);
+
         // Get the values from the form
-        socketExec('register', username, email, password);
+        console.log('Registering...', username, email, password);
+
+        socket.emit('register', username, email, password);
     };
 
     return (
@@ -39,10 +37,9 @@ const Registration: FC<RegistrationProps> = ({ socketExec }) => {
                     <h2 className={style.title}>Register</h2>
                     <form id="registrationForm" className={style.form} onSubmit={handleRegister}>
                         <fieldset>
-							<label htmlFor="email">Username</label>
-							<input type="text" name="username" id="username" required={true}
-								   onChange={(ev) => setUsername(ev.target.value)} value={username}/>
-						</fieldset>
+                            <label htmlFor="email">Username</label>
+                            <input type="text" name="username" id="username" required={true} onChange={(ev) => setUsername(ev.target.value)} value={username} />
+                        </fieldset>
                         <fieldset>
                             <label htmlFor="email">Email</label>
                             <input type="email" name="email" id="email" required={true} onChange={(ev) => setEmail(ev.target.value)} value={email} />
@@ -62,8 +59,8 @@ const Registration: FC<RegistrationProps> = ({ socketExec }) => {
                     <Link to="/login">Already have an account? Log in</Link>
                 </div>
             </section>
-		</Page>
-	);
+        </Page>
+    );
 };
 
-export {Registration};
+export { Registration };

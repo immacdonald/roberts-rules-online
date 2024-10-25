@@ -1,14 +1,10 @@
-import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { Page } from '../../components';
 import { CommitteeNav } from '../../components/CommitteeNav';
+import { socket } from '../../socket';
 import styles from './ActiveMotions.module.scss';
 
-interface ActiveMotionsProps {
-    socketExec: SocketExec;
-}
-
-const ActiveMotions: FC<ActiveMotionsProps> = ({ socketExec }) => {
+const ActiveMotions: FC = () => {
     const [createModal, setCreateModal] = useState<boolean>(false);
 
     const [motionTitle, setMotionTitle] = useState<string>('');
@@ -51,7 +47,7 @@ const ActiveMotions: FC<ActiveMotionsProps> = ({ socketExec }) => {
         event.preventDefault();
         console.log('Creating new motion:', motionTitle, 'John Doe');
         // Create the committee
-        socketExec('createCommittee', motionTitle, 'John Doe');
+        socket.emit('createCommittee', motionTitle, 'John Doe');
     };
 
     return (
@@ -76,9 +72,7 @@ const ActiveMotions: FC<ActiveMotionsProps> = ({ socketExec }) => {
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {populateMotions()}
-                        </tbody>
+                        <tbody>{populateMotions()}</tbody>
                     </table>
                 </section>
             </Page>

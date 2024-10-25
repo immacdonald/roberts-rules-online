@@ -97,7 +97,9 @@ io.on('connection', (socket: Socket) => {
         console.log(username);
         console.log(email);
         console.log(password);
-        if (!displayname) { displayname = username; }
+        if (!displayname) {
+            displayname = username;
+        }
 
         const [validUsername, err_msg_username] = Users.isUsernameValid(username);
         if (!validUsername) {
@@ -117,21 +119,23 @@ io.on('connection', (socket: Socket) => {
             return false;
         }
 
-        Users.createUser(username, email, password, displayname).then((res) => {
-            const r = res[0];
-            const val = res[1];
-            if (r) {
-                if (val instanceof User) {
-                    val.setSocket(socket);
-                    socket.emit('login', val.username, val.email, val.displayname);
+        Users.createUser(username, email, password, displayname)
+            .then((res) => {
+                const r = res[0];
+                const val = res[1];
+                if (r) {
+                    if (val instanceof User) {
+                        val.setSocket(socket);
+                        socket.emit('login', val.username, val.email, val.displayname);
+                    }
+                } else {
+                    socket.emit('failedRegister', val);
                 }
-            } else {
-                socket.emit('failedRegister', val);
-            }
-        }).catch((e) => {
-            console.log(e);
-            socket.emit('failedRegister', "An error occurred while registering.");
-        });
+            })
+            .catch((e) => {
+                console.log(e);
+                socket.emit('failedRegister', 'An error occurred while registering.');
+            });
     });
 });
 

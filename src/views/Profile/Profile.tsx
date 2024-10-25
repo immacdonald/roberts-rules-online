@@ -1,23 +1,14 @@
-import type { SocketExec } from '../../../types';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Page } from '../../components';
 import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 
-interface ProfileProps {
-    socketExec: SocketExec;
-}
-
-const Profile: FC<ProfileProps> = ({ socketExec }) => {
+const Profile: FC = () => {
     const { user, isLoggedIn } = useWebsiteContext();
 
     if (!isLoggedIn) {
         return <Navigate to="/" />;
     }
-
-    useEffect(() => {
-        console.log(socketExec);
-    }, []);
 
     return (
         <Page>

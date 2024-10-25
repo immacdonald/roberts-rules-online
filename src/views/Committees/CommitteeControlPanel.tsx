@@ -18,7 +18,7 @@ const ControlPanel: FC = () => {
 
     return (
         <Page>
-            <CommitteeNav/>
+            <CommitteeNav />
             <section>
                 <div className={styles.toggleSection}>
                     <div className={styles.toggleText}>Allow any user to create a special motion</div>
