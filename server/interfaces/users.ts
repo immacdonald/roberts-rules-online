@@ -4,7 +4,7 @@ import { MySQL } from '../db';
 import { User } from './user';
 
 const saltRounds = 10; // Typically a value between 10 and 12
-const sql = new MySQL();
+const sql = MySQL.getInstance();
 let dbReady = false;
 
 sql.ready(async function () {
@@ -136,8 +136,13 @@ export class Users {
     // Get Names are to query the database for the user
     getUserFromEmail(email: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            if (!Users.dbReady) return reject(false);
-            if (!email) return reject(false);
+            if (!Users.dbReady) {
+                return reject(false);
+            }
+            if (!email) {
+                return reject(false);
+            }
+
             sql.query(`SELECT * FROM users WHERE email = ?`, [email], function (err, rows) {
                 if (!err) {
                     if (rows.length > 0) {
@@ -157,13 +162,22 @@ export class Users {
 
     getUserById(id: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            if (!Users.dbReady) return reject(false);
-            if (!id) return reject(false);
-            sql.query(`SELECT * FROM users WHERE id = ?`, [id], function (err, rows) {
+            if (!Users.dbReady) {
+                return reject(false);
+            }
+
+            if (!id) {
+                return reject(false);
+            }
+
+            sql.query(`SELECT * FROM users WHERE id = ?`, [id], (err, rows) => {
                 if (!err) {
                     if (rows.length > 0) {
                         const row = rows[0];
                         const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
+
+                        // Add to users cache
+                        this.users.push(user);
                         return resolve(user);
                     } else {
                         return resolve(null);

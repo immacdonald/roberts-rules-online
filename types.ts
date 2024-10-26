@@ -1,7 +1,8 @@
 interface CommitteeMember {
-    username: string;
-    displayname: string;
+    id: string;
     role: string;
+    username?: string;
+    displayname?: string;
 }
 
 interface CommitteeData {

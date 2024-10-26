@@ -1,9 +1,10 @@
 import * as bcrypt from 'bcrypt';
 import { Socket } from 'socket.io';
+import { CommitteeData } from '../../types';
 import { MySQL } from '../db';
 import { Committees as CommitteesClass } from './Committees';
 
-const sql = new MySQL();
+const sql = MySQL.getInstance();
 let dbReady = false;
 
 sql.ready(async function () {
@@ -37,20 +38,22 @@ export class User {
 
     public setSocket(socket: Socket): void {
         if (this.socket == null || this.socket !== socket) {
-            console.log('Setting socket...');
             this.socket = socket;
 
             const Committees: CommitteesClass = CommitteesClass.instance;
 
             this.socket.on('getCommittees', async () => {
-                console.log('Requested getCommittees');
                 await sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [this.id, this.id], async (err, res) => {
-                    console.log('Performed a query?');
                     if (!err) {
-                        console.log('Got committees, getting client table...');
-                        const clientTable = await Committees.getClientCommitteesVersion(res);
-                        console.log('Got client table, sending to client...');
+                        //const data = JSON.parse(JSON.stringify(res));
+                        const data: CommitteeData[] = res.map((row) => ({
+                            ...row,
+                            members: JSON.parse(row.members)
+                        }));
+
+                        const clientTable = await Committees.populateCommitteeMembers(data);
                         this.socket.emit('setCommittees', clientTable);
+                        //this.socket.emit('setCommittees', data);
                     }
                 });
             });

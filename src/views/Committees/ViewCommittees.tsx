@@ -1,10 +1,10 @@
 import { FC, FormEvent, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { CommitteeData } from 'types';
 import { Page } from '../../components';
 import { Modal } from '../../components/Modal';
 import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 import { socket } from '../../socket';
-import { getMembersString } from '../../utility';
 import styles from './Committees.module.scss';
 
 const ViewCommittees: FC = () => {
@@ -45,15 +45,20 @@ const ViewCommittees: FC = () => {
                     </header>
                     <div className={styles.committeeList} id="committeeList">
                         {committees.length > 0 ? (
-                            committees.map((committee: any) => {
+                            committees.map((committee: CommitteeData) => {
+                                console.log(committee);
                                 return (
                                     <div className={styles.committee} key={committee.id} onClick={() => navigate('/committees/home')}>
-                                        <h3>{committee.name}</h3>
-                                        <p>{committee.desc || 'No description provided for this committee. Please contact the committee chair for more information.'}</p>
+                                        <div className={styles.committeeHeader}>
+                                            <h3>{committee.name}</h3>
+                                            <span>{committee.id}</span>
+                                        </div>
+                                        <p>{committee.description || 'No description provided for this committee. Please contact the committee chair for more information.'}</p>
                                         <br />
                                         <div className={styles.committeeCardFooter}>
                                             <p>
-                                                <b>Members:</b> {committee.members && committee.members.length > 0 ? getMembersString(committee.members) : 'No Members'}
+                                                <b>Members: </b>
+                                                {committee.members && committee.members.length > 0 ? committee.members.map((member) => member.displayname || member.id).join(', ') : 'No Members'}
                                             </p>
                                         </div>
                                     </div>

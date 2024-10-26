@@ -1,13 +1,14 @@
-import { Connection, createPool, Pool } from 'mysql';
+import { createPool, Pool } from 'mysql';
 import { wrap } from 'node-mysql-wrapper';
 
 export class MySQL {
-    public connection: Connection;
+    private static instance: MySQL;
     public pool: Pool;
     public db: any;
 
     constructor() {
         console.log('New MySQL instance created');
+
         const pool = createPool({
             host: '147.135.31.128',
             user: 'CSCI432FinalProject',
@@ -23,19 +24,22 @@ export class MySQL {
         console.log('Database is connecting');
         this.pool = pool;
     }
-    ready(callback): void {
+    public static getInstance(): MySQL {
+        if (!MySQL.instance) {
+            MySQL.instance = new MySQL();
+        }
+        return MySQL.instance;
+    }
+
+    public ready(callback: () => void): void {
         this.pool.getConnection((err, connection) => {
             this.db = wrap(connection);
             this.db.ready(callback);
         });
     }
 
-    query(query: string, data: object | undefined = [], p: (err, rows, fields) => void = (): void => {}): Promise<any> {
-        if (data && typeof data === 'function' && p == undefined) {
-            p = data as any;
-            data = undefined;
-        }
-
+    public query(query: string, data: any[] = [], p: (err, rows, fields) => void = (): void => {}): Promise<any> {
+        //console.log('Querying', query, data);
         return new Promise((resolve, reject) => {
             this.pool.getConnection((err, connection) => {
                 this.db = wrap(connection);
