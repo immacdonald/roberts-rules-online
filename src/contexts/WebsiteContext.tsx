@@ -1,11 +1,12 @@
-import { createContext, FC, ReactElement, ReactNode, useMemo, useState } from 'react';
+import { createContext, Dispatch, FC, ReactElement, ReactNode, SetStateAction, useMemo, useState } from 'react';
+import { CommitteeData } from 'types';
 
 interface WebsiteContextInterface {
     user: any;
     setUser: (user: any) => void;
     isLoggedIn: boolean;
-    setCommittees: (committee: any) => void;
-    committees: any[];
+    setCommittees: Dispatch<SetStateAction<CommitteeData[]>>;
+    committees: CommitteeData[];
     logout: () => void;
 }
 
@@ -17,7 +18,7 @@ interface WebsiteContextProviderProps {
 
 const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): ReactElement => {
     const [user, setUser] = useState<any>(null);
-    const [committees, setCommittees] = useState<any[]>([]);
+    const [committees, setCommittees] = useState<CommitteeData[]>([]);
 
     const logout = (): void => {
         setUser(null);

@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { Page } from '../../components';
-import styles from './Motion.module.scss';
 import { CommitteeNav } from '../../components/CommitteeNav';
+import styles from './Motion.module.scss';
 
 const Motion: FC = () => {
     return (
         <Page>
-            <CommitteeNav/>
+            <CommitteeNav />
             <section>
                 <h1>Motion about what day to bird watch</h1>
                 <p>I move that Saturday become the day the group gathers to watch birds</p>

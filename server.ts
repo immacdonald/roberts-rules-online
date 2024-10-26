@@ -12,16 +12,18 @@ import { Users as UsersClass } from './server/interfaces/users';
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
 createDatabase();
+
 const Users: UsersClass = UsersClass.instance;
-const Committees: CommitteesClass = CommitteesClass.instance;
+//const Committees: CommitteesClass = CommitteesClass.instance;
 CommitteesClass.setUsersClass();
 
 const app: Express = express();
 const server = createServer(app);
+
 const port: number = 3000;
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:3000'
+        origin: `http://localhost:${port}`
     }
 });
 
@@ -76,6 +78,7 @@ io.on('connection', (socket: Socket) => {
     socket.on('chatMessage', (msg) => {
         console.log('message: ' + msg);
     });
+
     // login
     socket.on('login', (username, password) => {
         console.log('Logging in...');
@@ -97,7 +100,9 @@ io.on('connection', (socket: Socket) => {
         console.log(username);
         console.log(email);
         console.log(password);
-        if (!displayname) { displayname = username; }
+        if (!displayname) {
+            displayname = username;
+        }
 
         const [validUsername, err_msg_username] = Users.isUsernameValid(username);
         if (!validUsername) {
@@ -117,48 +122,31 @@ io.on('connection', (socket: Socket) => {
             return false;
         }
 
-        Users.createUser(username, email, password, displayname).then((res) => {
-            const r = res[0];
-            const val = res[1];
-            if (r) {
-                if (val instanceof User) {
-                    val.setSocket(socket);
-                    socket.emit('login', val.username, val.email, val.displayname);
+        Users.createUser(username, email, password, displayname)
+            .then((res) => {
+                const r = res[0];
+                const val = res[1];
+                if (r) {
+                    if (val instanceof User) {
+                        val.setSocket(socket);
+                        socket.emit('login', val.username, val.email, val.displayname);
+                    }
+                } else {
+                    socket.emit('failedRegister', val);
                 }
-            } else {
-                socket.emit('failedRegister', val);
-            }
-        }).catch((e) => {
-            console.log(e);
-            socket.emit('failedRegister', "An error occurred while registering.");
-        });
+            })
+            .catch((e) => {
+                console.log(e);
+                socket.emit('failedRegister', 'An error occurred while registering.');
+            });
     });
 });
 
 Users.dbReady(async () => {
-    console.log('Users Database is ready');
-    Users.createUser('PeterG', 'peter@localhost.local', 'AdminPassword', 'Peter G')
-        .then((r) => {
-            console.log(r);
-        })
-        .catch((e) => {
-            console.log(e);
-        });
-    Users.createUser('test', 'test@example.com', 'password', 'Admin')
-        .then((r) => {
-            console.log(r);
-        })
-        .catch((e) => {
-            console.log(e);
-        });
-
-    Committees.createCommittee('Test Committee', 'lmao', 'EzdWsg7lDcA6n-AU', '{"EzdWsg7lDcA6n-AU": {"role": "admin"}}');
+    //console.log('Users Database is ready');
+    //Committees.createCommittee('Test Committee', 'lmao', 'EzdWsg7lDcA6n-AU', [{ id: 'EzdWsg7lDcA6n-AU', role: 'admin' }]);
 });
 
 server.listen(port, () => {
     console.log(`Robert's Rules Online listening at http://localhost:${port}`);
 });
-
-// ViteExpress.listen(app, port, () => {
-//     console.log(`[server]: Server is running at http://localhost:${port}`);
-// });

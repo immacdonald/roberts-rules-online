@@ -1,15 +1,11 @@
-import type { SocketExec } from '../../../types';
 import { FC, FormEvent, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { Page } from '../../components';
 import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { socket } from '../../socket';
 import style from './Login.module.scss';
 
-interface LoginProps {
-    socketExec: SocketExec;
-}
-
-const Login: FC<LoginProps> = ({ socketExec }) => {
+const Login: FC = () => {
     const { isLoggedIn } = useWebsiteContext();
 
     if (isLoggedIn) {
@@ -21,9 +17,10 @@ const Login: FC<LoginProps> = ({ socketExec }) => {
 
     const handleLogIn = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        console.log('Logging in...', email, password);
         // Get the values from the form
-        socketExec('login', email, password);
+        console.log('Logging in...', email, password);
+
+        socket.emit('login', email, password);
     };
 
     return (

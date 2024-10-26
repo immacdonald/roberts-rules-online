@@ -1,46 +1,33 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
-import { useWebsiteContext } from './contexts/useWebsiteContext';
-import { WebsiteContextProvider } from './contexts/WebsiteContext';
-import { Committees } from './interfaces/Committees';
-import { MySocket } from './interfaces/socket';
-import { CommitteeHome, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from './views';
-import { Registration } from './views/Auth/Registration';
-import { ActiveMotions } from './views/Motions';
-import { Motion } from './views/Committees/Motion';
-
-const socketExec = (name: string, ...args: any[]): void => {
-    console.log('Executing socket...', name, args);
-    MySocket.instance.socket.emit(name, ...args);
-};
+import { useWebsiteContext } from '../contexts/useWebsiteContext';
+import { WebsiteContextProvider } from '../contexts/WebsiteContext';
+import { socket } from '../socket';
+import { CommitteeHome, Registration, ActiveMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from '../views';
 
 const RoutedApp: FC = () => {
     const { user, setUser, setCommittees } = useWebsiteContext();
 
-    const socket = useRef<any>(MySocket.instance.socket);
-
-    socket.current.on('chatMessage', (msg: any) => {
+    socket.on('chatMessage', (msg: any) => {
         console.log('Message:' + msg);
     });
 
-    socket.current.on('login', (user: { id: string; username: string; displayname: string; email: string }, token: string) => {
+    socket.on('login', (user: { id: string; username: string; displayname: string; email: string }, token: string) => {
         console.log(`Logged in as ${user.email}`);
         localStorage.setItem('token', token);
         setUser(user);
 
         setTimeout(() => {
-            socket.current.emit("getCommittees");
-        }, 1000 )
+            socket.emit('getCommittees');
+        }, 1000);
     });
 
-    socket.current.on('setCommittees', (committees: any) => {
-        console.log("In RoutedApp", committees);
-        Committees.instance.setCommittees(committees);
+    socket.on('setCommittees', (committees: any) => {
+        console.log('In RoutedApp', committees);
         setCommittees(committees);
-        
     });
 
-    socket.current.on('failedRegister', (msg: any) => {
+    socket.on('failedRegister', (msg: any) => {
         alert(msg);
     });
 
@@ -62,19 +49,19 @@ const router = createBrowserRouter([
             },
             {
                 path: '/login',
-                element: <Login socketExec={socketExec} />
+                element: <Login />
             },
             {
                 path: '/register',
-                element: <Registration socketExec={socketExec} />
+                element: <Registration />
             },
             {
                 path: '/profile',
-                element: <Profile socketExec={socketExec} />
+                element: <Profile />
             },
             {
                 path: '/committees',
-                element: <ViewCommittees socketExec={socketExec} />
+                element: <ViewCommittees />
             },
             {
                 path: '/committees/control-panel',
@@ -86,7 +73,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/committees/active-motions',
-                element: <ActiveMotions socketExec={socketExec} />
+                element: <ActiveMotions />
             },
             {
                 path: '/committees/motion',

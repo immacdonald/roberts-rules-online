@@ -1,3 +1,16 @@
-type SocketExec = (name: string, ...args: any[]) => void;
+interface CommitteeMember {
+    id: string;
+    role: string;
+    username?: string;
+    displayname?: string;
+}
 
-export type { SocketExec };
+interface CommitteeData {
+    id: string;
+    name: string;
+    description: string;
+    owner: string;
+    members: CommitteeMember[];
+}
+
+export type { CommitteeMember, CommitteeData };
