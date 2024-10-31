@@ -1,14 +1,12 @@
 import { FC } from 'react';
-import { Page } from '../../components';
-import { CommitteeNav } from '../../components/CommitteeNav';
 import styles from './Motion.module.scss';
 
 const Motion: FC = () => {
     return (
-        <Page>
-            <CommitteeNav />
-            <section>
-                <h1>Motion about what day to bird watch</h1>
+        <section>
+            <h1>Motions</h1>
+            <div className={styles.motion}>
+                <h3>Motion about what day to bird watch</h3>
                 <p>I move that Saturday become the day the group gathers to watch birds</p>
                 <div className={styles.buttonContainer}>
                     <button className={styles.upvote}>Reply 👍</button>
@@ -17,8 +15,8 @@ const Motion: FC = () => {
                     <button className={styles.postpone}>Postpone 📅</button>
                     <button className={styles.amend}>Amend 🖋️</button>
                 </div>
-            </section>
-        </Page>
+            </div>
+        </section>
     );
 };
 

@@ -1,9 +1,10 @@
 import { FC, useEffect } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useWebsiteContext } from '../contexts/useWebsiteContext';
 import { WebsiteContextProvider } from '../contexts/WebsiteContext';
 import { socket } from '../socket';
-import { CommitteeHome, Registration, ActiveMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from '../views';
+import { Registration, ActiveMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeView, CommitteeHome } from '../views';
 
 const RoutedApp: FC = () => {
     const { user, setUser, setCommittees } = useWebsiteContext();
@@ -61,23 +62,39 @@ const router = createBrowserRouter([
             },
             {
                 path: '/committees',
-                element: <ViewCommittees />
+                element: (
+                    <ProtectedRoute>
+                        <ViewCommittees />
+                    </ProtectedRoute>
+                )
             },
             {
-                path: '/committees/control-panel',
-                element: <ControlPanel />
-            },
-            {
-                path: '/committees/home',
-                element: <CommitteeHome />
-            },
-            {
-                path: '/committees/active-motions',
-                element: <ActiveMotions />
-            },
-            {
-                path: '/committees/motion',
-                element: <Motion />
+                path: '/committees/:id',
+                element: (
+                    <ProtectedRoute>
+                        <CommitteeView>
+                            <Outlet />
+                        </CommitteeView>
+                    </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        path: 'home',
+                        element: <CommitteeHome />
+                    },
+                    {
+                        path: 'control-panel',
+                        element: <ControlPanel />
+                    },
+                    {
+                        path: 'active-motions',
+                        element: <ActiveMotions />
+                    },
+                    {
+                        path: 'motion',
+                        element: <Motion />
+                    }
+                ]
             },
             {
                 path: '*',

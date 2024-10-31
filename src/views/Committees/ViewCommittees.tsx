@@ -1,5 +1,5 @@
-import { FC, FormEvent, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { FC, FormEvent, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CommitteeData } from 'types';
 import { Page } from '../../components';
 import { Modal } from '../../components/Modal';
@@ -8,21 +8,17 @@ import { socket } from '../../socket';
 import styles from './Committees.module.scss';
 
 const ViewCommittees: FC = () => {
-    const { isLoggedIn, committees } = useWebsiteContext();
-
-    const navigate = useNavigate();
-
-    if (!isLoggedIn) {
-        return <Navigate to="/login" />;
-    }
+    const { committees } = useWebsiteContext();
 
     const [createModal, setCreateModal] = useState<boolean>(false);
 
     const [committeeName, setCommitteeName] = useState<string>('');
     const [committeeDesc, setCommitteeDesc] = useState<string>('');
 
+    const navigate = useNavigate();
+
     const createCommittee = (): void => {
-        console.log('Create a new committeee');
+        //console.log('Create a new committeee');
         setCreateModal(true);
     };
 
@@ -32,6 +28,12 @@ const ViewCommittees: FC = () => {
         // Create the committee
         socket.emit('createCommittee', committeeName, committeeDesc);
     };
+
+    const { setCurrentCommittee } = useWebsiteContext();
+
+    useEffect(() => {
+        setCurrentCommittee(null);
+    }, []);
 
     return (
         <>
@@ -46,9 +48,8 @@ const ViewCommittees: FC = () => {
                     <div className={styles.committeeList} id="committeeList">
                         {committees.length > 0 ? (
                             committees.map((committee: CommitteeData) => {
-                                console.log(committee);
                                 return (
-                                    <div className={styles.committee} key={committee.id} onClick={() => navigate('/committees/home')}>
+                                    <div className={styles.committee} key={committee.id} onClick={() => navigate(`/committees/${committee.id}/home`)}>
                                         <div className={styles.committeeHeader}>
                                             <h3>{committee.name}</h3>
                                             <span>{committee.id}</span>
@@ -83,7 +84,9 @@ const ViewCommittees: FC = () => {
                             <input type="text" id="committeeDesc" required={true} onChange={(ev) => setCommitteeDesc(ev.target.value)} value={committeeDesc} />
                         </fieldset>
                         <div className={styles.actions}>
-                            <button onClick={() => setCreateModal(false)}>Cancel</button>
+                            <button onClick={() => setCreateModal(false)} data-button-type="secondary">
+                                Cancel
+                            </button>
                             <button type="submit" id="createButton" data-button-type="primary">
                                 Create Committee
                             </button>

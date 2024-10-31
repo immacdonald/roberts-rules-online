@@ -1,21 +1,16 @@
 import { FC } from 'react';
-import { Page } from '../../components';
-import { CommitteeNav } from '../../components/CommitteeNav';
+import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 
 const CommitteeHome: FC = () => {
+    const { currentCommittee } = useWebsiteContext();
+
     return (
-        <Page>
-            <CommitteeNav />
-            <section>
-                <header>
-                    <h1>Committee Name</h1>
-                    <p>
-                        Description ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ....
-                    </p>
-                </header>
-            </section>
-        </Page>
+        <section>
+            <header>
+                <h1>{currentCommittee!.name}</h1>
+            </header>
+            <p>{currentCommittee!.description || 'No description written.'}</p>
+        </section>
     );
 };
 

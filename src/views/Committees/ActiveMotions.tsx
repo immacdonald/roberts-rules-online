@@ -1,6 +1,5 @@
 import { FC, FormEvent, useState } from 'react';
-import { Page } from '../../components';
-import { CommitteeNav } from '../../components/CommitteeNav';
+import { Modal } from '../../components/Modal';
 import { socket } from '../../socket';
 import styles from './ActiveMotions.module.scss';
 
@@ -52,48 +51,45 @@ const ActiveMotions: FC = () => {
 
     return (
         <>
-            <Page>
-                <CommitteeNav />
-                <section>
-                    <header className="">
-                        <h1>Active Motions</h1>
-                    </header>
-                    <div className=""></div>
-                    <div className={styles.buttonContainer}>
-                        <button className={styles.createButton} data-button-type="primary" onClick={() => createMotion()}>
-                            Create New Motion +
-                        </button>
-                    </div>
-                    <table id="activeMotionsTable" className={styles.motionTable}>
-                        <thead>
-                            <tr className={styles.motionTableHeader}>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>{populateMotions()}</tbody>
-                    </table>
-                </section>
-            </Page>
-            {createModal && (
-                <div className={styles.modal}>
-                    <div>
-                        <h2>Create New Motion</h2>
-                        <form id="createMotion" onSubmit={handleCreateMotion}>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="committeeName">Motion Title</label>
-                                <input type="text" name="motionTitle" id="motionTitle" required={true} onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} />
-                            </div>
-                            <div className={styles.modalFooter}>
-                                <button onClick={() => setCreateModal(false)}>Cancel</button>
-                                <button type="submit" id="createButton" data-button-type="primary">
-                                    Create Motion
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+            <section>
+                <header className="">
+                    <h1>Active Motions</h1>
+                </header>
+                <div className=""></div>
+                <div className={styles.buttonContainer}>
+                    <button className={styles.createButton} data-button-type="primary" onClick={() => createMotion()}>
+                        Create New Motion +
+                    </button>
                 </div>
+                <table id="activeMotionsTable" className={styles.motionTable}>
+                    <thead>
+                        <tr className={styles.motionTableHeader}>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>{populateMotions()}</tbody>
+                </table>
+            </section>
+            {createModal && (
+                <Modal>
+                    <h2>Create New Motion</h2>
+                    <form id="createMotion" onSubmit={handleCreateMotion}>
+                        <fieldset>
+                            <label htmlFor="committeeName">Motion Title</label>
+                            <input type="text" name="motionTitle" id="motionTitle" required={true} onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} />
+                        </fieldset>
+                        <div className={styles.actions}>
+                            <button onClick={() => setCreateModal(false)} data-button-type="secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" id="createButton" data-button-type="primary">
+                                Create Motion
+                            </button>
+                        </div>
+                    </form>
+                </Modal>
             )}
         </>
     );
