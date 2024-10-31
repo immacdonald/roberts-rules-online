@@ -36,3 +36,9 @@ button {
     background-color: var(--color-primary);
     color: white;
 }
+
+.motion {
+    border: var(--border);
+    border-radius: var(--border-radius);
+    padding: var(--space);
+}
