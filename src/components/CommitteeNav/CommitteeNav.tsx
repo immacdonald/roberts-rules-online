@@ -18,6 +18,9 @@ const CommitteeNav: FC = () => {
                 <Link to="/committees/active-motions" data-button-type="secondary">
                     Active Motions
                 </Link>
+                <Link to="/committees/past-motions" data-button-type="secondary">
+                    Past Motions
+                </Link>
                 <Link to="/committees/motion" data-button-type="secondary">
                     Motion Vote
                 </Link>

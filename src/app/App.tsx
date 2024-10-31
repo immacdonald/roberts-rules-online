@@ -3,7 +3,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { useWebsiteContext } from '../contexts/useWebsiteContext';
 import { WebsiteContextProvider } from '../contexts/WebsiteContext';
 import { socket } from '../socket';
-import { CommitteeHome, Registration, ActiveMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from '../views';
+import { CommitteeHome, Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from '../views';
 
 const RoutedApp: FC = () => {
     const { user, setUser, setCommittees } = useWebsiteContext();
@@ -74,6 +74,10 @@ const router = createBrowserRouter([
             {
                 path: '/committees/active-motions',
                 element: <ActiveMotions />
+            },
+            {
+                path: '/committees/past-motions',
+                element: <PastMotions />
             },
             {
                 path: '/committees/motion',
