@@ -1,7 +1,7 @@
 import { FC, FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CommitteeData } from 'types';
-import { Page } from '../../components';
+//import { Page } from '../../components';
 import { Modal } from '../../components/Modal';
 import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 import { socket } from '../../socket';

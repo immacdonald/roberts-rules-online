@@ -1,5 +1,5 @@
 {
-    "extends": "phantom-config/tsconfig",
+    "extends": "./node_modules/phantom-config/tsconfig",
     "compilerOptions": {
         "outDir": "dist",
         "baseUrl": ".",
