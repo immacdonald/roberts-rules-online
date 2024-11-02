@@ -1,5 +1,5 @@
 {
-    "extends": "./node_modules/phantom-config/tsconfig",
+    "extends": "phantom-config/tsconfig",
     "compilerOptions": {
         "noEmit": true,
         "skipLibCheck": true
