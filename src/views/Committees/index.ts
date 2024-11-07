@@ -5,3 +5,4 @@ export * from './Motion';
 export * from './ActiveMotions';
 export * from './Committee';
 export * from './CommitteeHome';
+export * from './CommitteeViewUsers';
