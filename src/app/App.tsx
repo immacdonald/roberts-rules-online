@@ -1,9 +1,10 @@
 import { FC, useEffect } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useWebsiteContext } from '../contexts/useWebsiteContext';
 import { WebsiteContextProvider } from '../contexts/WebsiteContext';
 import { socket } from '../socket';
-import { CommitteeHome, Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees } from '../views';
+import { Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
 
 const RoutedApp: FC = () => {
     const { user, setUser, setCommittees } = useWebsiteContext();
@@ -64,24 +65,40 @@ const router = createBrowserRouter([
                 element: <ViewCommittees />
             },
             {
-                path: '/committees/control-panel',
-                element: <ControlPanel />
-            },
-            {
-                path: '/committees/home',
-                element: <CommitteeHome />
-            },
-            {
-                path: '/committees/active-motions',
-                element: <ActiveMotions />
-            },
-            {
-                path: '/committees/past-motions',
-                element: <PastMotions />
-            },
-            {
-                path: '/committees/motion',
-                element: <Motion />
+                path: '/committees/:id',
+                element: (
+                    <ProtectedRoute>
+                        <CommitteeView>
+                            <Outlet />
+                        </CommitteeView>
+                    </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        path: 'home',
+                        element: <CommitteeHome />
+                    },
+                    {
+                        path: 'control-panel',
+                        element: <ControlPanel />
+                    },
+                    {
+                        path: 'active-motions',
+                        element: <ActiveMotions />
+                    },
+                    {
+                        path: 'past-motions',
+                        element: <PastMotions />
+                    },
+                    {
+                        path: 'motion',
+                        element: <Motion />
+                    },
+                    {
+                        path: 'users',
+                        element: <CommitteeViewUsers />
+                    }
+                ]
             },
             {
                 path: '*',

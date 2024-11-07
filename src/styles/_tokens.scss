@@ -1,16 +1,27 @@
 :root {
     --color-primary: #09bc8a;
     --color-primary-dark: #004346;
+
     --color-text: #222;
     --color-text-inverse: #fff;
+
     --color-page: #fcfcfc;
     --color-background: #f0f0f0;
+    --color-background-dark: #bdbdbd;
     --color-foreground: #fcfcfc;
+
+    --color-critical: #f14c4c;
+
     --border: 1px solid #d3d3d3;
     --border-radius: 8px;
+
     --font: inter, avenir, helvetica, arial, sans-serif;
+    --font-sm: 0.875rem;
+
     --space-sm: 0.5rem;
     --space: 1rem;
     --space-lg: 2rem;
+    --space-xl: 4rem;
+
     --shadow: 0px 4px 6px -2px #33333340;
 }

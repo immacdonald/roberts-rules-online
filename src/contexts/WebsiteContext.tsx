@@ -7,6 +7,8 @@ interface WebsiteContextInterface {
     isLoggedIn: boolean;
     setCommittees: Dispatch<SetStateAction<CommitteeData[]>>;
     committees: CommitteeData[];
+    currentCommittee: CommitteeData | null;
+    setCurrentCommittee: (id: string | null) => void;
     logout: () => void;
 }
 
@@ -27,7 +29,19 @@ const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): 
 
     const isLoggedIn = useMemo(() => !!user, [user]);
 
-    return <WebsiteContext.Provider value={{ user, setUser, isLoggedIn, logout, committees, setCommittees }}>{children}</WebsiteContext.Provider>;
+    const [currentCommittee, setCurrentCommitteeInternal] = useState<CommitteeData | null>(null);
+
+    const setCurrentCommittee = (id: string | null) => {
+        if (id && committees.length > 0) {
+            const committee = (committees.filter((committee) => committee.id == id) ?? [null])[0];
+            console.log('Setting to committee', committee);
+            setCurrentCommitteeInternal(committee);
+        } else {
+            setCurrentCommitteeInternal(null);
+        }
+    };
+
+    return <WebsiteContext.Provider value={{ user, setUser, isLoggedIn, logout, committees, setCommittees, currentCommittee, setCurrentCommittee }}>{children}</WebsiteContext.Provider>;
 };
 
 export { WebsiteContext, WebsiteContextProvider };
