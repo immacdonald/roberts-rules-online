@@ -46,25 +46,25 @@ const CommitteeViewUsers: FC = () => {
     ];
 
     const getRoleBox = (role: string) => {
-        if(role === 'Owner') {
+        if (role === 'Owner') {
             return (
-            <div className={styles.roleBox}>
-                <img src={HouseIcon} className={styles.iconImage} alt="Chair Icon" />
-            </div>
-        );
-        } else if(role === 'Chair') {
+                <div className={styles.roleBox}>
+                    <img src={HouseIcon} className={styles.iconImage} alt="Chair Icon" />
+                </div>
+            );
+        } else if (role === 'Chair') {
             return (
-            <div className={styles.roleBox}>
-                <img src={ChairIcon} className={styles.iconImage} alt="Chair Icon" />
-            </div>
-        );
-        }else {
+                <div className={styles.roleBox}>
+                    <img src={ChairIcon} className={styles.iconImage} alt="Chair Icon" />
+                </div>
+            );
+        } else {
             return (
-            <div></div>
-        );
+                <div></div>
+            );
         }
     };
-    
+
     const getUser = (name: string, role: string) => {
         return (
             <div className={styles.userAndRole}>
@@ -75,14 +75,6 @@ const CommitteeViewUsers: FC = () => {
             </div>
         );
     };
-
-    const getAddUserButton = () => {
-        return (
-            <div>
-                <button className={styles.addUserButton} onClick={() => addUser()}>Add User</button>
-            </div>
-        );
-    }
 
     const [createModal, setCreateModal] = useState<boolean>(false);
 
@@ -102,43 +94,40 @@ const CommitteeViewUsers: FC = () => {
 
     return (
         <>
-        <Page>
-            <CommitteeNav />
             <section>
                 <ul className={styles.userList}>
-                        {users.length > 0 ? (
-                            users.map((user: CommitteeMember) => {
-                                console.log(user);
-                                return (
-                                                <div key={user.id}>
-                                                    {getUser(user.displayname || 'Unknown', user.role)}
-                                                </div>
-                                );
-                            })
-                        ) : (
-                            <p>Loading users... </p>
-                        )}
-                        {getAddUserButton()}
+                    {users.length > 0 ? (
+                        users.map((user: CommitteeMember) => {
+                            console.log(user);
+                            return (
+                                <div key={user.id}>
+                                    {getUser(user.displayname || 'Unknown', user.role)}
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <p>Loading users... </p>
+                    )}
+                    <button data-button-type="primary" onClick={() => addUser()}>Add User</button>
                 </ul>
             </section>
-        </Page>
-        {createModal && (
-            <Modal>
-                <h2>Add New User</h2>
-                <form id="add User" onSubmit={handleAddUser}>
-                    <fieldset>
-                        <label htmlFor="userName">Enter Username</label>
-                        <input type="text" name="userName" id="userName" required={true} onChange={(ev) => setUserName(ev.target.value)} value={newUserName} />
-                    </fieldset>
-                    <div className={styles.actions}>
-                        <button onClick={() => setCreateModal(false)}>Cancel</button>
-                        <button type="submit" id="submitUserButton" data-button-type="primary">
-                            Add User
-                        </button>
-                    </div>
-                </form>
-            </Modal>
-        )}
+            {createModal && (
+                <Modal>
+                    <h2>Add New User</h2>
+                    <form id="add User" onSubmit={handleAddUser}>
+                        <fieldset>
+                            <label htmlFor="userName">Enter Username</label>
+                            <input type="text" name="userName" id="userName" required={true} onChange={(ev) => setUserName(ev.target.value)} value={newUserName} />
+                        </fieldset>
+                        <div className={styles.actions}>
+                            <button onClick={() => setCreateModal(false)}>Cancel</button>
+                            <button type="submit" id="submitUserButton" data-button-type="primary">
+                                Add User
+                            </button>
+                        </div>
+                    </form>
+                </Modal>
+            )}
         </>
     );
 };
