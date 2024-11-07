@@ -6,18 +6,18 @@
     width: 80%;
 }
 
-.motionTableHeader {
+.motionTableHeader, .pastMotionTableHeader, .motion, .pastMotion {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
     gap: var(--space);
     text-align: left;
 }
 
-.motion {
-    display: grid;
+.motionTableHeader, .motion {
     grid-template-columns: 2fr 1fr 1fr;
-    gap: var(--space);
-    text-align: left;
+}
+
+.pastMotionTableHeader, .pastMotion {
+    grid-template-columns: 0.2fr 2fr 1fr 1fr;
 }
 
 .motionTitle {

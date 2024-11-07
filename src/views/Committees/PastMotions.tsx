@@ -12,13 +12,18 @@ const PastMotions: FC = () => {
         } else dateString = date;
 
         return (
-            <tr className={styles.motion}>
-                <th className={styles.motionTitle}>
-                    <h3>{title}</h3>
+            <tr className={styles.pastMotion}>
+                <th>
+                    <div className={styles.buttonContainer}>
+                        <button>↩️</button>
+                    </div>
                 </th>
+                <td className={styles.motionTitle}>
+                    <h3>{title}</h3>
+                </td>
                 {/*  TODO: Fill with account's name */}
-                <th className={styles.motionAuthor}>{name}</th>
-                <th className={styles.motionDate}>{dateString}</th>
+                <td className={styles.motionAuthor}>{name}</td>
+                <td className={styles.motionDate}>{dateString}</td>
             </tr>
         );
     };
@@ -50,9 +55,10 @@ const PastMotions: FC = () => {
                             Failed
                         </button>
                     </div>
-                    <table id="activeMotionsTable" className={styles.motionTable}>
-                    <thead>
-                            <tr className={styles.motionTableHeader}>
+                    <table id="pastMotionsTable" className={styles.motionTable}>
+                        <thead>
+                            <tr className={styles.pastMotionTableHeader}>
+                                <td></td>
                                 <th>Title</th>
                                 <th>Author</th>
                                 <th>Date</th>
