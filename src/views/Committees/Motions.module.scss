@@ -3,7 +3,7 @@
 .motionTable {
     display: grid;
     gap: var(--space);
-    width: 80%;
+    width: 100%;
 }
 
 .motionTableHeader, .pastMotionTableHeader, .motion, .pastMotion {
@@ -28,12 +28,9 @@
     width: 90%;
 }
 
-.motionAuthor {
+.motionAuthor, .motionDate {
     padding-top: var(--space);
-}
-
-.motionDate {
-    padding-top: var(--space);
+    font-weight: bold;
 }
 
 .buttonContainer {
