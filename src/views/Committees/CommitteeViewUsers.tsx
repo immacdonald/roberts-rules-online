@@ -1,17 +1,11 @@
 import { FC, useState, FormEvent } from 'react';
-import { Page } from '../../components';
-import styles from './Committees.module.scss';
-import { CommitteeNav } from '../../components/CommitteeNav';
 import { CommitteeMember } from 'types';
-import { Modal } from '../../components/Modal';
-
 import ChairIcon from '../../assets/images/ChairIcon.png';
 import HouseIcon from '../../assets/images/HouseIcon.png';
-
-
+import { Modal } from '../../components/Modal';
+import styles from './Committees.module.scss';
 
 const CommitteeViewUsers: FC = () => {
-
     const users: CommitteeMember[] = [
         {
             id: '1',
@@ -59,9 +53,7 @@ const CommitteeViewUsers: FC = () => {
                 </div>
             );
         } else {
-            return (
-                <div></div>
-            );
+            return <div></div>;
         }
     };
 
@@ -99,16 +91,14 @@ const CommitteeViewUsers: FC = () => {
                     {users.length > 0 ? (
                         users.map((user: CommitteeMember) => {
                             console.log(user);
-                            return (
-                                <div key={user.id}>
-                                    {getUser(user.displayname || 'Unknown', user.role)}
-                                </div>
-                            );
+                            return <div key={user.id}>{getUser(user.displayname || 'Unknown', user.role)}</div>;
                         })
                     ) : (
                         <p>Loading users... </p>
                     )}
-                    <button data-button-type="primary" onClick={() => addUser()}>Add User</button>
+                    <button data-button-type="primary" onClick={() => addUser()}>
+                        Add User
+                    </button>
                 </ul>
             </section>
             {createModal && (

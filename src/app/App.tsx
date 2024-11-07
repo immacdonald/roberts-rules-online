@@ -6,7 +6,6 @@ import { WebsiteContextProvider } from '../contexts/WebsiteContext';
 import { socket } from '../socket';
 import { Registration, ActiveMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
 
-
 const RoutedApp: FC = () => {
     const { user, setUser, setCommittees } = useWebsiteContext();
 
@@ -96,8 +95,8 @@ const router = createBrowserRouter([
                         element: <Motion />
                     },
                     {
-                        path: "users",
-                        element: <CommitteeViewUsers/>
+                        path: 'users',
+                        element: <CommitteeViewUsers />
                     }
                 ]
             },

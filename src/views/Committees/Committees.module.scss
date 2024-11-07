@@ -70,7 +70,7 @@
     margin-right: 10px;
 }
 
-.userList{
+.userList {
     display: flex;
     flex-direction: column;
     gap: var(--space);
@@ -79,14 +79,12 @@
     width: 360px;
 }
 
-.userAndRole{
+.userAndRole {
     display: flex;
     gap: var(--space);
 }
 
-.userBox{
-    display: flex;
-    
+.userBox {
     align-items: center;
     width: 15em;
     height: 2.5em;
@@ -96,21 +94,21 @@
     box-shadow: var(--shadow);
 }
 
-.roleBox{
-    width: 2.5em;;
+.roleBox {
+    width: 2.5em;
     height: 2.5em;
     border-radius: var(--border-radius);
     background-color: var(--color-background);
     box-shadow: var(--shadow);
 }
 
-.userNameText{
+.userNameText {
     font-size: 1.2rem;
     font-weight: bold;
-    padding-left:1rem;
+    padding-left: 1rem;
 }
 
-.iconImage{
+.iconImage {
     height: 2.5em;
     width: 2.5em;
     padding: 0.1em;
