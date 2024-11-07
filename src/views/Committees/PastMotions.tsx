@@ -40,34 +40,31 @@ const PastMotions: FC = () => {
 
     return (
         <>
-            <Page>
-                <CommitteeNav />
-                <section>
-                    <header className="">
-                        <h1>Past Motions</h1>
-                    </header>
-                    <div className=""></div>
-                    <div className={styles.buttonContainer}>
-                        <button className={styles.selected}>
-                            Passed
-                        </button>
-                        <button className={styles.notSelected}>
-                            Failed
-                        </button>
-                    </div>
-                    <table id="pastMotionsTable" className={styles.motionTable}>
-                        <thead>
-                            <tr className={styles.pastMotionTableHeader}>
-                                <td></td>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>{populateMotions()}</tbody>
-                    </table>
-                </section>
-            </Page>
+            <section>
+                <header className="">
+                    <h1>Past Motions</h1>
+                </header>
+                <div className=""></div>
+                <div className={styles.buttonContainer}>
+                    <button className={styles.selected}>
+                        Passed
+                    </button>
+                    <button className={styles.notSelected}>
+                        Failed
+                    </button>
+                </div>
+                <table id="pastMotionsTable" className={styles.motionTable}>
+                    <thead>
+                        <tr className={styles.pastMotionTableHeader}>
+                            <td></td>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>{populateMotions()}</tbody>
+                </table>
+            </section>
         </>
     );
 };
