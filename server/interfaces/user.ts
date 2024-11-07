@@ -57,6 +57,22 @@ export class User {
                     }
                 });
             });
+
+            this.socket.on('getMotions', async (committeeId) => {
+                if (!committeeId) {
+                    return;
+                }
+                let thisCommittee = Committees.getCommitteeById(committeeId);
+                if (thisCommittee) {
+                    let motions = await thisCommittee.getMotions(true);
+                    if (motions) {
+                        console.log('Motions were sent to all clients');
+                    }
+                }else {
+                    console.log('Committee not found');
+                    return this.socket.emit('setMotions', []);
+                }
+            });
         } else {
             console.log('Socket already set or invalid');
         }

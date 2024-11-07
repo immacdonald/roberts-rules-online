@@ -22,9 +22,43 @@ async function createUsersTable(): Promise<void> {
     }
 }
 
+async function createMotionsTable(): Promise<void> {
+    const exits = await db.query(`SHOW TABLES LIKE 'users'`);
+    if (exits.length <= 0) {
+        const res = await db.query(`
+			CREATE TABLE IF NOT EXISTS motions (
+                id int(11) NOT NULL,
+                committeeId varchar(32) NOT NULL,
+                authorId varchar(32) NOT NULL,
+                title longtext NOT NULL,
+                flag longtext NOT NULL,
+                description longtext NOT NULL,
+                vote longtext NOT NULL,
+                summary longtext NOT NULL,
+                relatedId varchar(32) DEFAULT NULL,
+                status varchar(16) NOT NULL,
+                decisionTime bigint(20) NOT NULL,
+                creationDate bigint(20) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+		`);
+        if (res) {
+            console.log(res);
+            await db.query(`
+                ALTER TABLE \`motions\`
+                    ADD PRIMARY KEY (\`id\`),
+                    ADD KEY \`committeeId\` (\`committeeId\`),
+                    ADD KEY \`authorId\` (\`authorId\`);
+            COMMIT;
+            `);
+        }
+    }
+
+}
+
 function createDatabase(): void {
     db.ready(async function () {
-        await createUsersTable();
+        createUsersTable();
+        createMotionsTable()
     });
 }
 

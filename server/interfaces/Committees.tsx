@@ -33,6 +33,10 @@ export class Committees {
         this.committees = [];
     }
 
+    public getCommitteeById(id: string): Committee | undefined {
+        return this.committees.find((committee) => committee.id === id);
+    }
+
     public createCommittee(name: string, description: string, owner: string, members: { id: string; role: string }[]): void {
         if (dbReady) {
             const id = nanoid(16);
