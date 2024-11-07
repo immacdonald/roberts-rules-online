@@ -1,6 +1,4 @@
 import { FC } from 'react';
-import { Page } from '../../components';
-import { CommitteeNav } from '../../components/CommitteeNav';
 import styles from './Motions.module.scss';
 
 const PastMotions: FC = () => {
