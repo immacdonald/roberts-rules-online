@@ -2,7 +2,7 @@ import { FC, FormEvent, useState } from 'react';
 import { Page } from '../../components';
 import { CommitteeNav } from '../../components/CommitteeNav';
 import { socket } from '../../socket';
-import styles from './ActiveMotions.module.scss';
+import styles from './Motions.module.scss';
 
 const ActiveMotions: FC = () => {
     const [createModal, setCreateModal] = useState<boolean>(false);

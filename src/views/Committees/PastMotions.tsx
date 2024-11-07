@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Page } from '../../components';
 import { CommitteeNav } from '../../components/CommitteeNav';
-import styles from './ActiveMotions.module.scss';
+import styles from './Motions.module.scss';
 
 const PastMotions: FC = () => {
     const getMotion = (title: string, name: string, date?: string) => {
@@ -42,8 +42,16 @@ const PastMotions: FC = () => {
                         <h1>Past Motions</h1>
                     </header>
                     <div className=""></div>
+                    <div className={styles.buttonContainer}>
+                        <button className={styles.selected}>
+                            Passed
+                        </button>
+                        <button className={styles.notSelected}>
+                            Failed
+                        </button>
+                    </div>
                     <table id="activeMotionsTable" className={styles.motionTable}>
-                        <thead>
+                    <thead>
                             <tr className={styles.motionTableHeader}>
                                 <th>Title</th>
                                 <th>Author</th>

@@ -42,4 +42,16 @@
     width: 80%;
     margin-top: var(--space);
     margin-bottom: var(--space);
+    gap: var(--space);
+
+    .selected {
+        background-color: var(--color-primary);
+        color: var(--color-text-inverse);
+    }
+
+    .notSelected {
+        background-color: var(--color-foreground);
+        color: var(--color-primary);
+        border: var(--border);
+    }
 }
