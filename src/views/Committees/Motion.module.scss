@@ -1,44 +1,83 @@
-.buttonContainer {
+.motionContainer {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    justify-content: center;
+    align-items: center;
+    border-bottom:  var(--border);
+    padding-bottom: var(--space);
+    width: 100%;
 }
 
-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.upvote {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.downvote {
-    background-color: red;
-    color: white;
-}
-
-.noVote {
-    background-color: grey;
-    color: white;
-}
-
-.postpone {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.amend {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.motion {
-    border: var(--border);
+.background {
+    background-color: var(--color-background);
+    justify-content: center;
+    align-items: center;
     border-radius: var(--border-radius);
+    flex-grow: 1;
     padding: var(--space);
 }
+
+.backgroundGreen {
+    background-color: var(--color-primary);
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius);
+    flex-grow: 1;
+}
+
+.backgroundRed {
+    background-color: lightcoral;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius);
+    flex-grow: 1;
+}
+
+.userInfo {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space);
+    font-size: var(--font-sm);;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: var(--space);
+    margin-top: var(--space);
+}
+
+.positive {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+}
+
+.negative {
+    background-color: var(--color-critical);
+    color: var(--color-text-inverse);
+}
+
+.neutral {
+    border: var(--border);
+    background-color: var(--color-background-dark);
+    color: var(--color-text-inverse);
+}
+
+.callVote {
+    background-color: var(--color-primary-dark);
+    color: var(--color-text-inverse);
+    align-self: flex-start;
+    margin-top: var(--space-xl);
+}
+
+.miniMotion {
+    margin-block: var(--space);
+    margin-right: var(--space-xl);
+    display: inline-block;
+}
+
+.miniMotionReply {
+    margin-block: var(--space);
+    margin-right: var(--space-xl);
+    display: inline-block;
+}
+
+
