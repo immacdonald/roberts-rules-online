@@ -159,7 +159,6 @@ export class Users {
             });
         });
     }
-
     getUserById(id: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
             if (!Users.dbReady) {

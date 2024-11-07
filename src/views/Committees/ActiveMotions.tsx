@@ -33,6 +33,11 @@ const ActiveMotions: FC = () => {
     };
 
     const populateMotions = () => {
+
+        // socket.on('setMotions', (data: any) => {
+        //
+        // });
+        // socket.emit('getMotions'); // to be implemented, make sure that when the setMotions event is called it updates in real time
         return (
             <>
                 {getMotion('Motion to do something', 'Alice', '2015/03/12')}
