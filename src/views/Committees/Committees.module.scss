@@ -42,7 +42,7 @@
 
 .committeeCardFooter {
     width: 100%;
-    font-size: 0.8rem;
+    font-size: var(--font-sm);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -62,12 +62,12 @@
 }
 
 .toggleText {
-    font-size: 1.2rem;
+    font-size: var(--font-lg);
     font-weight: bold;
 }
 
 .toggle {
-    margin-right: 10px;
+    margin-right: var(--space-sm);
 }
 
 .userList {
@@ -103,13 +103,13 @@
 }
 
 .userNameText {
-    font-size: 1.2rem;
+    font-size: var(--font-lg);
     font-weight: bold;
-    padding-left: 1rem;
+    padding-left: var(--space);
 }
 
 .iconImage {
     height: 2.5em;
     width: 2.5em;
-    padding: 0.1em;
+    padding: var(--space-sm);
 }

@@ -6,7 +6,7 @@
     display: flex;
     align-items: center;
     justify-content: start;
-    padding-inline: 1rem;
+    padding-inline: var(--space);
     border-bottom: var(--border);
     position: sticky;
     inset: 0;
@@ -16,11 +16,24 @@
         color: var(--color-text);
     }
 
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: var(--space);
+        text-decoration: none;
+
+        @media (width <= 720px) {
+            > span {
+                display: none;
+            }
+        }
+    }
+
     .nav {
         display: flex;
         align-items: center;
         justify-content: start;
-        gap: 12px;
+        gap: var(--space);
         margin-left: auto;
     }
 }

@@ -41,7 +41,7 @@ section {
 
     width: 100%;
     padding-inline: max(calc((100% - #{$max-width}) / 2), #{$min-padding});
-    padding-block: 2rem;
+    padding-block: var(--space-lg);
 }
 
 a {
@@ -69,7 +69,7 @@ input {
     width: 100%;
     height: 38px;
     font-family: var(--font);
-    font-size: 1rem;
+    font-size: var(--font-md);
     padding-inline: var(--space);
     background-color: var(--color-background);
     border: var(--border);
@@ -91,7 +91,7 @@ button,
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 1rem;
+    font-size: var(--font-md);
     font-weight: 600;
     cursor: pointer;
     border-radius: var(--border-radius);

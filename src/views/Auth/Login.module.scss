@@ -6,10 +6,9 @@
 }
 
 .title {
-    font-size: 24px;
+    font-size: var(--font-xl);
     font-weight: bold;
     color: var(--color-primary);
-    margin: 0;
 }
 
 .formGroup {

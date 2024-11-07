@@ -2,26 +2,28 @@ import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 import style from './Header.module.scss';
+import { RobertRulesOnlineIcon } from '../../assets/icons';
 
 const Header: FC = () => {
     const { isLoggedIn, logout } = useWebsiteContext();
 
     return (
         <header className={style.header}>
-            <div className={style.logo}>
+            <Link to='/' className={style.logo}>
+                <RobertRulesOnlineIcon/>
                 <span>
                     <b>Robert's Rules Online</b>
                 </span>
-            </div>
+            </Link>
             <nav className={style.nav}>
                 <Link to="/" data-button-type="ghost">
                     Home
                 </Link>
-                <Link to="/committees" data-button-type="ghost">
-                    Committees
-                </Link>
                 {isLoggedIn ? (
                     <>
+                        <Link to="/committees" data-button-type="ghost">
+                            Committees
+                        </Link>
                         <button onClick={() => logout()} data-button-type="primary">
                             Logout
                         </button>

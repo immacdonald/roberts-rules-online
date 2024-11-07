@@ -20,13 +20,13 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 4rem 2rem;
+    padding: var(--space-xl) var(--space-lg);
     line-height: 1.15;
     background-color: #0a0a0a;
     color: var(--color-text-inverse);
 
     .title {
-        font-size: 4rem;
+        font-size: var(--space-xl);
         padding-bottom: var(--space);
     }
 
@@ -52,8 +52,8 @@
     align-items: center;
     max-width: 80%;
     margin: 0 auto;
-    padding-top: 2em;
-    row-gap: 1em;
+    padding-top: var(--space-lg);
+    row-gap: var(--space);
 
     .title {
         font-size: 3rem;
@@ -62,13 +62,12 @@
 
 .card {
     background: var(--color-primary);
-    border-radius: 0.5em;
-    box-shadow: 0 2px #d3d3d3;
+    border-radius: var(--border-radius);
     display: flex;
     max-width: 90%;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 2em;
+    margin-bottom: var(--space-lg);
     color: var(--color-text-inverse);
     font-weight: bold;
 
@@ -82,7 +81,7 @@
     }
 
     .cardText {
-        padding: 1rem;
+        padding: var(--space);
     }
 
     .cardImage {
