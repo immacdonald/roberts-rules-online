@@ -1,21 +1,21 @@
 .motionTable {
     display: grid;
     gap: var(--space);
-    width: 80%;
+    width: 100%;
 }
 
-.motionTableHeader {
+.motionTableHeader, .pastMotionTableHeader, .motion, .pastMotion {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
     gap: var(--space);
     text-align: left;
 }
 
-.motion {
-    display: grid;
+.motionTableHeader, .motion {
     grid-template-columns: 2fr 1fr 1fr;
-    gap: var(--space);
-    text-align: left;
+}
+
+.pastMotionTableHeader, .pastMotion {
+    grid-template-columns: 0.2fr 2fr 1fr 1fr;
 }
 
 .motionTitle {
@@ -26,12 +26,9 @@
     width: 90%;
 }
 
-.motionAuthor {
+.motionAuthor, .motionDate {
     padding-top: var(--space);
-}
-
-.motionDate {
-    padding-top: var(--space);
+    font-weight: bold;
 }
 
 .buttonContainer {
@@ -40,6 +37,18 @@
     width: 80%;
     margin-top: var(--space);
     margin-bottom: var(--space);
+    gap: var(--space);
+
+    .selected {
+        background-color: var(--color-primary);
+        color: var(--color-text-inverse);
+    }
+
+    .notSelected {
+        background-color: var(--color-foreground);
+        color: var(--color-primary);
+        border: var(--border);
+    }
 }
 
 .actions {

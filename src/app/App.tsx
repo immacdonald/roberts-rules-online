@@ -4,7 +4,7 @@ import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useWebsiteContext } from '../contexts/useWebsiteContext';
 import { WebsiteContextProvider } from '../contexts/WebsiteContext';
 import { socket } from '../socket';
-import { Registration, ActiveMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
+import { Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
 
 const RoutedApp: FC = () => {
     const { user, setUser, setCommittees } = useWebsiteContext();
@@ -62,11 +62,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/committees',
-                element: (
-                    <ProtectedRoute>
-                        <ViewCommittees />
-                    </ProtectedRoute>
-                )
+                element: <ViewCommittees />
             },
             {
                 path: '/committees/:id',
@@ -89,6 +85,10 @@ const router = createBrowserRouter([
                     {
                         path: 'active-motions',
                         element: <ActiveMotions />
+                    },
+                    {
+                        path: 'past-motions',
+                        element: <PastMotions />
                     },
                     {
                         path: 'motion',

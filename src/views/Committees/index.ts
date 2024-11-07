@@ -3,6 +3,7 @@ export * from './Committee';
 export * from './CommitteeControlPanel';
 export * from './Motion';
 export * from './ActiveMotions';
+export * from './PastMotions';
 export * from './Committee';
 export * from './CommitteeHome';
 export * from './CommitteeViewUsers';

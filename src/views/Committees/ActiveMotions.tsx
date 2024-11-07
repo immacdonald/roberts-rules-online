@@ -1,7 +1,7 @@
 import { FC, FormEvent, useState } from 'react';
 import { Modal } from '../../components/Modal';
 import { socket } from '../../socket';
-import styles from './ActiveMotions.module.scss';
+import styles from './Motions.module.scss';
 
 const ActiveMotions: FC = () => {
     const [createModal, setCreateModal] = useState<boolean>(false);
