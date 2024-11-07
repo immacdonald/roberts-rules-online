@@ -1,8 +1,8 @@
-import { FC } from 'react';
+import React, {FC, ReactNode} from 'react';
 import styles from './Motions.module.scss';
 
 const PastMotions: FC = () => {
-    const getMotion = (title: string, name: string, date?: string) => {
+    const getMotion = (title: string, name: string, date?: string): ReactNode => {
         let dateString;
         if (date === undefined) {
             const currentDate = new Date();
@@ -26,7 +26,7 @@ const PastMotions: FC = () => {
         );
     };
 
-    const populateMotions = () => {
+    const populateMotions = () : ReactNode => {
         return (
             <>
                 {getMotion('Motion to do something', 'Alice', '2015/03/12')}
