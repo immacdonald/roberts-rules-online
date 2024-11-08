@@ -4,6 +4,7 @@ import { Page } from '../../components';
 import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 import { socket } from '../../socket';
 import style from './Login.module.scss';
+import { login } from '../../auth';
 
 const Login: FC = () => {
     const { isLoggedIn } = useWebsiteContext();
@@ -19,8 +20,8 @@ const Login: FC = () => {
         event.preventDefault();
         // Get the values from the form
         console.log('Logging in...', email, password);
-
-        socket.emit('login', email, password);
+        login(email, password);
+        //socket.emit('login', email, password);
     };
 
     return (

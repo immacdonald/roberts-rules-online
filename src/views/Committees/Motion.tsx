@@ -4,7 +4,7 @@ import styles from './Motion.module.scss';
 
 interface MiniMotionReply {
     id: number;
-    parentId: number;
+    parentId?: number;
     backgroundClass: string;
     depth: number;
 }
@@ -24,7 +24,7 @@ const Motion: FC = () => {
     };
 
     return (
-        <>
+        <section>
             <div className={styles.border}>
                 <div className={styles.motionContainer}>
                     <div>
@@ -104,7 +104,7 @@ const Motion: FC = () => {
                     ))}
                 </div>
             ))}
-        </>
+        </section>
     );
 };
 

@@ -1,17 +1,4 @@
-type MotionData = {
-    id: string;
-    committeeId: string;
-    authorId: string;
-    title: string;
-    flag: string;
-    description: string;
-    vote: string;
-    summary: string;
-    relatedId: string;
-    status: string;
-    decisionTime: number;
-    creationDate: number;
-}
+import { MotionData } from '../../types';
 
 export class Motion {
     public readonly id: string;

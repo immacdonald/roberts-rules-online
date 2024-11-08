@@ -1,5 +1,5 @@
+import { Motion } from './motion';
 import { Motions } from './motions';
-import { User } from './user';
 import { Users as UsersClass } from './users';
 
 let Users: UsersClass;
@@ -9,7 +9,7 @@ export class Committee {
     public name: string;
     public description: string;
     public owner: string;
-    public members: object;
+    public members: { id: string, role: string}[];
     public MotionsClass: Motions;
 
     constructor(id, name, owner, members) {
@@ -25,10 +25,14 @@ export class Committee {
     }
 
     public sendToAllMembers(event: string, data: any): void {
-        for (const member in this.members) {
-            let user = Users.findUserById(member)
+        for (const member of this.members) {
+            let user = Users.findUserById(member.id)
             if (user) {
-                user.socket.emit(event, data);
+                if(user.socket) {
+                    user.socket.emit(event, data);
+                } else {
+                    console.log(`Cannot send to ${user.displayname} because socket is undefined`)
+                }
             }
         }
     }
@@ -38,16 +42,21 @@ export class Committee {
             if (member !== userId) {
                 let user = Users.findUserById(member)
                 if (user) {
-                    user.socket.emit(event, data);
+                    if(user.socket) {
+                        user.socket.emit(event, data);
+                    } else {
+                        console.log(`Cannot send to ${user.displayname} because socket is undefined`)
+                    }
                 }
             }
         }
     }
 
-    public getMotions(updateClients: boolean): Promise<any> {
+    public getMotions(updateClients: boolean): Promise<Motion[]> {
         let motions = this.MotionsClass.getMotions();
+        console.log(motions)
         if (updateClients) {
-            motions.then((data) => {
+            motions.then((data: Motion[]) => {
                 this.sendToAllMembers('setMotions', data);
             });
         }

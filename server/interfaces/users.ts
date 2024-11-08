@@ -99,7 +99,7 @@ async function createUser(username, email, password, displayname): Promise<[bool
 
 export class Users {
     public static instance: Users = new Users();
-    public static dbReady = dbReady;
+    public static dbReady: boolean = dbReady;
     private users: User[];
     private constructor() {
         this.users = [];

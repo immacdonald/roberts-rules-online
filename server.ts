@@ -18,6 +18,23 @@ const Users: UsersClass = UsersClass.instance;
 CommitteesClass.setUsersClass();
 
 const app: Express = express();
+app.use(express.json());
+
+// Middleware to block any requests made before the database is connected
+app.use((_, res, next) => {
+    if (!Users.dbReady) {
+        console.log("Rejecting request ")
+        setTimeout(() => {
+            if(Users.dbReady) {
+                
+            }
+        })
+        res.sendStatus(503);
+    } else {
+        next();
+    }
+ });
+
 const server = createServer(app);
 
 const port: number = 3000;
@@ -39,14 +56,30 @@ const vite = await createViteServer({
     appType: 'spa'
 });
 
-app.use(vite.middlewares);
-app.use(eStatic('static'));
-
 const API = '/api/v1';
 app.get(`${API}/ping`, (_: Request, res: Response) => {
     // Sends a friendly message and a 200 status (implicitly)
     res.send('Hello, this is the Express API.');
 });
+
+// Login route
+app.post(`${API}/login`, async (req, res) => {
+    console.log(req.body)
+    const { email, password } = req.body;
+    
+    //if (!dbReady) return res.status(500).json({ success: false, message: 'Database not ready' });
+  
+    try {
+      const [isLoggedIn, response] = await Users.loginUser(email, password);
+      if (isLoggedIn) {
+        res.status(200).json({ success: true, user: response });
+      } else {
+        res.status(401).json({ success: false, message: response });
+      }
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Server error during login' });
+    }
+  });
 
 /*io.use((socket, next) => {
     const token = socket.handshake.query.token;
@@ -146,6 +179,9 @@ Users.dbReady(async () => {
     //console.log('Users Database is ready');
     //Committees.createCommittee('Test Committee', 'lmao', 'EzdWsg7lDcA6n-AU', [{ id: 'EzdWsg7lDcA6n-AU', role: 'admin' }]);
 });
+
+app.use(vite.middlewares);
+app.use(eStatic('static'));
 
 server.listen(port, () => {
     console.log(`Robert's Rules Online listening at http://localhost:${port}`);

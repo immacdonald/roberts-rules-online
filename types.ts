@@ -11,6 +11,22 @@ interface CommitteeData {
     description: string;
     owner: string;
     members: CommitteeMember[];
+    motions: MotionData[]
 }
 
-export type { CommitteeMember, CommitteeData };
+type MotionData = {
+    id: string;
+    committeeId: string;
+    authorId: string;
+    title: string;
+    flag: string;
+    description: string;
+    vote: string;
+    summary: string;
+    relatedId: string;
+    status: string;
+    decisionTime: number;
+    creationDate: number;
+}
+
+export type { CommitteeMember, CommitteeData, MotionData };

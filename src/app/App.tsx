@@ -5,9 +5,10 @@ import { useWebsiteContext } from '../contexts/useWebsiteContext';
 import { WebsiteContextProvider } from '../contexts/WebsiteContext';
 import { socket } from '../socket';
 import { Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
+import { CommitteeData, MotionData } from 'types';
 
 const RoutedApp: FC = () => {
-    const { user, setUser, setCommittees } = useWebsiteContext();
+    const { user, setUser, setCommittees, setCommitteeMotions } = useWebsiteContext();
 
     socket.on('chatMessage', (msg: any) => {
         console.log('Message:' + msg);
@@ -23,9 +24,13 @@ const RoutedApp: FC = () => {
         }, 1000);
     });
 
-    socket.on('setCommittees', (committees: any) => {
-        console.log('In RoutedApp', committees);
+    socket.on('setCommittees', (committees: CommitteeData[]) => {
+        //console.log('In RoutedApp', committees);
         setCommittees(committees);
+    });
+
+    socket.on('setMotions', (motions: MotionData[]) => {
+        setCommitteeMotions(motions);
     });
 
     socket.on('failedRegister', (msg: any) => {
@@ -62,7 +67,11 @@ const router = createBrowserRouter([
             },
             {
                 path: '/committees',
-                element: <ViewCommittees />
+                element: (
+                    <ProtectedRoute>
+                        <ViewCommittees />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: '/committees/:id',

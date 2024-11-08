@@ -1,5 +1,6 @@
 import { createContext, Dispatch, FC, ReactElement, ReactNode, SetStateAction, useMemo, useState } from 'react';
-import { CommitteeData } from 'types';
+import { socket } from '../socket';
+import { CommitteeData, MotionData } from 'types';
 
 interface WebsiteContextInterface {
     user: any;
@@ -9,6 +10,7 @@ interface WebsiteContextInterface {
     committees: CommitteeData[];
     currentCommittee: CommitteeData | null;
     setCurrentCommittee: (id: string | null) => void;
+    setCommitteeMotions: (motions: MotionData[]) => void;
     logout: () => void;
 }
 
@@ -35,13 +37,21 @@ const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): 
         if (id && committees.length > 0) {
             const committee = (committees.filter((committee) => committee.id == id) ?? [null])[0];
             console.log('Setting to committee', committee);
+            socket.emit("getMotions", committee.id);
             setCurrentCommitteeInternal(committee);
         } else {
             setCurrentCommitteeInternal(null);
         }
     };
 
-    return <WebsiteContext.Provider value={{ user, setUser, isLoggedIn, logout, committees, setCommittees, currentCommittee, setCurrentCommittee }}>{children}</WebsiteContext.Provider>;
+    const setCommitteeMotions = (motions: MotionData[]) => {
+        if(currentCommittee) {
+            console.log(motions);
+            setCurrentCommitteeInternal({...currentCommittee, motions});
+        }
+    }
+
+    return <WebsiteContext.Provider value={{ user, setUser, isLoggedIn, logout, committees, setCommittees, currentCommittee, setCurrentCommittee, setCommitteeMotions }}>{children}</WebsiteContext.Provider>;
 };
 
 export { WebsiteContext, WebsiteContextProvider };
