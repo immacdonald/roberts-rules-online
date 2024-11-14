@@ -8,7 +8,7 @@ interface MiniMotionReply {
     depth: number;
 }
 
-const Motion: FC = () => {
+const MotionVote: FC = () => {
     const username = 'Username';
     const date = new Date().toLocaleDateString();
     const [replies, setReplies] = useState<MiniMotionReply[]>([]);
@@ -110,4 +110,4 @@ const Motion: FC = () => {
     );
 };
 
-export {Motion};
+export {MotionVote};

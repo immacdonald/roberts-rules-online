@@ -40,9 +40,9 @@ const ActiveMotions: FC = () => {
         // socket.emit('getMotions'); // to be implemented, make sure that when the setMotions event is called it updates in real time
         return (
             <>
-                {getMotion('Motion to do something', 'Alice', '2015/03/12')}
-                {getMotion('Motion to do something else', 'Bob', '2023/02/10')}
-                {getMotion('Motion to get an A in this class', 'Alex', '2024/10/24')}
+                {getMotion('MotionVote to do something', 'Alice', '2015/03/12')}
+                {getMotion('MotionVote to do something else', 'Bob', '2023/02/10')}
+                {getMotion('MotionVote to get an A in this class', 'Alex', '2024/10/24')}
             </>
         );
     };
