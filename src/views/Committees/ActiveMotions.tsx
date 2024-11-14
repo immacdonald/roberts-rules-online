@@ -36,7 +36,6 @@ const ActiveMotions: FC = () => {
     };
 
     const displayMotions = useMemo(() => {
-        console.log(currentCommittee);
         if (currentCommittee!.motions.length > 0) {
             return currentCommittee!.motions.map((motion: MotionData) => {
                 return getMotion(motion.title, motion.authorId, '2024/11/14');

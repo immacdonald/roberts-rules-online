@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useWebsiteContext } from '../contexts/useWebsiteContext';
@@ -12,6 +12,9 @@ import { User } from 'server/interfaces/user';
 const RoutedApp: FC = () => {
     const { user, setUser, setCommittees, setCommitteeMotions } = useWebsiteContext();
 
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    // Initialize the app and check whether the user session should be resumed
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -21,19 +24,16 @@ const RoutedApp: FC = () => {
                 } else {
                     localStorage.removeItem('token');
                 }
-            })
+                setIsLoading(false);
+            });
+        } else {
+            setIsLoading(false);
         }
-    }, [])
+    }, []);
 
     useEffect(() => {
         if (user) {
             initializeSocket();
-            //console.log("Logged in", user)
-
-            setTimeout(() => {
-                console.log("Getting committees")
-                socket!.emit('getCommittees');
-            }, 1000);
         } else {
             disconnectSocket();
         }
@@ -48,17 +48,20 @@ const RoutedApp: FC = () => {
             });
 
             socket.on('setCommittees', (committees: CommitteeData[]) => {
+                //console.log("Got committees", committees)
                 setCommittees(committees);
             });
 
             socket.on('setMotions', (motions: MotionData[]) => {
-                console.log("Setting motions", motions)
+                //console.log("Setting motions", motions)
                 setCommitteeMotions(motions);
             });
 
             socket.on('failedRegister', (msg: any) => {
                 alert(msg);
             });
+
+            socket!.emit('getCommittees');
         }
 
         // Cleanup function to remove listeners if socket changes or on component unmount
@@ -71,6 +74,10 @@ const RoutedApp: FC = () => {
             }
         };
     }, [socket]);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
     return <Outlet />;
 };

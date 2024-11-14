@@ -139,7 +139,6 @@ io.on('connection', (socket: Socket) => {
 
     socket.on('getCommittees', async () => {
         const id = socket.data.id;
-        console.log("Getting committees!")
         await sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [id, id], async (err, res) => {
             if (!err) {
                 //const data = JSON.parse(JSON.stringify(res));
@@ -151,6 +150,8 @@ io.on('connection', (socket: Socket) => {
                 const clientTable = await CommitteesClass.instance.populateCommitteeMembers(data);
                 socket.emit('setCommittees', clientTable);
                 //this.socket.emit('setCommittees', data);
+            } else {
+                console.log(err);
             }
         });
     })
@@ -162,7 +163,7 @@ io.on('connection', (socket: Socket) => {
         const thisCommittee = CommitteesClass.instance.getCommitteeById(committeeId);
         if (thisCommittee) {
             const motions = await thisCommittee.getMotions(false);
-            console.log("Got motions", motions);
+            //console.log("Got motions", motions);
             if (motions) {
                 socket.emit('setMotions', motions);
             }

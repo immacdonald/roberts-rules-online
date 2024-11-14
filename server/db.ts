@@ -32,7 +32,7 @@ export class MySQL {
     }
 
     public ready(callback: () => void): void {
-        this.pool.getConnection((err, connection) => {
+        this.pool.getConnection((_, connection) => {
             this.db = wrap(connection);
             this.db.ready(callback);
         });
@@ -41,7 +41,7 @@ export class MySQL {
     public query(query: string, data: any[] = [], p: (err: any, rows: any, fields: any) => void = (): void => {}): Promise<any> {
         //console.log('Querying', query, data);
         return new Promise((resolve, reject) => {
-            this.pool.getConnection((err, connection) => {
+            this.pool.getConnection((_, connection) => {
                 this.db = wrap(connection);
                 try {
                     connection.query(query, data, function (err, rows, fields) {
