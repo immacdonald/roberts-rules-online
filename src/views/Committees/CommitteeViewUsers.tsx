@@ -1,12 +1,17 @@
 import { FC, useState, FormEvent } from 'react';
+import { Page } from '../../components';
+import styles from './Committees.module.scss';
+import { CommitteeNav } from '../../components/CommitteeNav';
 import { CommitteeMember } from 'types';
+import { Modal } from '../../components/Modal';
+
 import ChairIcon from '../../assets/images/ChairIcon.png';
 import HouseIcon from '../../assets/images/HouseIcon.png';
-import { Modal } from '../../components/Modal';
-import styles from './Committees.module.scss';
 
 const CommitteeViewUsers: FC = () => {
-    const users: CommitteeMember[] = [
+
+    //sample user data
+    const [users, setUsers] = useState<CommitteeMember[]>([
         {
             id: '1',
             role: 'Owner',
@@ -37,9 +42,9 @@ const CommitteeViewUsers: FC = () => {
             username: 'sarahjohnson',
             displayname: 'Sarah Johnson'
         }
-    ];
+    ]);
 
-    const getRoleBox = (role: string) => {
+    const getRoleBox = (role: string, userId: string) => {
         if (role === 'Owner') {
             return (
                 <div className={styles.roleBox}>
@@ -53,20 +58,60 @@ const CommitteeViewUsers: FC = () => {
                 </div>
             );
         } else {
-            return <div></div>;
+            return (
+                <div className={styles.roleBox}>
+                    <button onClick={() => promoteUser(userId)}>promote</button>
+                </div>
+            );
         }
     };
 
-    const getUser = (name: string, role: string) => {
+    const promoteUser = (userId: string) => {
+        console.log('Promoting user:', userId);
+
+        var chairId: number | undefined;
+
+        // Find current Chair and the user to promote
+        users.forEach((user, index) => {
+            if (user.role === 'Chair') {
+                chairId = index;
+            }
+        });
+
+        // Create a copy of the users array
+        const tempUsers = [...users];
+
+        if (chairId !== undefined) {
+            tempUsers[chairId].role = 'Member';
+        }
+        tempUsers.forEach((user, index) => {
+            if (user.id === userId) {
+                tempUsers[index].role = 'Chair';
+            }
+        });
+
+        setUsers(tempUsers);
+    }
+
+
+    const getUser = (name: string, role: string, userId: string) => {
         return (
             <div className={styles.userAndRole}>
                 <div className={styles.userBox}>
                     <div className={styles.userNameText}>{name}</div>
                 </div>
-                {getRoleBox(role)}
+                {getRoleBox(role, userId)}
             </div>
         );
     };
+
+    const getAddUserButton = () => {
+        return (
+            <div>
+                <button className={styles.addUserButton} onClick={() => addUser()}>Add User</button>
+            </div>
+        );
+    }
 
     const [createModal, setCreateModal] = useState<boolean>(false);
 
@@ -81,6 +126,8 @@ const CommitteeViewUsers: FC = () => {
         event.preventDefault();
         console.log('Adding new user:', newUserName);
         // add the new user
+        //do backend stuff here
+
         //socket.emit('addUser', newUserName);
     };
 
@@ -91,14 +138,16 @@ const CommitteeViewUsers: FC = () => {
                     {users.length > 0 ? (
                         users.map((user: CommitteeMember) => {
                             console.log(user);
-                            return <div key={user.id}>{getUser(user.displayname || 'Unknown', user.role)}</div>;
+                            return (
+                                <div key={user.id}>
+                                    {getUser(user.displayname || 'Unknown', user.role, user.id)}
+                                </div>
+                            );
                         })
                     ) : (
                         <p>Loading users... </p>
                     )}
-                    <button data-button-type="primary" onClick={() => addUser()}>
-                        Add User
-                    </button>
+                    {getAddUserButton()}
                 </ul>
             </section>
             {createModal && (
