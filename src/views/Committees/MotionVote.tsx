@@ -1,5 +1,4 @@
 import {FC, useState} from 'react';
-import {Page} from '../../components';
 import styles from './Motion.module.scss';
 
 interface MiniMotionReply {
@@ -20,7 +19,10 @@ const Motion: FC = () => {
     };
 
     const addReplyMain = (backgroundClass: string) => {
-        setRepliesMain([...repliesMain, {id: repliesMain.length, backgroundClass, depth: 0}]);
+        setRepliesMain([...repliesMain, {
+            id: repliesMain.length, backgroundClass, depth: 0,
+            parentId: 0
+        }]);
     };
 
     return (
