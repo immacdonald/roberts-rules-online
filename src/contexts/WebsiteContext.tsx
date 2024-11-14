@@ -1,4 +1,4 @@
-import { createContext, FC, ReactElement, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, FC, ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
 import { socket } from '../socket';
 import { CommitteeData, MotionData } from 'types';
 
@@ -24,8 +24,6 @@ const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): 
     const [user, setUser] = useState<any>(null);
     const [committees, setCommitteesInternal] = useState<CommitteeData[]>([]);
 
-    const committeesRef = useRef<CommitteeData[]>([]);
-
     const logout = (): void => {
         setUser(null);
         localStorage.removeItem('token');
@@ -36,33 +34,16 @@ const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): 
     const [previousCommitee, setPreviousCommitee] = useState<string | null>(null);
     const [currentCommitteeId, setCurrentCommitteeId] = useState<string | null>(null);
 
-    const currentCommitteeRef = useRef<CommitteeData | null>(null);
-
     const setCurrentCommittee = (id: string | null) => {
         setCurrentCommitteeId(id);
     };
 
-    const setCommitteeMotions = (motions: MotionData[]) => {
-        const current = currentCommitteeRef.current;
-        console.log("Setting motions");
-        if (current) {
-            console.log("Setting motions");
-            const updatedCommittee = { ...current, motions };
-            currentCommitteeRef.current = updatedCommittee;
-            console.log(updatedCommittee);
-            const newCommittees = committees.filter((commitee) => commitee.id != current.id);
-            setCommittees([...newCommittees, updatedCommittee])
-        }
-    };
-
     const currentCommittee = useMemo(() => {
-        console.log("Update current committee motions");
         if (committees && currentCommitteeId) {
             const committee = committees.find((committee) => committee.id === currentCommitteeId) ?? null;
-            currentCommitteeRef.current = committee;
+            console.log(committee, "is current committee")
             return committee
         } else {
-            currentCommitteeRef.current = null;
             return null;
         }
     }, [currentCommitteeId, committees])
@@ -70,8 +51,21 @@ const WebsiteContextProvider: FC<WebsiteContextProviderProps> = ({ children }): 
     const setCommittees = (data: CommitteeData[]) => {
         const withMotions = data.map((committee: CommitteeData) => ({ ...committee, motions: [] }))
         setCommitteesInternal(withMotions);
-        committeesRef.current = withMotions;
     }
+
+    const setCommitteeMotions = (motions: MotionData[]) => {
+        console.log("Setting motions");
+        if (currentCommittee) {
+            console.log("Current committee motions");
+            const updatedCommittee = { ...currentCommittee, motions };
+            console.log(updatedCommittee);
+            const newCommittees = committees.filter((commitee) => commitee.id != currentCommittee.id);
+            const setTo = [...newCommittees, updatedCommittee]
+            console.log(setTo);
+            setCommittees(setTo)
+        }
+    };
+
 
     useEffect(() => {
         if (currentCommittee) {
