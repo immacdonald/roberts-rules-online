@@ -38,7 +38,7 @@ type MotionData = {
 
 sql.ready(async function () {
     dbReady = true;
-    // createMotion('1', '1', 'Test MotionVote 1');
+    // createMotion('1', '1', 'Test Motion 1');
 });
 
 export class Motions {
