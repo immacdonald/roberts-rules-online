@@ -26,6 +26,10 @@ const RoutedApp: FC = () => {
     socket.on('setCommittees', (committees: any) => {
         console.log('In RoutedApp', committees);
         setCommittees(committees);
+		// socket.emit('createMotion', {
+		// 	committeeId: committees[0].id,
+		// 	title: "Test Motion"
+		// });
     });
 
     socket.on('failedRegister', (msg: any) => {
