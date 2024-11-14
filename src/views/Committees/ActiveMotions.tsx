@@ -1,9 +1,12 @@
-import { FC, FormEvent, useState } from 'react';
+import { FC, FormEvent, useMemo, useState } from 'react';
 import { Modal } from '../../components/Modal';
 import { socket } from '../../socket';
 import styles from './Motions.module.scss';
+import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { MotionData } from 'types';
 
 const ActiveMotions: FC = () => {
+    const { currentCommittee } = useWebsiteContext();
     const [createModal, setCreateModal] = useState<boolean>(false);
 
     const [motionTitle, setMotionTitle] = useState<string>('');
@@ -32,26 +35,28 @@ const ActiveMotions: FC = () => {
         );
     };
 
-    const populateMotions = () => {
-
-        // socket.on('setMotions', (data: any) => {
-        //
-        // });
-        // socket.emit('getMotions'); // to be implemented, make sure that when the setMotions event is called it updates in real time
-        return (
-            <>
-                {getMotion('Motion to do something', 'Alice', '2015/03/12')}
-                {getMotion('Motion to do something else', 'Bob', '2023/02/10')}
-                {getMotion('Motion to get an A in this class', 'Alex', '2024/10/24')}
-            </>
-        );
-    };
+    const displayMotions = useMemo(() => {
+        console.log(currentCommittee);
+        if (currentCommittee!.motions.length > 0) {
+            return currentCommittee!.motions.map((motion: MotionData) => {
+                return getMotion(motion.title, motion.authorId, '2024/11/14');
+            })
+        } else {
+            return (
+                <>
+                    {getMotion('Motion to do something', 'Alice', '2015/03/12')}
+                    {getMotion('Motion to do something else', 'Bob', '2023/02/10')}
+                    {getMotion('Motion to get an A in this class', 'Alex', '2024/10/24')}
+                </>
+            );
+        }
+    }, [currentCommittee!.motions])
 
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         console.log('Creating new motion:', motionTitle, 'John Doe');
         // Create the committee
-        socket.emit('createCommittee', motionTitle, 'John Doe');
+        socket!.emit('createMotion', currentCommittee?.id!, motionTitle);
     };
 
     return (
@@ -74,7 +79,7 @@ const ActiveMotions: FC = () => {
                             <th>Date</th>
                         </tr>
                     </thead>
-                    <tbody>{populateMotions()}</tbody>
+                    <tbody>{displayMotions}</tbody>
                 </table>
             </section>
             {createModal && (

@@ -7,12 +7,13 @@ let Users: UsersClass;
 export class Committee {
     public readonly id: string;
     public name: string;
+    // @ts-expect-error description not set in constructor
     public description: string;
     public owner: string;
     public members: { id: string, role: string}[];
     public MotionsClass: Motions;
 
-    constructor(id, name, owner, members) {
+    constructor(id: any, name: any, owner: any, members: any) {
         if (!Users) {
             Users = UsersClass.instance;
         }
@@ -64,6 +65,6 @@ export class Committee {
     }
 
     public isMember(userId: string): boolean {
-        return this.owner === userId || this.members[userId] !== undefined;
+        return this.owner === userId || this.members.some((member) => member.id == userId);
     }
 }

@@ -5,9 +5,12 @@ import { Server, Socket } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import ViteExpress from 'vite-express';
 import { createDatabase } from './server/createDBTables';
-import { Committees as CommitteesClass } from './server/interfaces/Committees';
+import { Committees, Committees as CommitteesClass } from './server/interfaces/Committees';
 import { User } from './server/interfaces/user';
 import { Users as UsersClass } from './server/interfaces/users';
+import { CommitteeData, UserWithToken } from './types';
+import { MySQL } from './server/db';
+import { Motions, Motions } from './server/interfaces/motions';
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
@@ -22,18 +25,19 @@ app.use(express.json());
 
 // Middleware to block any requests made before the database is connected
 app.use((_, res, next) => {
-    if (!Users.dbReady) {
-        console.log("Rejecting request ")
+    if (!UsersClass.initialized) {
         setTimeout(() => {
-            if(Users.dbReady) {
-                
+            if (UsersClass.initialized) {
+                next();
+            } else {
+                console.log("Rejecting request due to database disconnect")
+                res.sendStatus(503);
             }
         })
-        res.sendStatus(503);
     } else {
         next();
     }
- });
+});
 
 const server = createServer(app);
 
@@ -64,24 +68,37 @@ app.get(`${API}/ping`, (_: Request, res: Response) => {
 
 // Login route
 app.post(`${API}/login`, async (req, res) => {
-    console.log(req.body)
-    const { email, password } = req.body;
-    
-    //if (!dbReady) return res.status(500).json({ success: false, message: 'Database not ready' });
-  
-    try {
-      const [isLoggedIn, response] = await Users.loginUser(email, password);
-      if (isLoggedIn) {
-        res.status(200).json({ success: true, user: response });
-      } else {
-        res.status(401).json({ success: false, message: response });
-      }
-    } catch (error) {
-      res.status(500).json({ success: false, message: 'Server error during login' });
-    }
-  });
+    const { email, password, token } = req.body;
 
-/*io.use((socket, next) => {
+    //if (!dbReady) return res.status(500).json({ success: false, message: 'Database not ready' });
+    if (email && password) {
+        try {
+
+            const [isLoggedIn, response] = await Users.loginUser(email, password);
+            if (isLoggedIn) {
+                const data = response as UserWithToken;
+                res.status(200).json({ success: true, data });
+            } else {
+                res.status(401).json({ success: false, message: response });
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Server error during login' });
+        }
+    } else {
+        try {
+            const response = await Users.getUserProfile(token);
+            if (response) {
+                res.status(200).json({ success: true, data: response });
+            } else {
+                res.status(401).json({ success: false, message: "Invalid or expired token" });
+            }
+        } catch (error) {
+            res.status(401).json({ success: false, message: error });
+        }
+    }
+});
+
+io.use((socket, next) => {
     const token = socket.handshake.query.token;
 
     // Proceed normally if no token is provided
@@ -91,25 +108,79 @@ app.post(`${API}/login`, async (req, res) => {
     }
 
     // Verify the token if it is present
-    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    jwt.verify(token as string, SECRET_KEY, (err, decoded) => {
         if (err) {
             console.log('Failed to authenticate token:', err.message);
             //return next(new Error('Authentication error'));
             return next();
+        }
+        else if (!decoded) {
+            console.log('Failed to decode token');
+            return next();
         } else {
-            console.log(`Successfully authenticated user ${decoded.email} from JWT`);
-            socket.emit('login', { id: decoded.id, displayname: decoded.displayname, username: decoded.username, email: decoded.email }, token);
+            const user = (decoded as {username: string, id: string});
+            socket.data.username = user.username;
+            socket.data.id = user.id;
+            console.log(`Successfully authenticated user ${user.username} from JWT`);
         }
     });
 
     return next();
-});*/
+});
 
 io.on('connection', (socket: Socket) => {
-    console.log('Client is connected');
+    console.log(`Client is connected (${socket.data.username})`);
 
     socket.on('chatMessage', (msg) => {
         console.log('message: ' + msg);
+    });
+
+    const sql = MySQL.getInstance();
+
+    socket.on('getCommittees', async () => {
+        const id = socket.data.id;
+        console.log("Getting committees!")
+        await sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [id, id], async (err, res) => {
+            if (!err) {
+                //const data = JSON.parse(JSON.stringify(res));
+                const data: CommitteeData[] = res.map((row: any) => ({
+                    ...row,
+                    members: JSON.parse(row.members)
+                }));
+
+                const clientTable = await CommitteesClass.instance.populateCommitteeMembers(data);
+                socket.emit('setCommittees', clientTable);
+                //this.socket.emit('setCommittees', data);
+            }
+        });
+    })
+
+    socket.on('getMotions', async (committeeId) => {
+        if (!committeeId) {
+            return;
+        }
+        const thisCommittee = CommitteesClass.instance.getCommitteeById(committeeId);
+        if (thisCommittee) {
+            const motions = await thisCommittee.getMotions(false);
+            console.log("Got motions", motions);
+            if (motions) {
+                socket.emit('setMotions', motions);
+            }
+        }else {
+            console.log('Committee not found');
+            return socket.emit('setMotions', []);
+        }
+    });
+
+    socket.on("createMotion", async (committeeId, title) => {
+        if (!committeeId) {
+            return;
+        }
+
+        const id = socket.data.id;
+        const motion = new Motions(committeeId);
+
+        motion.createLightweightMotion(committeeId, id, title);
     });
 
     // login
@@ -128,6 +199,7 @@ io.on('connection', (socket: Socket) => {
             }
         });
     });
+
     socket.on('register', (username, email, password, displayname) => {
         console.log('Registering...');
         console.log(username);

@@ -26,7 +26,7 @@ const ViewCommittees: FC = () => {
         event.preventDefault();
         console.log('Creating new committee:', committeeName, committeeDesc);
         // Create the committee
-        socket.emit('createCommittee', committeeName, committeeDesc);
+        socket!.emit('createCommittee', committeeName, committeeDesc);
     };
 
     const { setCurrentCommittee } = useWebsiteContext();

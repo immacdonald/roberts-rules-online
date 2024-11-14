@@ -38,7 +38,7 @@ export class MySQL {
         });
     }
 
-    public query(query: string, data: any[] = [], p: (err, rows, fields) => void = (): void => {}): Promise<any> {
+    public query(query: string, data: any[] = [], p: (err: any, rows: any, fields: any) => void = (): void => {}): Promise<any> {
         //console.log('Querying', query, data);
         return new Promise((resolve, reject) => {
             this.pool.getConnection((err, connection) => {

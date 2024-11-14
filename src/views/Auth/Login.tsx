@@ -5,9 +5,10 @@ import { useWebsiteContext } from '../../contexts/useWebsiteContext';
 import { socket } from '../../socket';
 import style from './Login.module.scss';
 import { login } from '../../auth';
+import { User } from 'server/interfaces/user';
 
 const Login: FC = () => {
-    const { isLoggedIn } = useWebsiteContext();
+    const { isLoggedIn, setUser } = useWebsiteContext();
 
     if (isLoggedIn) {
         return <Navigate to="/" />;
@@ -18,10 +19,11 @@ const Login: FC = () => {
 
     const handleLogIn = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        // Get the values from the form
-        console.log('Logging in...', email, password);
-        login(email, password);
-        //socket.emit('login', email, password);
+        login(email, password).then((user: User | null) => {
+            if(user) {
+                setUser(user);
+            }    
+        });
     };
 
     return (

@@ -107,6 +107,7 @@ button,
     &[data-button-type='secondary'] {
         border: var(--border);
         background-color: var(--color-foreground);
+        color: var(--color-text);
     }
 
     &[data-button-type='ghost'] {
@@ -135,4 +136,8 @@ h3 {
 
 hr {
     margin-block: var(--space);
+}
+
+::selection {
+    background-color: #09bc8a20;
 }

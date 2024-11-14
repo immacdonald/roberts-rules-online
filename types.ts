@@ -1,3 +1,5 @@
+import { User } from './server/interfaces/user';
+
 interface CommitteeMember {
     id: string;
     role: string;
@@ -29,4 +31,9 @@ type MotionData = {
     creationDate: number;
 }
 
-export type { CommitteeMember, CommitteeData, MotionData };
+interface UserWithToken {
+    user: User;
+    token: string;
+}
+
+export type { CommitteeMember, CommitteeData, MotionData, UserWithToken };

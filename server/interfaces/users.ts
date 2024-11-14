@@ -2,17 +2,21 @@ import * as bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { MySQL } from '../db';
 import { User } from './user';
+import jwt from 'jsonwebtoken';
+import { UserWithToken } from 'types';
 
 const saltRounds = 10; // Typically a value between 10 and 12
 const sql = MySQL.getInstance();
 let dbReady = false;
 
+const SECRET_KEY = 'DEV_SECRET_KEY';
+
 sql.ready(async function () {
     dbReady = true;
-    Users.dbReady = dbReady;
+    Users.initialized = dbReady;
 });
 
-async function createUser(username, email, password, displayname): Promise<[boolean, string | number]> {
+async function createUser(username: string, email: string, password: string, displayname: string): Promise<[boolean, string | number]> {
     return new Promise((resolve, reject) => {
         if (!displayname) displayname = username;
         if (!dbReady) return reject(false);
@@ -99,12 +103,12 @@ async function createUser(username, email, password, displayname): Promise<[bool
 
 export class Users {
     public static instance: Users = new Users();
-    public static dbReady: boolean = dbReady;
+    public static initialized: boolean = dbReady;
     private users: User[];
     private constructor() {
         this.users = [];
     }
-    async createUser(username, email, password, displayname): Promise<(boolean | string | number | User)[]> {
+    async createUser(username: string, email: string, password: string, displayname: string): Promise<(boolean | string | number | User)[]> {
         const res = await createUser(username, email, password, displayname);
         if (!res || !res[0]) {
             return [false, res[1]];
@@ -114,7 +118,7 @@ export class Users {
         this.users.push(user);
         return [true, user];
     }
-    async loginUser(email: string, password: string): Promise<[boolean, string | User]> {
+    async loginUser(email: string, password: string): Promise<[boolean, string | UserWithToken]> {
         let user: User | undefined | null = this.findUserByEmail(email);
         if (!user) {
             user = await this.getUserFromEmail(email);
@@ -123,20 +127,38 @@ export class Users {
             }
         }
         if (await user.isPasswordCorrect(password)) {
-            return [true, user];
+            const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+            return [true, { user, token }];
         } else {
             return [false, 'Password is incorrect'];
         }
     }
 
-    dbReady(callback): void {
+    async getUserProfile(token: string): Promise<UserWithToken | null> {
+        // Verify the token if it is present
+        try {
+            const decoded = await jwt.verify(token, SECRET_KEY);
+
+            const user = await this.getUserById((decoded as { id: string}).id)
+            if (user) {
+                return { user, token };
+            }
+
+            return null;
+        } catch (err) {
+            console.log('Failed to authenticate token:', err);
+            return null;
+        }
+    }
+
+    dbReady(callback: any): void {
         sql.ready(callback);
     }
 
     // Get Names are to query the database for the user
     getUserFromEmail(email: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            if (!Users.dbReady) {
+            if (!Users.initialized) {
                 return reject(false);
             }
             if (!email) {
@@ -161,7 +183,7 @@ export class Users {
     }
     getUserById(id: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            if (!Users.dbReady) {
+            if (!Users.initialized) {
                 return reject(false);
             }
 

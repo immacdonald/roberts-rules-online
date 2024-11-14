@@ -1,7 +1,11 @@
-import React, {FC, ReactNode} from 'react';
+import React, { FC, ReactNode, useEffect, useMemo } from 'react';
 import styles from './Motions.module.scss';
+import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { MotionData } from 'types';
 
 const PastMotions: FC = () => {
+    const { currentCommittee } = useWebsiteContext();
+
     const getMotion = (title: string, name: string, date?: string): ReactNode => {
         let dateString;
         if (date === undefined) {
@@ -26,15 +30,26 @@ const PastMotions: FC = () => {
         );
     };
 
-    const populateMotions = () : ReactNode => {
-        return (
-            <>
-                {getMotion('Motion to do something', 'Alice', '2015/03/12')}
-                {getMotion('Motion to do something else', 'Bob', '2023/02/10')}
-                {getMotion('Motion to get an A in this class', 'Alex', '2024/10/24')}
-            </>
-        );
-    };
+    const displayMotions = useMemo(() => {
+        console.log(currentCommittee);
+        if (currentCommittee!.motions.length > 0) {
+            return currentCommittee!.motions.map((motion: MotionData) => {
+                return getMotion(motion.title, motion.authorId, '2024/11/14');
+            })
+        } else {
+            return (
+                <>
+                    {getMotion('Motion to do something', 'Alice', '2015/03/12')}
+                    {getMotion('Motion to do something else', 'Bob', '2023/02/10')}
+                    {getMotion('Motion to get an A in this class', 'Alex', '2024/10/24')}
+                </>
+            );
+        }
+    }, [currentCommittee!.motions])
+
+    useEffect(() => {
+        console.log(currentCommittee);
+    }, [currentCommittee])
 
     return (
         <>
@@ -60,7 +75,7 @@ const PastMotions: FC = () => {
                             <th>Date</th>
                         </tr>
                     </thead>
-                    <tbody>{populateMotions()}</tbody>
+                    <tbody>{displayMotions}</tbody>
                 </table>
             </section>
         </>

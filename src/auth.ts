@@ -1,25 +1,30 @@
-const login = (email: string, password: string) => {
-    const url = 'http://localhost:3000/api/v1/login'
+import { User } from "server/interfaces/user";
+
+const login = async (email?: string, password?: string, token?: string): Promise<User | null> => {
+    const url = 'http://localhost:3000/api/v1/login';
 
     const options: RequestInit = {
         method: "POST",
-        body: JSON.stringify({ email, password }),
-        headers: { "Content-Type": "application/json"}
+        body: JSON.stringify((email && password) ? { email, password } : { token }),
+        headers: { "Content-Type": "application/json" }
+    };
+
+    try {
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+            throw new Error(`${response.status}`);
+        }
+
+        const data = await response.json();
+        localStorage.setItem('token', data.data.token);
+
+        return data.data.user;
+
+    } catch (error) {
+        console.warn(error);
+        return null;
     }
-
-    fetch(url, options)
-        .then((response: Response) => {
-            if (!response.ok) {
-                throw new Error(`${response.status}`);
-            }
-
-            response.json().then((data) => {
-                console.log(data);
-            });
-        })
-        .catch((error: Error) => {
-            console.warn(error);
-        });
-}
+};
 
 export { login }

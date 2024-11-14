@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { MySQL } from '../db';
 import { Motion } from './motion';
 import { Users as UsersClass } from './users';
@@ -20,18 +21,6 @@ type MotionData = {
     decisionTime: number;
     creationDate: number;
 }
-
-// function createMotion(committeeId, authorId, title) {
-//     const id = nanoid(16);
-//     const creationDate = Date.now();
-//     if (!dbReady) return setTimeout(() => createMotion(committeeId, authorId, title), 1000);
-//     if (!committeeId || !authorId || !title) return console.log('Missing required fields');
-//
-//     sql.query(`
-//         INSERT INTO motions (id, committeeId, authorId, title, flag, description, vote, summary, relatedId, status, decisionTime, creationDate) VALUES
-//         ('${id}', '${committeeId}', '${authorId}', '${title}', '', '', '', '', '', 'pending', ${creationDate}, ${creationDate})
-//     `)
-// }
 
 sql.ready(async function () {
     dbReady = true;
@@ -69,6 +58,21 @@ export class Motions {
         `);
         return motion;
     }
+
+    public createLightweightMotion(committeeId: string, authorId: string, title: string) {
+        //const id = Number(nanoid(16));
+        const id = Math.floor(Math.random() * 99999999)
+        const creationDate = Date.now();
+        if (!committeeId || !authorId || !title) return console.log('Missing required fields');
+
+        console.log(`Inserting motion ('${id}', '${committeeId}', '${authorId}', '${title}', '', '', '', '', '', 'pending', ${creationDate}, ${creationDate})`);
+
+        sql.query(`
+            INSERT INTO motions (id, committeeId, authorId, title, flag, description, vote, summary, relatedId, status, decisionTime, creationDate) VALUES
+            (${id}, '${committeeId}', '${authorId}', '${title}', '', '', '', '', '', 'pending', ${creationDate}, ${creationDate})
+        `)
+    }
+
     public async updateMotion(data: MotionData): Promise<Motion> {
         const motion = new Motion(data);
         // find the motion and remove it then push the new motion version

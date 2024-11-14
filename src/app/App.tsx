@@ -3,43 +3,74 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useWebsiteContext } from '../contexts/useWebsiteContext';
 import { WebsiteContextProvider } from '../contexts/WebsiteContext';
-import { socket } from '../socket';
+import { disconnectSocket, initializeSocket, socket } from '../socket';
 import { Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
 import { CommitteeData, MotionData } from 'types';
+import { login } from '../auth';
+import { User } from 'server/interfaces/user';
 
 const RoutedApp: FC = () => {
     const { user, setUser, setCommittees, setCommitteeMotions } = useWebsiteContext();
 
-    socket.on('chatMessage', (msg: any) => {
-        console.log('Message:' + msg);
-    });
-
-    socket.on('login', (user: { id: string; username: string; displayname: string; email: string }, token: string) => {
-        console.log(`Logged in as ${user.email}`);
-        localStorage.setItem('token', token);
-        setUser(user);
-
-        setTimeout(() => {
-            socket.emit('getCommittees');
-        }, 1000);
-    });
-
-    socket.on('setCommittees', (committees: CommitteeData[]) => {
-        //console.log('In RoutedApp', committees);
-        setCommittees(committees);
-    });
-
-    socket.on('setMotions', (motions: MotionData[]) => {
-        setCommitteeMotions(motions);
-    });
-
-    socket.on('failedRegister', (msg: any) => {
-        alert(msg);
-    });
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            login(undefined, undefined, token).then((user: User | null) => {
+                if (user) {
+                    setUser(user);
+                } else {
+                    localStorage.removeItem('token');
+                }
+            })
+        }
+    }, [])
 
     useEffect(() => {
-        console.log('Set user to', user);
-    }, [user]);
+        if (user) {
+            initializeSocket();
+            //console.log("Logged in", user)
+
+            setTimeout(() => {
+                console.log("Getting committees")
+                socket!.emit('getCommittees');
+            }, 1000);
+        } else {
+            disconnectSocket();
+        }
+    }, [user])
+
+    // Update socket listeners each time the socket is opened or closed
+    useEffect(() => {
+        if (socket) {
+            // Register socket event listeners
+            socket.on('chatMessage', (msg: any) => {
+                console.log('Message:', msg);
+            });
+
+            socket.on('setCommittees', (committees: CommitteeData[]) => {
+                setCommittees(committees);
+            });
+
+            socket.on('setMotions', (motions: MotionData[]) => {
+                console.log("Setting motions", motions)
+                setCommitteeMotions(motions);
+            });
+
+            socket.on('failedRegister', (msg: any) => {
+                alert(msg);
+            });
+        }
+
+        // Cleanup function to remove listeners if socket changes or on component unmount
+        return () => {
+            if (socket) {
+                socket.off('chatMessage');
+                socket.off('setCommittees');
+                socket.off('setMotions');
+                socket.off('failedRegister');
+            }
+        };
+    }, [socket]);
 
     return <Outlet />;
 };

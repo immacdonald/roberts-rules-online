@@ -19,11 +19,12 @@ export class User {
     public displayname: string;
     public readonly email: string;
     public creationDate: number;
+    // @ts-expect-error not set in constructor
     public socket: Socket;
 
     private readonly password: string;
 
-    constructor(id, username, email, password, displayname, creationDate) {
+    constructor(id: any, username: any, email: any, password: any, displayname: any, creationDate: any) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -46,7 +47,7 @@ export class User {
                 await sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [this.id, this.id], async (err, res) => {
                     if (!err) {
                         //const data = JSON.parse(JSON.stringify(res));
-                        const data: CommitteeData[] = res.map((row) => ({
+                        const data: CommitteeData[] = res.map((row: any) => ({
                             ...row,
                             members: JSON.parse(row.members)
                         }));

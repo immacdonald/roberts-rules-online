@@ -18,7 +18,7 @@ sql.ready(async function () {
 
     // Example Committees setup
     const committees = await sql.query('SELECT * FROM committees');
-    committees.forEach((committee) => {
+    committees.forEach((committee: Committee) => {
         Committees.instance.committees.push(new Committee(committee.id, committee.name, committee.owner, committee.members));
     });
 
