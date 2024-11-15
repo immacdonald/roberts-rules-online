@@ -10,7 +10,7 @@ import { setCommitteeMotions, setCommittees } from '../features/committeesSlice'
 import store from '../features/store';
 import { selectUser, setUser } from '../features/userSlice';
 import { disconnectSocket, initializeSocket, socket } from '../socket';
-import { Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
+import { Registration, ActiveMotions, PastMotions, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome, MotionVote } from '../views';
 
 const RoutedApp: FC = () => {
     const dispatch = useDispatch();
@@ -137,8 +137,8 @@ const router = createBrowserRouter([
                         element: <PastMotions />
                     },
                     {
-                        path: 'motion',
-                        element: <Motion />
+                        path: 'motion-vote',
+                        element: <MotionVote />
                     },
                     {
                         path: 'users',

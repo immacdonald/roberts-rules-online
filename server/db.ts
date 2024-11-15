@@ -1,5 +1,6 @@
 import { createPool, Pool } from 'mysql';
 import { wrap } from 'node-mysql-wrapper';
+import 'dotenv/config';
 
 export class Database {
     private static instance: Database;
@@ -11,11 +12,11 @@ export class Database {
         console.log('New MySQL database instance created');
 
         const pool = createPool({
-            host: '147.135.31.128',
-            user: 'CSCI432FinalProject',
-            password: 'FBEe8rDd8HCQ0bls',
-            database: 'csci432project',
-            port: 3306
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: parseInt(process.env.DB_PORT)
         });
 
         pool.on('error', function (err) {
