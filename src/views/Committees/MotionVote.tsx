@@ -1,5 +1,4 @@
 import {FC, useState} from 'react';
-import {Page} from '../../components';
 import styles from './Motion.module.scss';
 
 interface MiniMotionReply {
@@ -9,7 +8,7 @@ interface MiniMotionReply {
     depth: number;
 }
 
-const Motion: FC = () => {
+const MotionVote: FC = () => {
     const username = 'Username';
     const date = new Date().toLocaleDateString();
     const [replies, setReplies] = useState<MiniMotionReply[]>([]);
@@ -20,7 +19,10 @@ const Motion: FC = () => {
     };
 
     const addReplyMain = (backgroundClass: string) => {
-        setRepliesMain([...repliesMain, {id: repliesMain.length, backgroundClass, depth: 0}]);
+        setRepliesMain([...repliesMain, {
+            id: repliesMain.length, backgroundClass, depth: 0,
+            parentId: 0
+        }]);
     };
 
     return (
@@ -108,4 +110,4 @@ const Motion: FC = () => {
     );
 };
 
-export {Motion};
+export {MotionVote};

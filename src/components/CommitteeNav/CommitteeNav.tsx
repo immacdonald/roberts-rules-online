@@ -28,7 +28,7 @@ const CommitteeNav: FC = () => {
                 <Link to={`/committees/${currentCommittee!.id}/past-motions`} data-button-type={activeLink('/past-motions')}>
                     Past Motions
                 </Link>
-                <Link to="/committees/motion" data-button-type="secondary">
+                <Link to={`/committees/${currentCommittee!.id}/motion-vote`} data-button-type={activeLink(`secondary`)}>
                     Motion Vote
                 </Link>
                 <Link to={`/committees/${currentCommittee!.id}/users`} data-button-type={activeLink('/users')}>
