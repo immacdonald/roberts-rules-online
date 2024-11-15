@@ -3,7 +3,6 @@ import express, { Express } from 'express';
 import { Server } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import ViteExpress from 'vite-express';
-import { Users as UsersClass } from './server/controllers/users';
 import { createDatabase } from './server/createDBTables';
 import { apiRoutes, setupSocketHandlers } from './server/routes';
 
@@ -12,13 +11,13 @@ const app: Express = express();
 app.use(express.json());
 
 // Initialize database
-createDatabase();
+const database = await createDatabase();
 
 // Middleware to block any requests made before the database is connected
 app.use((_, res, next) => {
-    if (!UsersClass.initialized) {
+    if (!database.initialized) {
         setTimeout(() => {
-            if (UsersClass.initialized) {
+            if (!database.initialized) {
                 next();
             } else {
                 console.log('Rejecting request due to database disconnect');

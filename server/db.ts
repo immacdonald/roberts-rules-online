@@ -3,6 +3,7 @@ import { wrap } from 'node-mysql-wrapper';
 
 export class Database {
     private static instance: Database;
+    public initialized: boolean = false;
     public pool: Pool;
     public db: any;
 
@@ -32,6 +33,7 @@ export class Database {
     }
 
     public ready(callback: () => void): void {
+        this.initialized = true;
         this.pool.getConnection((_, connection) => {
             this.db = wrap(connection);
             this.db.ready(callback);

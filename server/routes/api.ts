@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { Users as UsersClass } from '../controllers/users';
 import { UserWithToken } from '../../types';
+import { Users as UsersClass } from '../controllers/users';
 
 const router = Router();
 
@@ -67,4 +67,4 @@ router.post('signup', async (req, res) => {
     }
 });
 
-export {router as apiRoutes};
+export { router as apiRoutes };

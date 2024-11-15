@@ -7,19 +7,13 @@ import { User } from '../interfaces/user';
 
 const saltRounds = 10; // Typically a value between 10 and 12
 const sql = Database.getInstance();
-let dbReady = false;
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
-
-sql.ready(async function () {
-    dbReady = true;
-    Users.initialized = dbReady;
-});
 
 async function createUser(username: string, email: string, password: string, displayname: string): Promise<[boolean, string]> {
     return new Promise((resolve, reject) => {
         if (!displayname) displayname = username;
-        if (!dbReady) return reject(false);
+        if (!sql.initialized) return reject(false);
         bcrypt.genSalt(saltRounds, (err, salt) => {
             if (err) {
                 // Handle error
@@ -103,7 +97,6 @@ async function createUser(username: string, email: string, password: string, dis
 
 export class Users {
     public static instance: Users = new Users();
-    public static initialized: boolean = dbReady;
     private users: User[];
     private constructor() {
         this.users = [];
@@ -151,14 +144,10 @@ export class Users {
         }
     }
 
-    dbReady(callback: any): void {
-        sql.ready(callback);
-    }
-
     // Get Names are to query the database for the user
     getUserFromEmail(email: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            if (!Users.initialized) {
+            if (!sql.initialized) {
                 return reject(false);
             }
             if (!email) {
@@ -183,7 +172,7 @@ export class Users {
     }
     getUserById(id: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            if (!Users.initialized) {
+            if (!sql.initialized) {
                 return reject(false);
             }
 

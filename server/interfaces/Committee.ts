@@ -1,4 +1,5 @@
 import { CommitteeMember } from '../../types';
+import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
 import { Users as UsersClass } from '../controllers/users';
 import { Motion } from './motion';
@@ -21,46 +22,34 @@ export class Committee {
         this.id = id;
         this.name = name;
         this.owner = owner;
-        this.members = typeof members == 'string' ? JSON.parse(members) as CommitteeMember[] : members;
+        this.members = typeof members == 'string' ? (JSON.parse(members) as CommitteeMember[]) : members;
         this.MotionsClass = new Motions(id);
     }
 
+    public sendToMember = (event: string, data: any, id: string): void => {
+        const socket = getUserConnection(id);
+
+        if (socket) {
+            socket.emit(event, data);
+        }
+    };
+
     public sendToAllMembers(event: string, data: any): void {
         for (const member of this.members) {
-            const user = Users.findUserById(member.id);
-            /*if (user) {
-                if (user.socket) {
-                    user.socket.emit(event, data);
-                } else {
-                    console.log(`Cannot send to ${user.displayname} because socket is undefined`);
-                }
-            }*/
+            this.sendToMember(event, data, member.id);
         }
     }
 
-    public sendToAllMembersExcept(event: string, data: any, userId: string): void {
-        for (const member in this.members) {
-            if (member !== userId) {
-                const user = Users.findUserById(member);
-                /*if (user) {
-                    if (user.socket) {
-                        user.socket.emit(event, data);
-                    } else {
-                        console.log(`Cannot send to ${user.displayname} because socket is undefined`);
-                    }
-                }*/
+    public sendToAllMembersExcept(event: string, data: any, excludeId: string): void {
+        for (const member of this.members) {
+            if (member.id != excludeId) {
+                this.sendToMember(event, data, member.id);
             }
         }
     }
 
-    public getMotions(updateClients: boolean): Promise<Motion[]> {
+    public getMotions(): Promise<Motion[]> {
         const motions = this.MotionsClass.getMotions();
-        console.log(motions);
-        if (updateClients) {
-            motions.then((data: Motion[]) => {
-                this.sendToAllMembers('setMotions', data);
-            });
-        }
         return motions;
     }
 

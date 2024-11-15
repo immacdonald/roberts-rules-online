@@ -5,11 +5,9 @@ import { Committee } from '../interfaces/Committee';
 import { User } from '../interfaces/user';
 import { Users as UsersClass } from './users';
 
-//const saltRounds = 10; // Typically a value between 10 and 12
-
 const sql = Database.getInstance();
 
-let Users: UsersClass = UsersClass.instance;
+const Users: UsersClass = UsersClass.instance;
 
 sql.ready(async function () {
     // Example Committees setup
@@ -28,8 +26,8 @@ export class Committees {
         this.committees = [];
     }
 
-    public getCommitteeById(id: string): Committee | undefined {
-        return this.committees.find((committee) => committee.id === id);
+    public getCommitteeById(id: string): Committee | null {
+        return this.committees.find((committee) => committee.id === id) ?? null;
     }
 
     public createCommittee(name: string, description: string, owner: string, members: { id: string; role: string }[]): void {
@@ -69,9 +67,5 @@ export class Committees {
         }
 
         return committees;
-    }
-
-    public static setUsersClass(): void {
-        Users = UsersClass.instance;
     }
 }
