@@ -1,6 +1,6 @@
-import { MySQL } from './db';
+import { Database } from './db';
 
-const db = MySQL.getInstance();
+const db = Database.getInstance();
 
 async function createUsersTable(): Promise<void> {
     const exits = await db.query(`SHOW TABLES LIKE 'users'`);

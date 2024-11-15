@@ -1,8 +1,7 @@
-import { MySQL } from '../db';
-import { Motion } from './motion';
+import { Database } from '../db';
+import { Motion } from '../interfaces/motion';
 
-const sql = MySQL.getInstance();
-let dbReady = false;
+const sql = Database.getInstance();
 
 type MotionData = {
     id: string;
@@ -19,19 +18,11 @@ type MotionData = {
     creationDate: number;
 };
 
-sql.ready(async function () {
-    dbReady = true;
-    // createMotion('1', '1', 'Test Motion 1');
-});
-
 export class Motions {
-    public static dbReady = dbReady;
     public motions: Motion[] = [];
     public committeeId: string;
-    private dbready: boolean = false;
     constructor(committeeId: string) {
         this.committeeId = committeeId;
-        this.dbready = dbReady;
     }
 
     public async getMotions(): Promise<Motion[]> {

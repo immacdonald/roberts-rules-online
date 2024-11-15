@@ -1,13 +1,13 @@
 import { createPool, Pool } from 'mysql';
 import { wrap } from 'node-mysql-wrapper';
 
-export class MySQL {
-    private static instance: MySQL;
+export class Database {
+    private static instance: Database;
     public pool: Pool;
     public db: any;
 
     constructor() {
-        console.log('New MySQL instance created');
+        console.log('New MySQL database instance created');
 
         const pool = createPool({
             host: '147.135.31.128',
@@ -24,11 +24,11 @@ export class MySQL {
         console.log('Database is connecting');
         this.pool = pool;
     }
-    public static getInstance(): MySQL {
-        if (!MySQL.instance) {
-            MySQL.instance = new MySQL();
+    public static getInstance(): Database {
+        if (!Database.instance) {
+            Database.instance = new Database();
         }
-        return MySQL.instance;
+        return Database.instance;
     }
 
     public ready(callback: () => void): void {

@@ -1,13 +1,13 @@
 import { nanoid } from 'nanoid';
 import { CommitteeData } from '../../types';
-import { MySQL } from '../db';
-import { Committee } from './Committee';
-import { User } from './user';
+import { Database } from '../db';
+import { Committee } from '../interfaces/Committee';
+import { User } from '../interfaces/user';
 import { Users as UsersClass } from './users';
 
 //const saltRounds = 10; // Typically a value between 10 and 12
 
-const sql = MySQL.getInstance();
+const sql = Database.getInstance();
 
 let Users: UsersClass;
 

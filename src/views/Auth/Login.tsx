@@ -11,8 +11,8 @@ const Login: FC = () => {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector(selectUser);
 
-    const [email, setEmail] = useState('PeterGreek1@gmail.com');
-    const [password, setPassword] = useState('thisisapassword');
+    const [email, setEmail] = useState('test@example.com');
+    const [password, setPassword] = useState('password');
 
     if (isLoggedIn) {
         return <Navigate to="/" />;
@@ -42,7 +42,7 @@ const Login: FC = () => {
                             <input type="password" id="password" required={true} onChange={(ev) => setPassword(ev.target.value)} value={password} />
                         </fieldset>
                         <button type="submit" id="login-button" className={style.loginButton} data-button-type="primary">
-                            Sign In
+                            Log In
                         </button>
                     </form>
                     <Link to="/forgot-password">Forgot Password?</Link>

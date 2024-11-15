@@ -1,12 +1,12 @@
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
-import { UserWithToken } from 'types';
-import { MySQL } from '../db';
-import { User } from './user';
+import { UserWithToken } from '../../types';
+import { Database } from '../db';
+import { User } from '../interfaces/user';
 
 const saltRounds = 10; // Typically a value between 10 and 12
-const sql = MySQL.getInstance();
+const sql = Database.getInstance();
 let dbReady = false;
 
 const SECRET_KEY = 'DEV_SECRET_KEY';

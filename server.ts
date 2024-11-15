@@ -4,11 +4,11 @@ import jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import ViteExpress from 'vite-express';
+import { Committees as CommitteesClass } from './server/controllers/Committees';
+import { Motions } from './server/controllers/motions';
+import { Users as UsersClass } from './server/controllers/users';
 import { createDatabase } from './server/createDBTables';
-import { MySQL } from './server/db';
-import { Committees as CommitteesClass } from './server/interfaces/Committees';
-import { Motions } from './server/interfaces/motions';
-import { Users as UsersClass } from './server/interfaces/users';
+import { Database } from './server/db';
 import { CommitteeData, UserWithToken } from './types';
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
@@ -165,26 +165,19 @@ io.on('connection', (socket: Socket) => {
         console.log('message: ' + msg);
     });
 
-    const sql = MySQL.getInstance();
+    const sql = Database.getInstance();
 
     socket.on('getCommittees', async () => {
         const id = socket.data.id;
         await sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [id, id], async (err, res) => {
             if (!err) {
-                //const data = JSON.parse(JSON.stringify(res));
                 const data: CommitteeData[] = res.map((row: any) => ({
                     ...row,
                     members: JSON.parse(row.members)
                 }));
 
-                console.log('Committees');
-                console.log(data);
-
                 const clientTable = await CommitteesClass.instance.populateCommitteeMembers(data);
-                console.log('Client table');
-                console.log(clientTable);
                 socket.emit('setCommittees', clientTable);
-                //this.socket.emit('setCommittees', data);
             } else {
                 console.log(err);
             }

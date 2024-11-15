@@ -1,13 +1,12 @@
+import { Motions } from '../controllers/motions';
+import { Users as UsersClass } from '../controllers/users';
 import { Motion } from './motion';
-import { Motions } from './motions';
-import { Users as UsersClass } from './users';
 
 let Users: UsersClass;
 
 export class Committee {
     public readonly id: string;
     public name: string;
-    // @ts-expect-error description not set in constructor
     public description: string;
     public owner: string;
     public members: { id: string; role: string }[];
@@ -28,13 +27,13 @@ export class Committee {
     public sendToAllMembers(event: string, data: any): void {
         for (const member of this.members) {
             const user = Users.findUserById(member.id);
-            if (user) {
+            /*if (user) {
                 if (user.socket) {
                     user.socket.emit(event, data);
                 } else {
                     console.log(`Cannot send to ${user.displayname} because socket is undefined`);
                 }
-            }
+            }*/
         }
     }
 
@@ -42,13 +41,13 @@ export class Committee {
         for (const member in this.members) {
             if (member !== userId) {
                 const user = Users.findUserById(member);
-                if (user) {
+                /*if (user) {
                     if (user.socket) {
                         user.socket.emit(event, data);
                     } else {
                         console.log(`Cannot send to ${user.displayname} because socket is undefined`);
                     }
-                }
+                }*/
             }
         }
     }
