@@ -14,27 +14,26 @@ const setupSocketHandlers = (io: Server) => {
 
         // Proceed normally if no token is provided
         if (!token) {
-            console.log('No token provided, allowing anonymous connection');
-            return next();
+            console.log('No token provided, disallowing anonymous connection');
+            return next(new Error('Authentication error'));
         }
 
         // Verify the token if it is present
         jwt.verify(token as string, SECRET_KEY, (err, decoded) => {
             if (err) {
                 console.log('Failed to authenticate token:', err.message);
-                return next();
+                return next(new Error('Authentication error'));
             } else if (!decoded) {
                 console.log('Failed to decode token');
-                return next();
+                return next(new Error('Authentication error'));
             } else {
                 const user = decoded as { username: string; id: string };
                 socket.data.username = user.username;
                 socket.data.id = user.id;
                 console.log(`Successfully authenticated user ${user.username} from JWT`);
+                return next();
             }
         });
-
-        return next();
     });
 
     io.on('connection', (socket: Socket) => {

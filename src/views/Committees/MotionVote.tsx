@@ -102,4 +102,4 @@ const MotionVote: FC = () => {
     );
 };
 
-export {MotionVote};
+export { MotionVote };

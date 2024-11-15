@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { MotionData } from 'types';
 import { selectCurrentCommittee } from '../../features/committeesSlice';
 import styles from './Motions.module.scss';
+import { Loading } from '../../components';
 
 const PastMotions: FC = () => {
     const currentCommittee = useSelector(selectCurrentCommittee);
@@ -15,7 +16,7 @@ const PastMotions: FC = () => {
         } else dateString = date;
 
         return (
-            <tr className={styles.pastMotion}>
+            <tr className={styles.pastMotion} key={title}>
                 <th>
                     <div className={styles.buttonContainer}>
                         <button>↩️</button>
@@ -32,19 +33,9 @@ const PastMotions: FC = () => {
     };
 
     const displayMotions = useMemo(() => {
-        if (currentCommittee!.motions.length > 0) {
-            return currentCommittee!.motions.map((motion: MotionData) => {
-                return getMotion(motion.title, motion.authorId, '2024/11/14');
-            });
-        } else {
-            return (
-                <>
-                    {getMotion('Motion to do something', 'Alice', '2015/03/12')}
-                    {getMotion('Motion to do something else', 'Bob', '2023/02/10')}
-                    {getMotion('Motion to get an A in this class', 'Alex', '2024/10/24')}
-                </>
-            );
-        }
+        return currentCommittee!.motions!.map((motion: MotionData) => {
+            return getMotion(motion.title, motion.authorId, '2024/11/14');
+        });
     }, [currentCommittee!.motions]);
 
     return (
@@ -58,17 +49,21 @@ const PastMotions: FC = () => {
                     <button className={styles.selected}>Passed</button>
                     <button className={styles.notSelected}>Failed</button>
                 </div>
-                <table id="pastMotionsTable" className={styles.motionTable}>
-                    <thead>
-                        <tr className={styles.pastMotionTableHeader}>
-                            <td></td>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>{displayMotions}</tbody>
-                </table>
+                {currentCommittee?.motions ? (
+                    <table id="pastMotionsTable" className={styles.motionTable}>
+                        <thead>
+                            <tr className={styles.pastMotionTableHeader}>
+                                <th/>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>{displayMotions}</tbody>
+                    </table>
+                ) : (
+                    <Loading />
+                )}
             </section>
         </>
     );

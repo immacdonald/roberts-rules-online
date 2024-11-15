@@ -5,6 +5,7 @@ import { Modal } from '../../components/Modal';
 import { selectCurrentCommittee } from '../../features/committeesSlice';
 import { socket } from '../../socket';
 import styles from './Motions.module.scss';
+import { Loading } from '../../components';
 
 const ActiveMotions: FC = () => {
     const currentCommittee = useSelector(selectCurrentCommittee);
@@ -25,11 +26,10 @@ const ActiveMotions: FC = () => {
         } else dateString = date;
 
         return (
-            <tr className={styles.motion}>
+            <tr className={styles.motion} key={title}>
                 <th className={styles.motionTitle}>
                     <h3>{title}</h3>
                 </th>
-                {/*  TODO: Fill with account's name */}
                 <th className={styles.motionAuthor}>{name}</th>
                 <th className={styles.motionDate}>{dateString}</th>
             </tr>
@@ -37,19 +37,9 @@ const ActiveMotions: FC = () => {
     };
 
     const displayMotions = useMemo(() => {
-        if (currentCommittee!.motions.length > 0) {
-            return currentCommittee!.motions.map((motion: MotionData) => {
-                return getMotion(motion.title, motion.authorId, '2024/11/14');
-            });
-        } else {
-            return (
-                <>
-                    {getMotion('Motion to do something', 'Alice', '2015/03/12')}
-                    {getMotion('Motion to do something else', 'Bob', '2023/02/10')}
-                    {getMotion('Motion to get an A in this class', 'Alex', '2024/10/24')}
-                </>
-            );
-        }
+        return currentCommittee!.motions!.map((motion: MotionData) => {
+            return getMotion(motion.title, motion.authorId, '2024/11/14');
+        });
     }, [currentCommittee!.motions]);
 
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
@@ -71,16 +61,20 @@ const ActiveMotions: FC = () => {
                         Create New Motion +
                     </button>
                 </div>
-                <table id="activeMotionsTable" className={styles.motionTable}>
-                    <thead>
-                        <tr className={styles.motionTableHeader}>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>{displayMotions}</tbody>
-                </table>
+                {currentCommittee?.motions ? (
+                    <table id="activeMotionsTable" className={styles.motionTable}>
+                        <thead>
+                            <tr className={styles.motionTableHeader}>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>{displayMotions}</tbody>
+                    </table>
+                ) : (
+                    <Loading />
+                )}
             </section>
             {createModal && (
                 <Modal>

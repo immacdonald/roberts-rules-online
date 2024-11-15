@@ -13,7 +13,7 @@ interface CommitteeData {
     description: string;
     owner: string;
     members: CommitteeMember[];
-    motions: MotionData[];
+    motions: MotionData[] | null;
 }
 
 type MotionData = {

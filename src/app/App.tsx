@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { User } from 'server/interfaces/user';
@@ -6,7 +6,7 @@ import { CommitteeData, MotionData } from 'types';
 import { login } from '../auth';
 import { Loading } from '../components';
 import { ProtectedRoute } from '../components/ProtectedRoute';
-import { setCommitteeMotions, setCommittees } from '../features/committeesSlice';
+import { selectCommittees, setCommitteeMotions, setCommittees } from '../features/committeesSlice';
 import store from '../features/store';
 import { selectUser, setUser } from '../features/userSlice';
 import { disconnectSocket, initializeSocket, socket } from '../socket';
@@ -15,6 +15,8 @@ import { Registration, ActiveMotions, PastMotions, ControlPanel, Home, Login, No
 const RoutedApp: FC = () => {
     const dispatch = useDispatch();
     const user = useSelector(selectUser);
+    const committees = useSelector(selectCommittees);
+    const committeesRef = useRef<CommitteeData[] | null>(committees);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -25,10 +27,24 @@ const RoutedApp: FC = () => {
             login(undefined, undefined, token).then((user: User | null) => {
                 if (user) {
                     dispatch(setUser(user));
+
+                    const maxCommitteeWaitTime = 5000;
+                    const committeeRetryDelay = 100;
+
+                    const startTime = Date.now();
+
+                    const interval = setInterval(() => {
+                        if (committeesRef.current || Date.now() - startTime >= maxCommitteeWaitTime) {
+                            clearInterval(interval);
+                            setIsLoading(false);
+                        }
+                    }, committeeRetryDelay);
+
+
                 } else {
                     localStorage.removeItem('token');
+                    setIsLoading(false);
                 }
-                setIsLoading(false);
             });
         } else {
             setIsLoading(false);
@@ -42,6 +58,11 @@ const RoutedApp: FC = () => {
             disconnectSocket();
         }
     }, [user]);
+
+    useEffect(() => {
+        // Keep the ref updated with the latest value of committees to avoid stale data
+        committeesRef.current = committees;
+    }, [committees]);
 
     // Update socket listeners each time the socket is opened or closed
     useEffect(() => {
