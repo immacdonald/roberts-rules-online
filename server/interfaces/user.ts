@@ -5,16 +5,15 @@ export class User {
     public displayname: string;
     public readonly email: string;
     public creationDate: number;
-
     private readonly password: string;
 
-    constructor(id: any, username: any, email: any, password: any, displayname: any, creationDate: any) {
+    constructor(id: string, username: string, email: string, password: string, displayname: string, creationDate: number | string) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.displayname = displayname;
-        this.creationDate = creationDate;
+        this.creationDate = typeof creationDate == 'string' ? parseInt(creationDate) : creationDate;
     }
 
     public async isPasswordCorrect(password: string): Promise<boolean> {

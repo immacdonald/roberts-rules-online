@@ -9,7 +9,7 @@ import { Users as UsersClass } from './users';
 
 const sql = Database.getInstance();
 
-let Users: UsersClass;
+let Users: UsersClass = UsersClass.instance;
 
 sql.ready(async function () {
     // Example Committees setup

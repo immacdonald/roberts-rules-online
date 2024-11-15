@@ -1,3 +1,4 @@
+import { CommitteeMember } from '../../types';
 import { Motions } from '../controllers/motions';
 import { Users as UsersClass } from '../controllers/users';
 import { Motion } from './motion';
@@ -9,10 +10,10 @@ export class Committee {
     public name: string;
     public description: string;
     public owner: string;
-    public members: { id: string; role: string }[];
+    public members: CommitteeMember[];
     public MotionsClass: Motions;
 
-    constructor(id: any, name: any, owner: any, members: any) {
+    constructor(id: string, name: string, owner: string, members: string | CommitteeMember[]) {
         if (!Users) {
             Users = UsersClass.instance;
         }
@@ -20,7 +21,7 @@ export class Committee {
         this.id = id;
         this.name = name;
         this.owner = owner;
-        this.members = JSON.parse(members);
+        this.members = typeof members == 'string' ? JSON.parse(members) as CommitteeMember[] : members;
         this.MotionsClass = new Motions(id);
     }
 

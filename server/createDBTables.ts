@@ -54,7 +54,7 @@ async function createMotionsTable(): Promise<void> {
     }
 }
 
-function createDatabase(): void {
+const createDatabase = (): void => {
     db.ready(async function () {
         createUsersTable();
         createMotionsTable();
