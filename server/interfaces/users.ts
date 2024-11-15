@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
+import { UserWithToken } from 'types';
 import { MySQL } from '../db';
 import { User } from './user';
-import jwt from 'jsonwebtoken';
-import { UserWithToken } from 'types';
 
 const saltRounds = 10; // Typically a value between 10 and 12
 const sql = MySQL.getInstance();
@@ -16,7 +16,7 @@ sql.ready(async function () {
     Users.initialized = dbReady;
 });
 
-async function createUser(username: string, email: string, password: string, displayname: string): Promise<[boolean, string | number]> {
+async function createUser(username: string, email: string, password: string, displayname: string): Promise<[boolean, string]> {
     return new Promise((resolve, reject) => {
         if (!displayname) displayname = username;
         if (!dbReady) return reject(false);
@@ -108,7 +108,7 @@ export class Users {
     private constructor() {
         this.users = [];
     }
-    async createUser(username: string, email: string, password: string, displayname: string): Promise<(boolean | string | number | User)[]> {
+    async createUser(username: string, email: string, password: string, displayname: string): Promise<(boolean | string | UserWithToken)[]> {
         const res = await createUser(username, email, password, displayname);
         if (!res || !res[0]) {
             return [false, res[1]];
@@ -116,7 +116,8 @@ export class Users {
         const idAndDate: string = res[1] as string;
         const user = new User(idAndDate.split('+')[0], username, email, password, displayname, idAndDate.split('+')[1]);
         this.users.push(user);
-        return [true, user];
+        const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+        return [true, { user, token }];
     }
     async loginUser(email: string, password: string): Promise<[boolean, string | UserWithToken]> {
         let user: User | undefined | null = this.findUserByEmail(email);
@@ -139,14 +140,13 @@ export class Users {
         try {
             const decoded = await jwt.verify(token, SECRET_KEY);
 
-            const user = await this.getUserById((decoded as { id: string}).id)
+            const user = await this.getUserById((decoded as { id: string }).id);
             if (user) {
                 return { user, token };
             }
 
             return null;
-        } catch (err) {
-            console.log('Failed to authenticate token:', err);
+        } catch {
             return null;
         }
     }
@@ -235,7 +235,7 @@ export class Users {
         if (!username) return [false, 'Username must be at least 3 characters long'];
         if (username.length < 3) return [false, 'Username must be at least 3 characters long'];
         if (username.length > 32) return [false, 'Username must be at most 32 characters long'];
-        if (/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/.test(username) == false) return [false, 'Username must only contain letters, numbers, underscores and periods'];
+        if (/^(?!.*[_]{2})[a-zA-Z0-9_]*[^_]$/.test(username) == false) return [false, 'Username must only contain letters, numbers, underscores and periods'];
         return [true, ''];
     }
     isPasswordValid(password: string): boolean {

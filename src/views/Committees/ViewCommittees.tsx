@@ -1,14 +1,15 @@
-import { FC, FormEvent, useEffect, useState } from 'react';
+import { FC, FormEvent, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { CommitteeData } from 'types';
 import { Page } from '../../components';
 import { Modal } from '../../components/Modal';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { selectCommittees } from '../../features/committeesSlice';
 import { socket } from '../../socket';
 import styles from './Committees.module.scss';
 
 const ViewCommittees: FC = () => {
-    const { committees } = useWebsiteContext();
+    const committees = useSelector(selectCommittees);
 
     const [createModal, setCreateModal] = useState<boolean>(false);
 
@@ -29,12 +30,6 @@ const ViewCommittees: FC = () => {
         socket!.emit('createCommittee', committeeName, committeeDesc);
     };
 
-    const { setCurrentCommittee } = useWebsiteContext();
-
-    useEffect(() => {
-        setCurrentCommittee(null);
-    }, []);
-
     return (
         <>
             <Page>
@@ -46,28 +41,24 @@ const ViewCommittees: FC = () => {
                         </button>
                     </header>
                     <div className={styles.committeeList} id="committeeList">
-                        {committees.length > 0 ? (
-                            committees.map((committee: CommitteeData) => {
-                                return (
-                                    <div className={styles.committee} key={committee.id} onClick={() => navigate(`/committees/${committee.id}/home`)}>
-                                        <div className={styles.committeeHeader}>
-                                            <h3>{committee.name}</h3>
-                                            <span>{committee.id}</span>
-                                        </div>
-                                        <p>{committee.description || 'No description provided for this committee. Please contact the committee chair for more information.'}</p>
-                                        <br />
-                                        <div className={styles.committeeCardFooter}>
-                                            <p>
-                                                <b>Members: </b>
-                                                {committee.members && committee.members.length > 0 ? committee.members.map((member) => member.displayname || member.id).join(', ') : 'No Members'}
-                                            </p>
-                                        </div>
+                        {committees.map((committee: CommitteeData) => {
+                            return (
+                                <div className={styles.committee} key={committee.id} onClick={() => navigate(`/committees/${committee.id}/home`)}>
+                                    <div className={styles.committeeHeader}>
+                                        <h3>{committee.name}</h3>
+                                        <span>{committee.id}</span>
                                     </div>
-                                );
-                            })
-                        ) : (
-                            <p>Loading committees... this process can take up to 30 seconds.</p>
-                        )}
+                                    <p>{committee.description || 'No description provided for this committee. Please contact the committee chair for more information.'}</p>
+                                    <br />
+                                    <div className={styles.committeeCardFooter}>
+                                        <p>
+                                            <b>Members: </b>
+                                            {committee.members && committee.members.length > 0 ? committee.members.map((member) => member.displayname || member.id).join(', ') : 'No Members'}
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </section>
             </Page>

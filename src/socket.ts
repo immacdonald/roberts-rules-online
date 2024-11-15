@@ -18,9 +18,9 @@ export const initializeSocket = (): Socket | null => {
 };
 
 export const disconnectSocket = () => {
-    if(socket) {
+    if (socket) {
         socket = null;
     }
-}
+};
 
-export { socket }
+export { socket };

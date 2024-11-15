@@ -1,16 +1,20 @@
 import { FC, useEffect, useState } from 'react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
-import { ProtectedRoute } from '../components/ProtectedRoute';
-import { useWebsiteContext } from '../contexts/useWebsiteContext';
-import { WebsiteContextProvider } from '../contexts/WebsiteContext';
-import { disconnectSocket, initializeSocket, socket } from '../socket';
-import { Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
+import { User } from 'server/interfaces/user';
 import { CommitteeData, MotionData } from 'types';
 import { login } from '../auth';
-import { User } from 'server/interfaces/user';
+import { Loading } from '../components';
+import { ProtectedRoute } from '../components/ProtectedRoute';
+import { setCommitteeMotions, setCommittees } from '../features/committeesSlice';
+import store from '../features/store';
+import { selectUser, setUser } from '../features/userSlice';
+import { disconnectSocket, initializeSocket, socket } from '../socket';
+import { Registration, ActiveMotions, PastMotions, Motion, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
 
 const RoutedApp: FC = () => {
-    const { user, setUser, setCommittees, setCommitteeMotions } = useWebsiteContext();
+    const dispatch = useDispatch();
+    const user = useSelector(selectUser);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -20,7 +24,7 @@ const RoutedApp: FC = () => {
         if (token) {
             login(undefined, undefined, token).then((user: User | null) => {
                 if (user) {
-                    setUser(user);
+                    dispatch(setUser(user));
                 } else {
                     localStorage.removeItem('token');
                 }
@@ -37,7 +41,7 @@ const RoutedApp: FC = () => {
         } else {
             disconnectSocket();
         }
-    }, [user])
+    }, [user]);
 
     // Update socket listeners each time the socket is opened or closed
     useEffect(() => {
@@ -48,17 +52,13 @@ const RoutedApp: FC = () => {
             });
 
             socket.on('setCommittees', (committees: CommitteeData[]) => {
-                //console.log("Got committees", committees)
-                setCommittees(committees);
+                console.log('Got committees', committees);
+                dispatch(setCommittees(committees));
             });
 
             socket.on('setMotions', (motions: MotionData[]) => {
-                //console.log("Setting motions", motions)
-                setCommitteeMotions(motions);
-            });
-
-            socket.on('failedRegister', (msg: any) => {
-                alert(msg);
+                console.log('Setting motions', motions);
+                dispatch(setCommitteeMotions(motions));
             });
 
             socket!.emit('getCommittees');
@@ -70,13 +70,12 @@ const RoutedApp: FC = () => {
                 socket.off('chatMessage');
                 socket.off('setCommittees');
                 socket.off('setMotions');
-                socket.off('failedRegister');
             }
         };
     }, [socket]);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     return <Outlet />;
@@ -157,9 +156,9 @@ const router = createBrowserRouter([
 
 const App: FC = () => {
     return (
-        <WebsiteContextProvider>
+        <Provider store={store}>
             <RouterProvider router={router} />
-        </WebsiteContextProvider>
+        </Provider>
     );
 };
 

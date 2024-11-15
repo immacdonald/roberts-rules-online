@@ -1,12 +1,13 @@
 import { FC, FormEvent, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { MotionData } from 'types';
 import { Modal } from '../../components/Modal';
+import { selectCurrentCommittee } from '../../features/committeesSlice';
 import { socket } from '../../socket';
 import styles from './Motions.module.scss';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
-import { MotionData } from 'types';
 
 const ActiveMotions: FC = () => {
-    const { currentCommittee } = useWebsiteContext();
+    const currentCommittee = useSelector(selectCurrentCommittee);
     const [createModal, setCreateModal] = useState<boolean>(false);
 
     const [motionTitle, setMotionTitle] = useState<string>('');
@@ -39,7 +40,7 @@ const ActiveMotions: FC = () => {
         if (currentCommittee!.motions.length > 0) {
             return currentCommittee!.motions.map((motion: MotionData) => {
                 return getMotion(motion.title, motion.authorId, '2024/11/14');
-            })
+            });
         } else {
             return (
                 <>
@@ -49,13 +50,13 @@ const ActiveMotions: FC = () => {
                 </>
             );
         }
-    }, [currentCommittee!.motions])
+    }, [currentCommittee!.motions]);
 
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         console.log('Creating new motion:', motionTitle, 'John Doe');
         // Create the committee
-        socket!.emit('createMotion', currentCommittee?.id!, motionTitle);
+        socket!.emit('createMotion', currentCommittee!.id!, motionTitle);
     };
 
     return (

@@ -63,13 +63,13 @@ export class User {
                 if (!committeeId) {
                     return;
                 }
-                let thisCommittee = Committees.getCommitteeById(committeeId);
+                const thisCommittee = Committees.getCommitteeById(committeeId);
                 if (thisCommittee) {
-                    let motions = await thisCommittee.getMotions(true);
+                    const motions = await thisCommittee.getMotions(true);
                     if (motions) {
                         console.log('Motions were sent to all clients');
                     }
-                }else {
+                } else {
                     console.log('Committee not found');
                     return this.socket.emit('setMotions', []);
                 }

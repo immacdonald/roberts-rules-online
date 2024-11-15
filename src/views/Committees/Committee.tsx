@@ -1,8 +1,9 @@
 import { FC, ReactNode, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Page } from '../../components';
+import { Loading, Page } from '../../components';
 import { CommitteeNav } from '../../components/CommitteeNav';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { selectCurrentCommittee, setCurrentCommittee } from '../../features/committeesSlice';
 
 interface CommitteeViewProps {
     children: ReactNode;
@@ -10,27 +11,23 @@ interface CommitteeViewProps {
 
 const CommitteeView: FC<CommitteeViewProps> = ({ children }) => {
     const { id } = useParams();
-
-    const { currentCommittee, setCurrentCommittee } = useWebsiteContext();
+    const dispatch = useDispatch();
+    const currentCommittee = useSelector(selectCurrentCommittee);
 
     useEffect(() => {
         if (id) {
-            setCurrentCommittee(id);
+            dispatch(setCurrentCommittee(id));
         }
     }, [id]);
 
+    if (!currentCommittee) {
+        return <Loading />;
+    }
+
     return (
         <Page>
-            {currentCommittee ? (
-                <>
-                    <CommitteeNav />
-                    {children}
-                </>
-            ) : (
-                <section>
-                    <h1>Loading committee...</h1>
-                </section>
-            )}
+            <CommitteeNav />
+            {children}
         </Page>
     );
 };

@@ -1,10 +1,11 @@
 import { FC } from 'react';
+import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { selectCurrentCommittee } from '../../features/committeesSlice';
 import style from './CommitteeNav.module.scss';
 
 const CommitteeNav: FC = () => {
-    const { currentCommittee } = useWebsiteContext();
+    const currentCommittee = useSelector(selectCurrentCommittee);
 
     const { pathname } = useLocation();
 

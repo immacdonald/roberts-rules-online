@@ -1,5 +1,4 @@
-import {FC, useState} from 'react';
-import {Page} from '../../components';
+import { FC, useState } from 'react';
 import styles from './Motion.module.scss';
 
 interface MiniMotionReply {
@@ -16,11 +15,11 @@ const Motion: FC = () => {
     const [repliesMain, setRepliesMain] = useState<MiniMotionReply[]>([]);
 
     const addReply = (parentId: number, backgroundClass: string, depth: number) => {
-        setReplies([...replies, {id: replies.length, parentId, backgroundClass, depth}]);
+        setReplies([...replies, { id: replies.length, parentId, backgroundClass, depth }]);
     };
 
     const addReplyMain = (backgroundClass: string) => {
-        setRepliesMain([...repliesMain, {id: repliesMain.length, backgroundClass, depth: 0}]);
+        setRepliesMain([...repliesMain, { id: repliesMain.length, backgroundClass, depth: 0 }]);
     };
 
     return (
@@ -63,49 +62,44 @@ const Motion: FC = () => {
                         <p>Mini motion message</p>
                     </section>
                     <div className={styles.buttonContainer}>
-                        <button onClick={() => addReply(reply.id, styles.backgroundGreen, reply.depth + 1)}
-                                className={styles.upvote}>
+                        <button onClick={() => addReply(reply.id, styles.backgroundGreen, reply.depth + 1)} className={styles.upvote}>
                             Reply 👍
                         </button>
-                        <button onClick={() => addReply(reply.id, styles.backgroundRed, reply.depth + 1)}
-                                className={styles.downvote}>
+                        <button onClick={() => addReply(reply.id, styles.backgroundRed, reply.depth + 1)} className={styles.downvote}>
                             Reply 👎
                         </button>
-                        <button onClick={() => addReply(reply.id, styles.background, reply.depth + 1)}
-                                className={styles.noVote}>
+                        <button onClick={() => addReply(reply.id, styles.background, reply.depth + 1)} className={styles.noVote}>
                             Reply 🤷‍♀️
                         </button>
                     </div>
-                    {replies.filter(r => r.parentId === reply.id).map((subReply) => (
-                        <div key={subReply.id} className={styles.miniMotionReply}>
-                            <section className={subReply.backgroundClass}>
-                                <div className={styles.userInfo}>
-                                    <span>{username}</span>
-                                    <span>{date}</span>
+                    {replies
+                        .filter((r) => r.parentId === reply.id)
+                        .map((subReply) => (
+                            <div key={subReply.id} className={styles.miniMotionReply}>
+                                <section className={subReply.backgroundClass}>
+                                    <div className={styles.userInfo}>
+                                        <span>{username}</span>
+                                        <span>{date}</span>
+                                    </div>
+                                    <p>Mini motion message</p>
+                                </section>
+                                <div className={styles.buttonContainer}>
+                                    <button onClick={() => addReply(subReply.id, styles.backgroundGreen, subReply.depth + 1)} className={styles.upvote}>
+                                        Reply 👍
+                                    </button>
+                                    <button onClick={() => addReply(subReply.id, styles.backgroundRed, subReply.depth + 1)} className={styles.downvote}>
+                                        Reply 👎
+                                    </button>
+                                    <button onClick={() => addReply(subReply.id, styles.background, subReply.depth + 1)} className={styles.noVote}>
+                                        Reply 🤷‍♀️
+                                    </button>
                                 </div>
-                                <p>Mini motion message</p>
-                            </section>
-                            <div className={styles.buttonContainer}>
-                                <button
-                                    onClick={() => addReply(subReply.id, styles.backgroundGreen, subReply.depth + 1)}
-                                    className={styles.upvote}>
-                                    Reply 👍
-                                </button>
-                                <button onClick={() => addReply(subReply.id, styles.backgroundRed, subReply.depth + 1)}
-                                        className={styles.downvote}>
-                                    Reply 👎
-                                </button>
-                                <button onClick={() => addReply(subReply.id, styles.background, subReply.depth + 1)}
-                                        className={styles.noVote}>
-                                    Reply 🤷‍♀️
-                                </button>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
             ))}
         </section>
     );
 };
 
-export {Motion};
+export { Motion };

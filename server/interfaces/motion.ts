@@ -3,7 +3,7 @@ import { MotionData } from '../../types';
 export class Motion {
     public readonly id: string;
     public readonly committeeId: string;
-    public readonly authorId
+    public readonly authorId;
     public title: string;
     public flag: string;
     public description: string;

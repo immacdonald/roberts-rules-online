@@ -5,12 +5,11 @@ import { Server, Socket } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
 import ViteExpress from 'vite-express';
 import { createDatabase } from './server/createDBTables';
-import { Committees, Committees as CommitteesClass } from './server/interfaces/Committees';
-import { User } from './server/interfaces/user';
+import { MySQL } from './server/db';
+import { Committees as CommitteesClass } from './server/interfaces/Committees';
+import { Motions } from './server/interfaces/motions';
 import { Users as UsersClass } from './server/interfaces/users';
 import { CommitteeData, UserWithToken } from './types';
-import { MySQL } from './server/db';
-import { Motions, Motions } from './server/interfaces/motions';
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
@@ -30,10 +29,10 @@ app.use((_, res, next) => {
             if (UsersClass.initialized) {
                 next();
             } else {
-                console.log("Rejecting request due to database disconnect")
+                console.log('Rejecting request due to database disconnect');
                 res.sendStatus(503);
             }
-        })
+        }, 5000);
     } else {
         next();
     }
@@ -73,7 +72,6 @@ app.post(`${API}/login`, async (req, res) => {
     //if (!dbReady) return res.status(500).json({ success: false, message: 'Database not ready' });
     if (email && password) {
         try {
-
             const [isLoggedIn, response] = await Users.loginUser(email, password);
             if (isLoggedIn) {
                 const data = response as UserWithToken;
@@ -82,7 +80,7 @@ app.post(`${API}/login`, async (req, res) => {
                 res.status(401).json({ success: false, message: response });
             }
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Server error during login' });
+            res.status(500).json({ success: false, message: error });
         }
     } else {
         try {
@@ -90,11 +88,46 @@ app.post(`${API}/login`, async (req, res) => {
             if (response) {
                 res.status(200).json({ success: true, data: response });
             } else {
-                res.status(401).json({ success: false, message: "Invalid or expired token" });
+                res.status(401).json({ success: false, message: 'Invalid or expired token.' });
             }
         } catch (error) {
-            res.status(401).json({ success: false, message: error });
+            res.status(500).json({ success: false, message: error });
         }
+    }
+});
+
+app.post(`${API}/signup`, async (req, res) => {
+    const { username, email, password, displayname } = req.body;
+    console.log(`Registering ${username} for ${email}`);
+
+    const [validUsername, error] = Users.isUsernameValid(username);
+    if (!validUsername) {
+        res.status(500).json({ success: false, message: error });
+        return false;
+    }
+    if (!Users.isEmailValid(email)) {
+        res.status(400).json({ success: false, message: 'Email is not valid.' });
+        return false;
+    }
+    if (!Users.isPasswordValid(password)) {
+        res.status(400).json({ success: false, message: 'Password is not valid.' });
+        return false;
+    }
+    if (!Users.isDisplayNameValid(displayname)) {
+        res.status(400).json({ success: false, message: 'Display name is not valid.' });
+        return false;
+    }
+
+    try {
+        const [userCreated, response] = await Users.createUser(username, email, password, displayname);
+        if (userCreated) {
+            const data = response as UserWithToken;
+            res.status(200).json({ success: true, data });
+        } else {
+            res.status(401).json({ success: false, message: response });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error });
     }
 });
 
@@ -111,14 +144,12 @@ io.use((socket, next) => {
     jwt.verify(token as string, SECRET_KEY, (err, decoded) => {
         if (err) {
             console.log('Failed to authenticate token:', err.message);
-            //return next(new Error('Authentication error'));
             return next();
-        }
-        else if (!decoded) {
+        } else if (!decoded) {
             console.log('Failed to decode token');
             return next();
         } else {
-            const user = (decoded as {username: string, id: string});
+            const user = decoded as { username: string; id: string };
             socket.data.username = user.username;
             socket.data.id = user.id;
             console.log(`Successfully authenticated user ${user.username} from JWT`);
@@ -147,14 +178,19 @@ io.on('connection', (socket: Socket) => {
                     members: JSON.parse(row.members)
                 }));
 
+                console.log('Committees');
+                console.log(data);
+
                 const clientTable = await CommitteesClass.instance.populateCommitteeMembers(data);
+                console.log('Client table');
+                console.log(clientTable);
                 socket.emit('setCommittees', clientTable);
                 //this.socket.emit('setCommittees', data);
             } else {
                 console.log(err);
             }
         });
-    })
+    });
 
     socket.on('getMotions', async (committeeId) => {
         if (!committeeId) {
@@ -167,13 +203,13 @@ io.on('connection', (socket: Socket) => {
             if (motions) {
                 socket.emit('setMotions', motions);
             }
-        }else {
+        } else {
             console.log('Committee not found');
             return socket.emit('setMotions', []);
         }
     });
 
-    socket.on("createMotion", async (committeeId, title) => {
+    socket.on('createMotion', async (committeeId, title) => {
         if (!committeeId) {
             return;
         }
@@ -182,69 +218,6 @@ io.on('connection', (socket: Socket) => {
         const motion = new Motions(committeeId);
 
         motion.createLightweightMotion(committeeId, id, title);
-    });
-
-    // login
-    socket.on('login', (username, password) => {
-        console.log('Logging in...');
-        console.log(username);
-        console.log(password);
-        Users.loginUser(username, password).then(([success, data]) => {
-            if (success) {
-                const user = data as User;
-                const token = jwt.sign({ id: user.id, username: user.username, displayname: user.displayname, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-                socket.emit('login', user, token);
-                user.setSocket(socket);
-            } else {
-                console.log(`Error logging in: ${data}`);
-            }
-        });
-    });
-
-    socket.on('register', (username, email, password, displayname) => {
-        console.log('Registering...');
-        console.log(username);
-        console.log(email);
-        console.log(password);
-        if (!displayname) {
-            displayname = username;
-        }
-
-        const [validUsername, err_msg_username] = Users.isUsernameValid(username);
-        if (!validUsername) {
-            socket.emit('failedRegister', err_msg_username);
-            return false;
-        }
-        if (!Users.isEmailValid(email)) {
-            socket.emit('failedRegister', 'Email is not valid.');
-            return false;
-        }
-        if (!Users.isPasswordValid(password)) {
-            socket.emit('failedRegister', 'Password is not valid.');
-            return false;
-        }
-        if (!Users.isDisplayNameValid(displayname)) {
-            socket.emit('failedRegister', 'Display name is not valid.');
-            return false;
-        }
-
-        Users.createUser(username, email, password, displayname)
-            .then((res) => {
-                const r = res[0];
-                const val = res[1];
-                if (r) {
-                    if (val instanceof User) {
-                        val.setSocket(socket);
-                        socket.emit('login', val.username, val.email, val.displayname);
-                    }
-                } else {
-                    socket.emit('failedRegister', val);
-                }
-            })
-            .catch((e) => {
-                console.log(e);
-                socket.emit('failedRegister', 'An error occurred while registering.');
-            });
     });
 });
 

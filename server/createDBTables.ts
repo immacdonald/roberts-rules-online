@@ -52,13 +52,12 @@ async function createMotionsTable(): Promise<void> {
             `);
         }
     }
-
 }
 
 function createDatabase(): void {
     db.ready(async function () {
         createUsersTable();
-        createMotionsTable()
+        createMotionsTable();
     });
 }
 

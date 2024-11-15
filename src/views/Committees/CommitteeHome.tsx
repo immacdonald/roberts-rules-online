@@ -1,8 +1,9 @@
 import { FC } from 'react';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { useSelector } from 'react-redux';
+import { selectCurrentCommittee } from '../../features/committeesSlice';
 
 const CommitteeHome: FC = () => {
-    const { currentCommittee } = useWebsiteContext();
+    const currentCommittee = useSelector(selectCurrentCommittee);
 
     return (
         <section>

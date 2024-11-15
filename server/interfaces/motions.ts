@@ -1,11 +1,8 @@
-import { nanoid } from 'nanoid';
 import { MySQL } from '../db';
 import { Motion } from './motion';
-import { Users as UsersClass } from './users';
 
 const sql = MySQL.getInstance();
 let dbReady = false;
-let Users: UsersClass;
 
 type MotionData = {
     id: string;
@@ -20,7 +17,7 @@ type MotionData = {
     status: string;
     decisionTime: number;
     creationDate: number;
-}
+};
 
 sql.ready(async function () {
     dbReady = true;
@@ -60,8 +57,7 @@ export class Motions {
     }
 
     public createLightweightMotion(committeeId: string, authorId: string, title: string) {
-        //const id = Number(nanoid(16));
-        const id = Math.floor(Math.random() * 99999999)
+        const id = Math.floor(Math.random() * 99999999);
         const creationDate = Date.now();
         if (!committeeId || !authorId || !title) return console.log('Missing required fields');
 
@@ -70,14 +66,18 @@ export class Motions {
         sql.query(`
             INSERT INTO motions (id, committeeId, authorId, title, flag, description, vote, summary, relatedId, status, decisionTime, creationDate) VALUES
             (${id}, '${committeeId}', '${authorId}', '${title}', '', '', '', '', '', 'pending', ${creationDate}, ${creationDate})
-        `)
+        `);
     }
 
     public async updateMotion(data: MotionData): Promise<Motion> {
         const motion = new Motion(data);
         // find the motion and remove it then push the new motion version
-        let x = this.motions.findIndex(m => m.id === motion.id);
-        if (x) {this.motions[x] = motion;} else {this.motions.push(motion);}
+        const x = this.motions.findIndex((m) => m.id === motion.id);
+        if (x) {
+            this.motions[x] = motion;
+        } else {
+            this.motions.push(motion);
+        }
         await sql.query(`
             UPDATE motions SET title = '${motion.title}', flag = '${motion.flag}', description = '${motion.description}', vote = '${motion.vote}', summary = '${motion.summary}', relatedId = '${motion.relatedId}', status = '${motion.status}', decisionTime = '${motion.decisionTime}', creationDate = '${motion.creationDate}'
             WHERE id = '${motion.id}' AND committeeId = '${this.committeeId}'
@@ -85,7 +85,7 @@ export class Motions {
         return motion;
     }
     public async deleteMotion(id: string): Promise<void> {
-        this.motions = this.motions.filter(motion => motion.id !== id);
+        this.motions = this.motions.filter((motion) => motion.id !== id);
         await sql.query(`DELETE FROM motions WHERE id = '${id}' AND committeeId = '${this.committeeId}'`);
     }
 }

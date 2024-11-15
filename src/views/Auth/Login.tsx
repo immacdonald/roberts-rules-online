@@ -1,28 +1,29 @@
 import { FC, FormEvent, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
-import { Page } from '../../components';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
-import { socket } from '../../socket';
-import style from './Login.module.scss';
-import { login } from '../../auth';
 import { User } from 'server/interfaces/user';
+import { login } from '../../auth';
+import { Page } from '../../components';
+import { selectUser, setUser } from '../../features/userSlice';
+import style from './Login.module.scss';
 
 const Login: FC = () => {
-    const { isLoggedIn, setUser } = useWebsiteContext();
+    const dispatch = useDispatch();
+    const isLoggedIn = useSelector(selectUser);
+
+    const [email, setEmail] = useState('PeterGreek1@gmail.com');
+    const [password, setPassword] = useState('thisisapassword');
 
     if (isLoggedIn) {
         return <Navigate to="/" />;
     }
 
-    const [email, setEmail] = useState('PeterGreek1@gmail.com');
-    const [password, setPassword] = useState('thisisapassword');
-
     const handleLogIn = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         login(email, password).then((user: User | null) => {
-            if(user) {
-                setUser(user);
-            }    
+            if (user) {
+                dispatch(setUser(user));
+            }
         });
     };
 

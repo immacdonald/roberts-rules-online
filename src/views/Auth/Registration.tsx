@@ -1,21 +1,24 @@
 import { FC, FormEvent, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
+import { User } from '../../../server/interfaces/user';
+import { signup } from '../../auth';
 import { Page } from '../../components';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
-import { socket } from '../../socket';
+import { selectIsLoggedIn, setUser } from '../../features/userSlice';
 import style from './Login.module.scss';
 
 const Registration: FC = () => {
-    const { isLoggedIn } = useWebsiteContext();
+    const dispatch = useDispatch();
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
 
     if (isLoggedIn) {
         return <Navigate to="/" />;
     }
-
-    const [email, setEmail] = useState('PeterGreek@gmail.com');
-    const [password, setPassword] = useState('thisisapassword');
-    const [confirmPassword, setConfirmPassword] = useState('thisisapassword');
-    const [username, setUsername] = useState('Peter Greek');
 
     const handleRegister = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
@@ -24,10 +27,11 @@ const Registration: FC = () => {
             return;
         }
 
-        // Get the values from the form
-        console.log('Registering...', username, email, password);
-
-        socket.emit('register', username, email, password);
+        signup(username, email, password, username).then((user: User | null) => {
+            if (user) {
+                dispatch(setUser(user));
+            }
+        });
     };
 
     return (

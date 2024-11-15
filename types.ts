@@ -13,7 +13,7 @@ interface CommitteeData {
     description: string;
     owner: string;
     members: CommitteeMember[];
-    motions: MotionData[]
+    motions: MotionData[];
 }
 
 type MotionData = {
@@ -29,7 +29,7 @@ type MotionData = {
     status: string;
     decisionTime: number;
     creationDate: number;
-}
+};
 
 interface UserWithToken {
     user: User;

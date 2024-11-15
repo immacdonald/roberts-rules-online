@@ -1,10 +1,11 @@
-import React, { FC, ReactNode, useEffect, useMemo } from 'react';
-import styles from './Motions.module.scss';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { FC, ReactNode, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { MotionData } from 'types';
+import { selectCurrentCommittee } from '../../features/committeesSlice';
+import styles from './Motions.module.scss';
 
 const PastMotions: FC = () => {
-    const { currentCommittee } = useWebsiteContext();
+    const currentCommittee = useSelector(selectCurrentCommittee);
 
     const getMotion = (title: string, name: string, date?: string): ReactNode => {
         let dateString;
@@ -34,7 +35,7 @@ const PastMotions: FC = () => {
         if (currentCommittee!.motions.length > 0) {
             return currentCommittee!.motions.map((motion: MotionData) => {
                 return getMotion(motion.title, motion.authorId, '2024/11/14');
-            })
+            });
         } else {
             return (
                 <>
@@ -44,7 +45,7 @@ const PastMotions: FC = () => {
                 </>
             );
         }
-    }, [currentCommittee!.motions])
+    }, [currentCommittee!.motions]);
 
     return (
         <>
@@ -54,12 +55,8 @@ const PastMotions: FC = () => {
                 </header>
                 <div className=""></div>
                 <div className={styles.buttonContainer}>
-                    <button className={styles.selected}>
-                        Passed
-                    </button>
-                    <button className={styles.notSelected}>
-                        Failed
-                    </button>
+                    <button className={styles.selected}>Passed</button>
+                    <button className={styles.notSelected}>Failed</button>
                 </div>
                 <table id="pastMotionsTable" className={styles.motionTable}>
                     <thead>

@@ -1,16 +1,18 @@
 import { FC } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
-import style from './Header.module.scss';
 import { RobertRulesOnlineIcon } from '../../assets/icons';
+import { logout, selectIsLoggedIn } from '../../features/userSlice';
+import style from './Header.module.scss';
 
 const Header: FC = () => {
-    const { isLoggedIn, logout } = useWebsiteContext();
+    const dispatch = useDispatch();
+    const isLoggedIn = useSelector(selectIsLoggedIn);
 
     return (
         <header className={style.header}>
-            <Link to='/' className={style.logo}>
-                <RobertRulesOnlineIcon/>
+            <Link to="/" className={style.logo}>
+                <RobertRulesOnlineIcon />
                 <span>
                     <b>Robert's Rules Online</b>
                 </span>
@@ -24,7 +26,7 @@ const Header: FC = () => {
                         <Link to="/committees" data-button-type="ghost">
                             Committees
                         </Link>
-                        <button onClick={() => logout()} data-button-type="primary">
+                        <button onClick={() => dispatch(logout())} data-button-type="primary">
                             Logout
                         </button>
                         <Link to="/profile" className={style.profile} />
@@ -35,7 +37,7 @@ const Header: FC = () => {
                             Login
                         </Link>
                         <Link to="/register" data-button-type="primary">
-                            Register
+                            Sign Up
                         </Link>
                     </>
                 )}

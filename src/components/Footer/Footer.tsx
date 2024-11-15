@@ -15,7 +15,7 @@ const Footer: FC = () => {
                     <Link to="/">Home</Link>
                     <Link to="/committees">Committees</Link>
                     <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
+                    <Link to="/register">Sign Up</Link>
                 </div>
                 <div>
                     <span>Legal</span>

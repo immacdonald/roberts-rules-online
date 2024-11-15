@@ -1,10 +1,12 @@
 import { FC } from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { Page } from '../../components';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
+import { selectIsLoggedIn, selectUser } from '../../features/userSlice';
 
 const Profile: FC = () => {
-    const { user, isLoggedIn } = useWebsiteContext();
+    const user = useSelector(selectUser);
+    const isLoggedIn = useSelector(selectIsLoggedIn);
 
     if (!isLoggedIn) {
         return <Navigate to="/" />;

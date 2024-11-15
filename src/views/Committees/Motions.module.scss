@@ -4,17 +4,22 @@
     width: 100%;
 }
 
-.motionTableHeader, .pastMotionTableHeader, .motion, .pastMotion {
+.motionTableHeader,
+.pastMotionTableHeader,
+.motion,
+.pastMotion {
     display: grid;
     gap: var(--space);
     text-align: left;
 }
 
-.motionTableHeader, .motion {
+.motionTableHeader,
+.motion {
     grid-template-columns: 2fr 1fr 1fr;
 }
 
-.pastMotionTableHeader, .pastMotion {
+.pastMotionTableHeader,
+.pastMotion {
     grid-template-columns: 0.2fr 2fr 1fr 1fr;
 }
 
@@ -26,7 +31,8 @@
     width: 90%;
 }
 
-.motionAuthor, .motionDate {
+.motionAuthor,
+.motionDate {
     padding-top: var(--space);
     font-weight: bold;
 }

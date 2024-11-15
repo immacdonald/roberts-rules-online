@@ -10,7 +10,7 @@ export class Committee {
     // @ts-expect-error description not set in constructor
     public description: string;
     public owner: string;
-    public members: { id: string, role: string}[];
+    public members: { id: string; role: string }[];
     public MotionsClass: Motions;
 
     constructor(id: any, name: any, owner: any, members: any) {
@@ -27,12 +27,12 @@ export class Committee {
 
     public sendToAllMembers(event: string, data: any): void {
         for (const member of this.members) {
-            let user = Users.findUserById(member.id)
+            const user = Users.findUserById(member.id);
             if (user) {
-                if(user.socket) {
+                if (user.socket) {
                     user.socket.emit(event, data);
                 } else {
-                    console.log(`Cannot send to ${user.displayname} because socket is undefined`)
+                    console.log(`Cannot send to ${user.displayname} because socket is undefined`);
                 }
             }
         }
@@ -41,12 +41,12 @@ export class Committee {
     public sendToAllMembersExcept(event: string, data: any, userId: string): void {
         for (const member in this.members) {
             if (member !== userId) {
-                let user = Users.findUserById(member)
+                const user = Users.findUserById(member);
                 if (user) {
-                    if(user.socket) {
+                    if (user.socket) {
                         user.socket.emit(event, data);
                     } else {
-                        console.log(`Cannot send to ${user.displayname} because socket is undefined`)
+                        console.log(`Cannot send to ${user.displayname} because socket is undefined`);
                     }
                 }
             }
@@ -54,8 +54,8 @@ export class Committee {
     }
 
     public getMotions(updateClients: boolean): Promise<Motion[]> {
-        let motions = this.MotionsClass.getMotions();
-        console.log(motions)
+        const motions = this.MotionsClass.getMotions();
+        console.log(motions);
         if (updateClients) {
             motions.then((data: Motion[]) => {
                 this.sendToAllMembers('setMotions', data);
