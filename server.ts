@@ -16,7 +16,6 @@ const SECRET_KEY = 'DEV_SECRET_KEY';
 createDatabase();
 
 const Users: UsersClass = UsersClass.instance;
-//const Committees: CommitteesClass = CommitteesClass.instance;
 CommitteesClass.setUsersClass();
 
 const app: Express = express();
@@ -192,6 +191,10 @@ io.on('connection', (socket: Socket) => {
         });
     });
 
+    socket.on("createCommittee", async (name: string, description: string) => {
+        CommitteesClass.instance.createCommittee(name, description, socket.data.id, [{id: socket.data.id, role: "owner"}]);
+    })
+
     socket.on('getMotions', async (committeeId) => {
         if (!committeeId) {
             return;
@@ -219,11 +222,6 @@ io.on('connection', (socket: Socket) => {
 
         motion.createLightweightMotion(committeeId, id, title);
     });
-});
-
-Users.dbReady(async () => {
-    //console.log('Users Database is ready');
-    //Committees.createCommittee('Test Committee', 'lmao', 'EzdWsg7lDcA6n-AU', [{ id: 'EzdWsg7lDcA6n-AU', role: 'admin' }]);
 });
 
 app.use(vite.middlewares);
