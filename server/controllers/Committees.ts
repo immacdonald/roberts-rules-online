@@ -68,4 +68,12 @@ export class Committees {
 
         return committees;
     }
+
+    public static isUserInCommittee(userId: string, committeeId: string): boolean {
+		const committee = Committees.instance.getCommitteeById(committeeId);
+		if (committee) {
+			return committee.isMember(userId);
+		}
+		return false;
+	}
 }
