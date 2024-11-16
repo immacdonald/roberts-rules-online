@@ -32,7 +32,7 @@ const committeesSlice = createSlice({
         },
         setCommitteeMotions: (state, action: PayloadAction<MotionData[]>) => {
             if (!state.committees) {
-                console.warn("Cannot set committee motions before committees exist");
+                console.warn('Cannot set committee motions before committees exist');
             } else {
                 const currentCommittee = state.committees.find((committee) => committee.id === state.currentCommitteeId);
                 if (currentCommittee) {

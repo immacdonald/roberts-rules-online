@@ -1,9 +1,9 @@
 import { FC, ReactNode, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { MotionData } from 'types';
+import { Loading } from '../../components';
 import { selectCurrentCommittee } from '../../features/committeesSlice';
 import styles from './Motions.module.scss';
-import { Loading } from '../../components';
 
 const PastMotions: FC = () => {
     const currentCommittee = useSelector(selectCurrentCommittee);
@@ -53,7 +53,7 @@ const PastMotions: FC = () => {
                     <table id="pastMotionsTable" className={styles.motionTable}>
                         <thead>
                             <tr className={styles.pastMotionTableHeader}>
-                                <th/>
+                                <th />
                                 <th>Title</th>
                                 <th>Author</th>
                                 <th>Date</th>

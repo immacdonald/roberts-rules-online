@@ -47,7 +47,7 @@ export class Motions {
         return motion;
     }
 
-    public createLightweightMotion(committeeId: string, authorId: string, title: string) {
+    public createLightweightMotion(committeeId: string, authorId: string, title: string): void {
         const id = Math.floor(Math.random() * 99999999);
         const creationDate = Date.now();
         if (!committeeId || !authorId || !title) return console.log('Missing required fields');

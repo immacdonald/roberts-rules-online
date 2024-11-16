@@ -14,11 +14,11 @@ const MotionVote: FC = () => {
     const [replies, setReplies] = useState<MiniMotionReply[]>([]);
     const [repliesMain, setRepliesMain] = useState<MiniMotionReply[]>([]);
 
-    const addReply = (parentId: number, backgroundClass: string, depth: number) => {
+    const addReply = (parentId: number, backgroundClass: string, depth: number): void => {
         setReplies([...replies, { id: replies.length, parentId, backgroundClass, depth }]);
     };
 
-    const addReplyMain = (backgroundClass: string) => {
+    const addReplyMain = (backgroundClass: string): void => {
         setRepliesMain([...repliesMain, { id: repliesMain.length, backgroundClass, depth: 0 }]);
     };
 

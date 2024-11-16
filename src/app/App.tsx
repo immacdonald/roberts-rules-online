@@ -39,8 +39,6 @@ const RoutedApp: FC = () => {
                             setIsLoading(false);
                         }
                     }, committeeRetryDelay);
-
-
                 } else {
                     localStorage.removeItem('token');
                     setIsLoading(false);
@@ -86,7 +84,7 @@ const RoutedApp: FC = () => {
         }
 
         // Cleanup function to remove listeners if socket changes or on component unmount
-        return () => {
+        return (): void => {
             if (socket) {
                 socket.off('chatMessage');
                 socket.off('setCommittees');

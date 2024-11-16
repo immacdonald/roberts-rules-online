@@ -8,7 +8,7 @@ import { Database } from '../db';
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
-const setupSocketHandlers = (io: Server) => {
+const setupSocketHandlers = (io: Server): void => {
     io.use((socket, next) => {
         const token = socket.handshake.query.token;
 

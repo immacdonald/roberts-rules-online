@@ -9,7 +9,7 @@ const CommitteeNav: FC = () => {
 
     const { pathname } = useLocation();
 
-    const activeLink = (link: string) => (pathname.endsWith(link) ? 'primary' : 'secondary');
+    const activeLink = (link: string): string => (pathname.endsWith(link) ? 'primary' : 'secondary');
 
     return (
         <header className={style.header}>

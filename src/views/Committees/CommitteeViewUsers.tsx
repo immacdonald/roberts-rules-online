@@ -1,4 +1,4 @@
-import { FC, useState, FormEvent } from 'react';
+import { FC, useState, FormEvent, ReactElement } from 'react';
 import { CommitteeMember } from 'types';
 import ChairIcon from '../../assets/images/ChairIcon.png';
 import HouseIcon from '../../assets/images/HouseIcon.png';
@@ -40,7 +40,7 @@ const CommitteeViewUsers: FC = () => {
         }
     ]);
 
-    const getRoleBox = (role: string, userId: string) => {
+    const getRoleBox = (role: string, userId: string): ReactElement => {
         if (role === 'Owner') {
             return (
                 <div className={styles.roleBox}>
@@ -62,7 +62,7 @@ const CommitteeViewUsers: FC = () => {
         }
     };
 
-    const promoteUser = (userId: string) => {
+    const promoteUser = (userId: string): void => {
         console.log('Promoting user:', userId);
 
         let chairId: number | undefined;
@@ -89,7 +89,7 @@ const CommitteeViewUsers: FC = () => {
         setUsers(tempUsers);
     };
 
-    const getUser = (name: string, role: string, userId: string) => {
+    const getUser = (name: string, role: string, userId: string): ReactElement => {
         return (
             <div className={styles.userAndRole}>
                 <div className={styles.userBox}>
@@ -100,7 +100,7 @@ const CommitteeViewUsers: FC = () => {
         );
     };
 
-    const getAddUserButton = () => {
+    const getAddUserButton = (): ReactElement => {
         return (
             <div>
                 <button className={styles.addUserButton} onClick={() => addUser()}>

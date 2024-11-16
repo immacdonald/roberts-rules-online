@@ -17,7 +17,7 @@ export const initializeSocket = (): Socket | null => {
     return socket;
 };
 
-export const disconnectSocket = () => {
+export const disconnectSocket = (): void => {
     if (socket) {
         socket = null;
     }

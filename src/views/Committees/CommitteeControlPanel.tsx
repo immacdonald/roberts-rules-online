@@ -6,11 +6,11 @@ const ControlPanel: FC = () => {
     const [specialMotionAllowed, setSpecialMotionAllowed] = useState<boolean>(false);
     const [procedureMotionAllowed, setProcedureMotionAllowed] = useState<boolean>(false);
 
-    const handleSpecialMotionChange = () => {
+    const handleSpecialMotionChange = (): void => {
         setSpecialMotionAllowed(!specialMotionAllowed);
     };
 
-    const handleProcedureMotionChange = () => {
+    const handleProcedureMotionChange = (): void => {
         setProcedureMotionAllowed(!procedureMotionAllowed);
     };
 

@@ -1,11 +1,11 @@
-import { FC, FormEvent, useMemo, useState } from 'react';
+import { FC, FormEvent, ReactElement, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MotionData } from 'types';
+import { Loading } from '../../components';
 import { Modal } from '../../components/Modal';
 import { selectCurrentCommittee } from '../../features/committeesSlice';
 import { socket } from '../../socket';
 import styles from './Motions.module.scss';
-import { Loading } from '../../components';
 
 const ActiveMotions: FC = () => {
     const currentCommittee = useSelector(selectCurrentCommittee);
@@ -13,12 +13,12 @@ const ActiveMotions: FC = () => {
 
     const [motionTitle, setMotionTitle] = useState<string>('');
 
-    const createMotion = () => {
+    const createMotion = (): void => {
         console.log('Create a new motion');
         setCreateModal(true);
     };
 
-    const getMotion = (title: string, name: string, date?: string) => {
+    const getMotion = (title: string, name: string, date?: string): ReactElement => {
         let dateString;
         if (date === undefined) {
             const currentDate = new Date();
