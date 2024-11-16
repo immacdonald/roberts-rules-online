@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import Toggle from 'react-toggle';
-import styles from './Committees.module.scss';
+import styles from './ControlPanel.module.scss';
 
 const ControlPanel: FC = () => {
     const [specialMotionAllowed, setSpecialMotionAllowed] = useState<boolean>(false);

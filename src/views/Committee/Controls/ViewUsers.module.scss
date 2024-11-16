@@ -1,0 +1,43 @@
+.userList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space);
+    padding: var(--space);
+    list-style-type: none;
+    width: 360px;
+}
+
+.userAndRole {
+    display: flex;
+    gap: var(--space);
+}
+
+.userBox {
+    align-items: center;
+    width: 15em;
+    height: 2.5em;
+    border-radius: var(--border-radius);
+    background-color: var(--color-background);
+    display: flex;
+    box-shadow: var(--shadow);
+}
+
+.roleBox {
+    width: 2.5em;
+    height: 2.5em;
+    border-radius: var(--border-radius);
+    background-color: var(--color-background);
+    box-shadow: var(--shadow);
+}
+
+.userNameText {
+    font-size: var(--font-lg);
+    font-weight: bold;
+    padding-left: var(--space);
+}
+
+.iconImage {
+    height: 2.5em;
+    width: 2.5em;
+    padding: var(--space-sm);
+}

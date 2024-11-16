@@ -90,6 +90,7 @@ button,
     padding: var(--space-sm);
     text-align: center;
     text-decoration: none;
+    white-space: nowrap;
     display: inline-block;
     font-size: var(--font-md);
     font-weight: 600;
@@ -102,12 +103,20 @@ button,
         background-color: var(--color-primary);
         color: var(--color-text-inverse);
         border: none;
+
+        &[data-button-context='critical'] {
+            background-color: var(--color-critical);
+        }
     }
 
     &[data-button-type='secondary'] {
         border: var(--border);
         background-color: var(--color-foreground);
         color: var(--color-text);
+
+        &[data-button-context='critical'] {
+            border-color: var(--color-critical);
+        }
     }
 
     &[data-button-type='ghost'] {

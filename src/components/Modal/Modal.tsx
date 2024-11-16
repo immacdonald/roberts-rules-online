@@ -5,7 +5,7 @@ interface ModalProps {
     children: ReactNode;
 }
 
-const Modal: FC<ModalProps> = ({ children }) => {
+const ModalRoot: FC<ModalProps> = ({ children }) => {
     return (
         <div className={styles.modal}>
             <div>{children}</div>
@@ -13,4 +13,16 @@ const Modal: FC<ModalProps> = ({ children }) => {
     );
 };
 
-export { Modal };
+interface ModalActionsProps {
+    children: ReactNode;
+}
+
+const ModalActions: FC<ModalActionsProps> = ({ children }) => {
+    return <div className={styles.actions}>{children}</div>;
+};
+
+export const Modal = ModalRoot as typeof ModalRoot & {
+    Actions: typeof ModalActions;
+};
+
+Modal.Actions = ModalActions;

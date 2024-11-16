@@ -10,7 +10,22 @@ import { selectCommittees, setCommitteeMotions, setCommittees } from '../feature
 import store from '../features/store';
 import { selectUser, setUser } from '../features/userSlice';
 import { disconnectSocket, initializeSocket, socket } from '../socket';
-import { Registration, ActiveMotions, PastMotions, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome, MotionVote } from '../views';
+import {
+    Registration,
+    ActiveMotions,
+    PastMotions,
+    ControlPanel,
+    Home,
+    Login,
+    NotFound,
+    Profile,
+    ViewCommittees,
+    CommitteeViewUsers,
+    CommitteeView,
+    CommitteeHome,
+    MotionVote,
+    MotionView
+} from '../views';
 
 const RoutedApp: FC = () => {
     const dispatch = useDispatch();
@@ -156,12 +171,24 @@ const router = createBrowserRouter([
                         element: <PastMotions />
                     },
                     {
-                        path: 'motion-vote',
-                        element: <MotionVote />
-                    },
-                    {
                         path: 'users',
                         element: <CommitteeViewUsers />
+                    },
+                    {
+                        path: 'motions/:motion',
+                        element: (
+                            <ProtectedRoute>
+                                <MotionView>
+                                    <Outlet />
+                                </MotionView>
+                            </ProtectedRoute>
+                        ),
+                        children: [
+                            {
+                                path: '',
+                                element: <MotionVote />
+                            }
+                        ]
                     }
                 ]
             },

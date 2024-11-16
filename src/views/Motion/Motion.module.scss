@@ -1,0 +1,75 @@
+.motionContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: var(--space);
+}
+
+.overview {
+    background-color: var(--color-background);
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    flex-grow: 1;
+}
+
+.comments {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space);
+}
+
+.replies {
+    margin-left: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.comment,
+.reply {
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+
+    &[data-comment-type='positive'] {
+        background-color: var(--color-primary-background);
+    }
+
+    &[data-comment-type='negative'] {
+        background-color: var(--color-critical-background);
+    }
+
+    &[data-comment-type='neutral'] {
+        border: var(--border);
+    }
+}
+
+.actions {
+    display: flex;
+    gap: var(--space);
+    margin-top: var(--space);
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.modify {
+    display: flex;
+    gap: var(--space);
+    margin-left: var(--space);
+    background-color: var(--color-background);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+}
+
+.comment {
+    margin-bottom: var(--space-sm);
+}
+
+.userInfo {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space);
+    font-size: var(--font-sm);
+    color: var(--color-text);
+}

@@ -1,9 +1,9 @@
 import { FC, useState, FormEvent, ReactElement } from 'react';
 import { CommitteeMember } from 'types';
-import ChairIcon from '../../assets/images/ChairIcon.png';
-import HouseIcon from '../../assets/images/HouseIcon.png';
-import { Modal } from '../../components/Modal';
-import styles from './Committees.module.scss';
+import ChairIcon from '../../../assets/images/ChairIcon.png';
+import HouseIcon from '../../../assets/images/HouseIcon.png';
+import { Modal } from '../../../components/Modal';
+import styles from './ViewUsers.module.scss';
 
 const CommitteeViewUsers: FC = () => {
     //sample user data
@@ -151,12 +151,12 @@ const CommitteeViewUsers: FC = () => {
                             <label htmlFor="userName">Enter Username</label>
                             <input type="text" name="userName" id="userName" required={true} onChange={(ev) => setUserName(ev.target.value)} value={newUserName} />
                         </fieldset>
-                        <div className={styles.actions}>
+                        <Modal.Actions>
                             <button onClick={() => setCreateModal(false)}>Cancel</button>
                             <button type="submit" id="submitUserButton" data-button-type="primary">
                                 Add User
                             </button>
-                        </div>
+                        </Modal.Actions>
                     </form>
                 </Modal>
             )}

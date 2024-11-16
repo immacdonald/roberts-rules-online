@@ -1,16 +1,13 @@
 import { nanoid } from 'nanoid';
 import { CommitteeData } from '../../types';
 import { Database } from '../db';
-import { Committee } from '../interfaces/Committee';
+import { Committee } from '../interfaces/committee';
 import { User } from '../interfaces/user';
-import { Users as UsersClass } from './users';
+import { Users } from './users';
 
 const sql = Database.getInstance();
 
-const Users: UsersClass = UsersClass.instance;
-
 sql.ready(async function () {
-    // Example Committees setup
     const committees = await sql.query('SELECT * FROM committees');
     committees.forEach((committee: Committee) => {
         Committees.instance.committees.push(new Committee(committee.id, committee.name, committee.owner, committee.members));
@@ -54,9 +51,9 @@ export class Committees {
     public async populateCommitteeMembers(committees: CommitteeData[]): Promise<CommitteeData[]> {
         for (let i = 0; i < committees.length; i++) {
             for (let j = 0; j < committees[i].members.length; j++) {
-                let user: User | undefined | null = Users.findUserById(committees[i].members[j].id);
+                let user: User | undefined | null = Users.instance.findUserById(committees[i].members[j].id);
                 if (!user) {
-                    user = await Users.getUserById(committees[i].members[j].id);
+                    user = await Users.instance.getUserById(committees[i].members[j].id);
                 }
 
                 if (user) {
@@ -70,10 +67,10 @@ export class Committees {
     }
 
     public static isUserInCommittee(userId: string, committeeId: string): boolean {
-		const committee = Committees.instance.getCommitteeById(committeeId);
-		if (committee) {
-			return committee.isMember(userId);
-		}
-		return false;
-	}
+        const committee = Committees.instance.getCommitteeById(committeeId);
+        if (committee) {
+            return committee.isMember(userId);
+        }
+        return false;
+    }
 }

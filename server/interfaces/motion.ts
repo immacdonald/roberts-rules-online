@@ -1,7 +1,5 @@
-import { Committee } from './Committee';
 import { Database } from '../db';
 const sql = Database.getInstance();
-
 
 type MotionData = {
     id: string;
@@ -16,7 +14,7 @@ type MotionData = {
     status: string;
     decisionTime: number;
     creationDate: number;
-}
+};
 
 export class Motion {
     public readonly id: string;
@@ -25,17 +23,15 @@ export class Motion {
     public title: string;
     public flag: string;
     public description: string;
-    public vote: string;
+    public vote: Record<string, string>;
     public summary: string;
     public relatedId: string;
     public status: string;
     public decisionTime: number;
     public creationDate: number;
-	private committee: Committee;
 
-    constructor(data: MotionData, _committee: Committee) {
-		this.committee = _committee;
-		this.id = data.id;
+    constructor(data: MotionData) {
+        this.id = data.id;
         this.committeeId = data.committeeId;
         this.authorId = data.authorId;
         this.title = data.title;
@@ -49,69 +45,90 @@ export class Motion {
         this.creationDate = data.creationDate;
     }
 
-	public alterTitle(_title: string): void {
-		this.title = _title;
-		sql.query(`
+    public alterTitle(_title: string): void {
+        this.title = _title;
+        sql.query(
+            `
 			UPDATE motions
 			SET title = ?
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`, [_title])
-	}
+		`,
+            [_title]
+        );
+    }
 
-	public setFlag(_flag: string): void {
-		this.flag = _flag;
-		sql.query(`
+    public setFlag(_flag: string): void {
+        this.flag = _flag;
+        sql.query(
+            `
 			UPDATE motions
 			SET flag = ?
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`, [_flag])
-	}
+		`,
+            [_flag]
+        );
+    }
 
-	public setDescription(_description: string): void {
-		this.description = _description;
-		sql.query(`
+    public setDescription(_description: string): void {
+        this.description = _description;
+        sql.query(
+            `
 			UPDATE motions
 			SET description = ?
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`, [_description])
-	}
+		`,
+            [_description]
+        );
+    }
 
-	public setSummary(_summary: string): void {
-		this.summary = _summary;
-		sql.query(`
+    public setSummary(_summary: string): void {
+        this.summary = _summary;
+        sql.query(
+            `
 			UPDATE motions
 			SET summary = ?
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`, [_summary])
-	}
+		`,
+            [_summary]
+        );
+    }
 
-	public addVote(userId: string, value: string): void {
-		this.vote[userId] = value;
-		sql.query(`
+    public addVote(userId: string, value: string): void {
+        this.vote[userId] = value;
+        sql.query(
+            `
 			UPDATE motions
 			SET vote = JSON_SET(vote, '$.?', '?')
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`, [userId, value])
-	}
+		`,
+            [userId, value]
+        );
+    }
 
-	public removeVote(userId: string): void {
-		delete this.vote[userId];
-		sql.query(`
+    public removeVote(userId: string): void {
+        delete this.vote[userId];
+        sql.query(
+            `
 			UPDATE motions
 			SET vote = JSON_REMOVE(vote, '$.?')
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`, [userId])
-	}
+		`,
+            [userId]
+        );
+    }
 
-	public attachMotion(_relatedId: string): void {
-		this.relatedId = _relatedId;
-		sql.query(`
+    public attachMotion(_relatedId: string): void {
+        this.relatedId = _relatedId;
+        sql.query(
+            `
 			UPDATE motions
 			SET relatedId = ?
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`, [_relatedId])
-	}
-/*
+		`,
+            [_relatedId]
+        );
+    }
+    /*
 	public detachMotion(): void {
 		this.relatedId = '';
 		sql.query(`
@@ -121,28 +138,31 @@ export class Motion {
 		`)
 	}*/
 
-	public setStatus(_status: string): void {
-		this.status = _status;
-		sql.query(`
+    public setStatus(_status: string): void {
+        this.status = _status;
+        sql.query(
+            `
 			UPDATE motions
 			SET status = ?
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`, [_status])
-	}
+		`,
+            [_status]
+        );
+    }
 
-	public setDecisionTime(_decisionTime: number): void {
-		this.decisionTime = _decisionTime;
-		sql.query(`
+    public setDecisionTime(_decisionTime: number): void {
+        this.decisionTime = _decisionTime;
+        sql.query(`
 			UPDATE motions
 			SET decisionTime = '${_decisionTime}'
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`)
-	}
+		`);
+    }
 
-	public delete(): void {
-		sql.query(`
+    public delete(): void {
+        sql.query(`
 			DELETE FROM motions
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`)
-	}
+		`);
+    }
 }

@@ -5,7 +5,7 @@ import { User } from '../../../server/interfaces/user';
 import { signup } from '../../auth';
 import { Page } from '../../components';
 import { selectIsLoggedIn, setUser } from '../../features/userSlice';
-import style from './Login.module.scss';
+import styles from './Auth.module.scss';
 
 const Registration: FC = () => {
     const dispatch = useDispatch();
@@ -36,10 +36,10 @@ const Registration: FC = () => {
 
     return (
         <Page>
-            <section className={style.background}>
-                <div className={style.formGroup}>
-                    <h2 className={style.title}>Register</h2>
-                    <form id="registrationForm" className={style.form} onSubmit={handleRegister}>
+            <section className={styles.background}>
+                <div className={styles.formGroup}>
+                    <h2 className={styles.title}>Register</h2>
+                    <form id="registrationForm" className={styles.form} onSubmit={handleRegister}>
                         <fieldset>
                             <label htmlFor="email">Username</label>
                             <input type="text" name="username" id="username" required={true} onChange={(ev) => setUsername(ev.target.value)} value={username} />
@@ -56,7 +56,7 @@ const Registration: FC = () => {
                             <label htmlFor="confirmPassword">Confirm Password</label>
                             <input type="password" id="confirmPassword" required={true} onChange={(ev) => setConfirmPassword(ev.target.value)} value={confirmPassword} />
                         </fieldset>
-                        <button type="submit" id="register-button" className={style.loginButton} data-button-type="primary">
+                        <button type="submit" id="register-button" className={styles.loginButton} data-button-type="primary">
                             Register
                         </button>
                     </form>

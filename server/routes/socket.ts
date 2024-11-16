@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 import { CommitteeData } from '../../types';
-import { Committees as CommitteesClass } from '../controllers/Committees';
+import { Committees } from '../controllers/committees';
 import { addUserConnection, removeUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
 import { Database } from '../db';
@@ -57,7 +57,7 @@ const setupSocketHandlers = (io: Server): void => {
                         members: JSON.parse(row.members)
                     }));
 
-                    const clientTable = await CommitteesClass.instance.populateCommitteeMembers(data);
+                    const clientTable = await Committees.instance.populateCommitteeMembers(data);
                     socket.emit('setCommittees', clientTable);
                 } else {
                     console.log(err);
@@ -66,14 +66,14 @@ const setupSocketHandlers = (io: Server): void => {
         });
 
         socket.on('createCommittee', async (name: string, description: string) => {
-            CommitteesClass.instance.createCommittee(name, description, socket.data.id, [{ id: socket.data.id, role: 'owner' }]);
+            Committees.instance.createCommittee(name, description, socket.data.id, [{ id: socket.data.id, role: 'owner' }]);
         });
 
         socket.on('getMotions', async (committeeId) => {
             if (!committeeId) {
                 return;
             }
-            const thisCommittee = CommitteesClass.instance.getCommitteeById(committeeId);
+            const thisCommittee = Committees.instance.getCommitteeById(committeeId);
             if (thisCommittee) {
                 const motions = await thisCommittee.getMotions();
                 //console.log("Got motions", motions);
@@ -92,9 +92,9 @@ const setupSocketHandlers = (io: Server): void => {
             }
 
             const id = socket.data.id;
-            const motion = new Motions(committeeId);
+            const motions = new Motions(committeeId);
 
-            motion.createLightweightMotion(committeeId, id, title);
+            motions.createLightweightMotion(committeeId, id, title);
         });
 
         // Remove the socket from the connections hashmap upon disconnect

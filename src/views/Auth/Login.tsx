@@ -5,7 +5,7 @@ import { User } from 'server/interfaces/user';
 import { login } from '../../auth';
 import { Page } from '../../components';
 import { selectUser, setUser } from '../../features/userSlice';
-import style from './Login.module.scss';
+import styles from './Auth.module.scss';
 
 const Login: FC = () => {
     const dispatch = useDispatch();
@@ -29,10 +29,10 @@ const Login: FC = () => {
 
     return (
         <Page>
-            <section className={style.background}>
-                <div className={style.formGroup}>
-                    <h2 className={style.title}>Login</h2>
-                    <form id="loginForm" className={style.form} onSubmit={handleLogIn}>
+            <section className={styles.background}>
+                <div className={styles.formGroup}>
+                    <h2 className={styles.title}>Login</h2>
+                    <form id="loginForm" className={styles.form} onSubmit={handleLogIn}>
                         <fieldset>
                             <label htmlFor="email">Email</label>
                             <input type="email" name="email" id="email" required={true} onChange={(ev) => setEmail(ev.target.value)} value={email} />
@@ -41,7 +41,7 @@ const Login: FC = () => {
                             <label htmlFor="password">Password</label>
                             <input type="password" id="password" required={true} onChange={(ev) => setPassword(ev.target.value)} value={password} />
                         </fieldset>
-                        <button type="submit" id="login-button" className={style.loginButton} data-button-type="primary">
+                        <button type="submit" id="login-button" className={styles.loginButton} data-button-type="primary">
                             Log In
                         </button>
                     </form>
