@@ -1,8 +1,7 @@
 import { FC, useState, FormEvent, ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import { CommitteeMember } from 'types';
-import ChairIcon from '../../../assets/images/ChairIcon.png';
-import HouseIcon from '../../../assets/images/HouseIcon.png';
+import { chairIcon, houseIcon } from '../../../assets/images';
 import { Loading } from '../../../components';
 import { Modal } from '../../../components/Modal';
 import { selectCurrentCommittee } from '../../../features/committeesSlice';
@@ -38,14 +37,14 @@ const CommitteeViewUsers: FC = () => {
                 return (
                     <div className={styles.role}>
                         <i>Owner</i>
-                        <img src={HouseIcon} className={styles.iconImage} alt="Owner Icon" />
+                        <img src={houseIcon} className={styles.iconImage} alt="Owner Icon" />
                     </div>
                 );
             } else if (role === 'chair') {
                 return (
                     <div className={styles.role}>
                         <i>Chair</i>
-                        <img src={ChairIcon} className={styles.iconImage} alt="Chair Icon" />
+                        <img src={chairIcon} className={styles.iconImage} alt="Chair Icon" />
                     </div>
                 );
             } else {

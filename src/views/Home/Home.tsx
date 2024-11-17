@@ -1,7 +1,5 @@
 import { FC } from 'react';
-import book from '../../assets/images/book.png';
-import lines from '../../assets/images/lines.png';
-import miniWebsite from '../../assets/images/miniWebsite.png';
+import { book, spiralLines, websitePreview } from '../../assets/images';
 import { Page } from '../../components';
 import styles from './Home.module.scss';
 
@@ -10,7 +8,7 @@ const Home: FC = () => {
         <Page>
             <section className={styles.header}>
                 <div className={styles.headline}>
-                    <h1 className={styles.title}>AAA and efficient meetings, every time.</h1>
+                    <h1 className={styles.title}>Organized and efficient meetings, every time.</h1>
                     <h3 className={styles.subtitle}>
                         <span className={styles.highlight}>Robert's Rules Online</span> gives you the tools to manage, record, and streamline meetings so that no time is wasted.
                     </h3>
@@ -27,7 +25,7 @@ const Home: FC = () => {
                         parliamentary procedure accessible and efficient. Whether you're a seasoned chairperson or new to the world of organized meetings, our user-friendly interface provides the
                         tools you need to navigate Robert's Rules of Order with ease.
                     </p>
-                    <img style={{ maxWidth: '100%' }} src={lines} alt="Lines smoothing out" />
+                    <img style={{ maxWidth: '100%' }} src={spiralLines} alt="Lines smoothing out" />
                 </div>
                 <div className={styles.card}>
                     <div className={styles.content}>
@@ -40,7 +38,7 @@ const Home: FC = () => {
                             </p>
                         </div>
                         <div className={styles.cardImage}>
-                            <img src={miniWebsite} alt="Committee page" />
+                            <img src={websitePreview} alt="Committee page" />
                         </div>
                     </div>
                 </div>
