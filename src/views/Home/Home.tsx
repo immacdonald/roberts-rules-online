@@ -10,7 +10,7 @@ const Home: FC = () => {
         <Page>
             <section className={styles.header}>
                 <div className={styles.headline}>
-                    <h1 className={styles.title}>Organized and efficient meetings, every time.</h1>
+                    <h1 className={styles.title}>AAA and efficient meetings, every time.</h1>
                     <h3 className={styles.subtitle}>
                         <span className={styles.highlight}>Robert's Rules Online</span> gives you the tools to manage, record, and streamline meetings so that no time is wasted.
                     </h3>

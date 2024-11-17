@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 
-const url = process.env.NODE_ENV == 'production' ? 'https://roberts-rules-online.vercel.app' : 'http://localhost:3000';
+const url = process.env.NODE_ENV == 'production' ? 'https://robert-rules-online.onrender.com' : 'http://localhost:3000';
 
 let socket: Socket | null = null;
 
@@ -11,7 +11,9 @@ export const initializeSocket = (): Socket | null => {
     if (!token) return null;
 
     if (!socket) {
-        socket = io(url, { query: { token } });
+        socket = io(url, {
+            query: { token }
+        });
     }
 
     return socket;
