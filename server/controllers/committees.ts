@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { CommitteeData } from '../../types';
+import { CommitteeData, CommitteeRole } from '../../types';
 import { Database } from '../db';
 import { Committee } from '../interfaces/committee';
 import { User } from '../interfaces/user';
@@ -23,7 +23,7 @@ sql.ready(async function () {
     console.log('Committees Database is ready');
 });
 
-const createCommittee = (name: string, description: string, owner: string, members: { id: string; role: string }[]): void => {
+const createCommittee = (name: string, description: string, owner: string, members: { id: string; role: CommitteeRole }[]): void => {
     const id = nanoid(16);
 
     const memberData = JSON.stringify(members);

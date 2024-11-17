@@ -1,18 +1,14 @@
 import { compare } from 'bcrypt';
 import { Socket } from 'socket.io';
-import { CommitteeData } from '../../types';
-import { Database } from '../db';
 import { Motion } from './motion';
-import { getCommitteeById, populateCommitteeMembers } from '../controllers/committees';
-
-const sql = Database.getInstance();
+import { getCommitteeById } from '../controllers/committees';
 
 export class User {
     public readonly id: string;
     public username: string;
     public displayname: string;
     public readonly email: string;
-    public creationDate: number;
+    public readonly creationDate: number;
     private readonly password: string;
     public socket: Socket | null = null;
 
@@ -32,65 +28,6 @@ export class User {
     public setSocket(socket: Socket): void {
         if (this.socket == null || this.socket !== socket) {
             this.socket = socket;
-
-            this.socket.on('getCommittees', async () => {
-                console.log('Getting committees');
-                await sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [this.id, this.id], async (err, res) => {
-                    if (!err) {
-                        //const data = JSON.parse(JSON.stringify(res));
-                        const data: CommitteeData[] = res.map((row: any) => ({
-                            ...row,
-                            members: JSON.parse(row.members)
-                        }));
-
-                        const clientTable = await populateCommitteeMembers(data);
-                        this.socket!.emit('setCommittees', clientTable);
-                        //this.socket.emit('setCommittees', data);
-                    }
-                });
-            });
-
-            this.socket.on('getMotions', async (committeeId) => {
-                if (committeeId) {
-                    const thisCommittee = getCommitteeById(committeeId);
-                    if (thisCommittee) {
-                        if (thisCommittee.isMember(this.id)) {
-                            const motions = await thisCommittee.getMotions();
-                            if (motions) {
-                                console.log('Motions were sent to all clients');
-                            }
-                        } else {
-                            console.log('User is not a member');
-                            this.socket!.emit('setMotions', []);
-                        }
-                    } else {
-                        console.log('Committee not found');
-                        this.socket!.emit('setMotions', []);
-                    }
-                }
-
-            });
-
-            this.socket.on('createMotion', async (data) => {
-                console.log('Creating motion', data);
-                const thisCommittee = getCommitteeById(data.committeeId);
-                if (thisCommittee) {
-                    console.log('Committee found');
-                    if (thisCommittee.isMember(this.id)) {
-                        console.log('User is a member');
-                        if (thisCommittee.canUserDoAction(this.id, 'createMotion')) {
-                            console.log('User can create motion');
-                            const id = await thisCommittee.createMotion(this.id, data.title);
-                            const motion = await thisCommittee.getMotionById(id);
-                            thisCommittee.sendToAllMembers('addMotion', {
-                                committeeId: data.committeeId,
-                                motion: motion,
-                                id: id
-                            });
-                        }
-                    }
-                }
-            });
 
             this.socket.on('motion.changeTitle', (data) => {
                 const thisCommittee = getCommitteeById(data.committeeId);

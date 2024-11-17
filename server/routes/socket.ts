@@ -38,11 +38,7 @@ const setupSocketHandlers = (io: Server): void => {
         console.log(`Client is connected (${socket.data.username})`);
 
         // Add socket to the connections hashmap upon initial connection
-        addUserConnection(socket.data.id, socket);
-
-        socket.on('chatMessage', (msg) => {
-            console.log('message: ' + msg);
-        });
+        addUserConnection(socket.data.id, socket)
 
         // General testing socket endpoint for debugging the backend (triggered by 'Q' on the website)
         socket.on('test', () => {
@@ -90,6 +86,19 @@ const setupSocketHandlers = (io: Server): void => {
             if (committee) {
                 const id = socket.data.id;
                 committee.createMotion(id, title);
+            } else {
+                console.log('Committee not found to create motion');
+            }
+        });
+
+        socket.on("changeMotionTitle", async (committeeId: string, motionId: string, title: string) => {
+            if (!committeeId) {
+                return;
+            }
+
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.changeMotionTitle(motionId, title);
             } else {
                 console.log('Committee not found to create motion');
             }

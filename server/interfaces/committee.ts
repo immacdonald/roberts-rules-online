@@ -57,12 +57,17 @@ export class Committee {
         return motions;
     }
 
-    public getMotionById(id: string): Motion | undefined {
-        return this.motions.findMotion(id);
+    public getMotionById(id: string): Motion | null {
+        return this.motions.findMotion(id) ?? null;
+    }
+
+    public sendUpdatedMotions = async (): Promise<void> => {
+        const updatedMotions = await this.getMotions();
+        await this.sendToAllMembers('setMotions', updatedMotions);
     }
 
     public canUserDoAction(userId: string, action: string): boolean {
-        if (userId === this.owner) {
+        if (userId == this.owner) {
             // Owners can do everything
             return true;
         }
@@ -80,34 +85,42 @@ export class Committee {
         return false;
     }
 
-    public async createMotion(userId: string, title: string): Promise<string> {
+    public isMember(userId: string): boolean {
+        return this.owner === userId || this.members.some((member) => member.id == userId);
+    }
+
+    public createMotion = async (userId: string, title: string, description?: string, relatedMotionId?: string): Promise<void> => {
         let id = nanoid(16);
         while (await doesMotionExist(id)) {
             id = nanoid(16);
         }
 
-        const info: MotionData = {
-            id: id,
-            committeeId: this.id,
-            authorId: userId,
-            title: title,
-            flag: '',
-            description: '',
-            vote: '{}',
-            summary: '',
-            relatedId: '',
-            status: 'pending',
-            decisionTime: Date.now() + config.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
-            creationDate: Date.now()
-        };
+        if (this.canUserDoAction(userId, 'createMotion')) {
+            const info: MotionData = {
+                id: id,
+                committeeId: this.id,
+                authorId: userId,
+                title: title,
+                flag: '',
+                description: description || '',
+                vote: '{}',
+                summary: '',
+                relatedId: relatedMotionId || '',
+                status: 'pending',
+                decisionTime: Date.now() + config.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
+                creationDate: Date.now()
+            };
 
-        await this.motions.createMotion(info);
-        const updatedMotions = await this.getMotions();
-        this.sendToAllMembers('setMotions', updatedMotions);
-        return id;
+            await this.motions.createMotion(info);
+            await this.sendUpdatedMotions();
+        }
     }
 
-    public isMember(userId: string): boolean {
-        return this.owner === userId || this.members.some((member) => member.id == userId);
+    public changeMotionTitle = async (motionId: string, title: string) => {
+        const motion: Motion | null = this.getMotionById(motionId);
+        if (motion) {
+            await motion.alterTitle(title);
+            await this.sendUpdatedMotions()
+        }
     }
 }

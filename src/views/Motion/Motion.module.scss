@@ -6,11 +6,27 @@
 }
 
 .overview {
-    background-color: var(--color-background);
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    flex-grow: 1;
+    align-items: start;
+    padding: var(--space);
+    border-radius: var(--border-radius);
+    background-color: var(--color-background);
+
+    .title {
+        width: 100%;
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        gap: var(--space);
+        margin-bottom: var(--space-sm);
+    }
+
+    .titleEdit {
+        width: 320px;
+        height: 60px;
+    }
 }
 
 .comments {

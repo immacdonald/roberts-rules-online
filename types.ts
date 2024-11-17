@@ -1,8 +1,10 @@
 import { User } from './server/interfaces/user';
 
+type CommitteeRole = 'owner' | 'chair' | 'member' | 'observer';
+
 interface CommitteeMember {
     id: string;
-    role: string;
+    role: CommitteeRole;
     username?: string;
     displayname?: string;
 }
@@ -37,4 +39,4 @@ interface UserWithToken {
     token: string;
 }
 
-export type { CommitteeMember, CommitteeData, MotionData, UserWithToken };
+export type { CommitteeMember, CommitteeData, CommitteeRole, MotionData, UserWithToken };
