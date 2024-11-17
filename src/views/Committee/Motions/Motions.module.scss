@@ -8,7 +8,6 @@
 .filter {
     display: flex;
     justify-content: center;
-    margin-block: var(--space);
     gap: var(--space);
 
     button {
@@ -63,4 +62,16 @@
             margin-inline-end: var(--space-sm);
         }
     }
+}
+
+.empty {
+    background-color: var(--color-background);
+    width: 80%;
+    min-height: 96px;
+    margin-inline: auto;
+    margin-top: var(--space-lg);
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

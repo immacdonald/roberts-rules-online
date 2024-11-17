@@ -30,24 +30,30 @@ const PastMotions: FC = () => {
                 <header className={styles.header}>
                     <h1>Past Motions</h1>
                     <div className={styles.filter}>
-                        <button className={viewPassedMotions ? styles.selected : undefined} onClick={() => setViewPassedMotions(true)}>
+                        <button className={viewPassedMotions ? styles.selected : undefined} onClick={() => setViewPassedMotions(true)} disabled={!(currentCommittee?.motions?.length || 0 > 0)}>
                             Passed
                         </button>
-                        <button className={viewPassedMotions ? undefined : styles.selected} onClick={() => setViewPassedMotions(false)}>
+                        <button className={viewPassedMotions ? undefined : styles.selected} onClick={() => setViewPassedMotions(false)} disabled={!(currentCommittee?.motions?.length || 0 > 0)}>
                             Failed
                         </button>
                     </div>
                 </header>
                 {currentCommittee?.motions ? (
-                    <div className={styles.motionTable} style={{ '--table-layout': '72px 1fr 200px 200px' } as CSSProperties}>
-                        <div className={clsx(styles.row, styles.tableHeader)}>
-                            <span>Revote</span>
-                            <span>Title</span>
-                            <span>Author</span>
-                            <span>Date</span>
+                    currentCommittee!.motions.length > 0 ? (
+                        <div className={styles.motionTable} style={{ '--table-layout': '72px 1fr 200px 200px' } as CSSProperties}>
+                            <div className={clsx(styles.row, styles.tableHeader)}>
+                                <span>Revote</span>
+                                <span>Title</span>
+                                <span>Author</span>
+                                <span>Date</span>
+                            </div>
+                            {displayMotions}
                         </div>
-                        {displayMotions}
-                    </div>
+                    ) : (
+                        <div className={styles.empty}>
+                            <p>No motions have been voted on yet.</p>
+                        </div>
+                    )
                 ) : (
                     <Loading />
                 )}

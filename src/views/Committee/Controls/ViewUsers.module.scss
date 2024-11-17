@@ -1,33 +1,36 @@
 .userList {
+    margin-inline: auto;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: var(--space);
     padding: var(--space);
     list-style-type: none;
     width: 360px;
 }
 
-.userAndRole {
+.user {
+    width: 360px;
+    height: 52px;
     display: flex;
-    gap: var(--space);
-}
-
-.userBox {
+    justify-content: start;
     align-items: center;
-    width: 15em;
-    height: 2.5em;
+    gap: var(--space);
+    padding-inline: var(--space-sm);
+    border: var(--border);
     border-radius: var(--border-radius);
-    background-color: var(--color-background);
-    display: flex;
-    box-shadow: var(--shadow);
-}
 
-.roleBox {
-    width: 2.5em;
-    height: 2.5em;
-    border-radius: var(--border-radius);
-    background-color: var(--color-background);
-    box-shadow: var(--shadow);
+    .name {
+        align-items: center;
+        display: flex;
+    }
+
+    .role {
+        margin-left: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
 .userNameText {

@@ -1,118 +1,22 @@
 import { FC, useState, FormEvent, ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 import { CommitteeMember } from 'types';
 import ChairIcon from '../../../assets/images/ChairIcon.png';
 import HouseIcon from '../../../assets/images/HouseIcon.png';
+import { Loading } from '../../../components';
 import { Modal } from '../../../components/Modal';
+import { selectCurrentCommittee } from '../../../features/committeesSlice';
 import styles from './ViewUsers.module.scss';
 
 const CommitteeViewUsers: FC = () => {
-    //sample user data
-    const [users, setUsers] = useState<CommitteeMember[]>([
-        {
-            id: '1',
-            role: 'Owner',
-            username: 'johndoe',
-            displayname: 'John Doe'
-        },
-        {
-            id: '2',
-            role: 'Chair',
-            username: 'janedoe',
-            displayname: 'Jane Doe'
-        },
-        {
-            id: '3',
-            role: 'Member',
-            username: 'mikesmith',
-            displayname: 'Mike Smith'
-        },
-        {
-            id: '4',
-            role: 'Member',
-            username: 'emilyjones',
-            displayname: 'Emily Jones'
-        },
-        {
-            id: '5',
-            role: 'Member',
-            username: 'sarahjohnson',
-            displayname: 'Sarah Johnson'
-        }
-    ]);
+    const { members } = useSelector(selectCurrentCommittee)!;
 
-    const getRoleBox = (role: string, userId: string): ReactElement => {
-        if (role === 'Owner') {
-            return (
-                <div className={styles.roleBox}>
-                    <img src={HouseIcon} className={styles.iconImage} alt="Chair Icon" />
-                </div>
-            );
-        } else if (role === 'Chair') {
-            return (
-                <div className={styles.roleBox}>
-                    <img src={ChairIcon} className={styles.iconImage} alt="Chair Icon" />
-                </div>
-            );
-        } else {
-            return (
-                <div className={styles.roleBox}>
-                    <button onClick={() => promoteUser(userId)}>promote</button>
-                </div>
-            );
-        }
-    };
+    const [createModal, setCreateModal] = useState<boolean>(false);
+    const [newUserName, setUserName] = useState<string>('');
 
     const promoteUser = (userId: string): void => {
         console.log('Promoting user:', userId);
-
-        let chairId: number | undefined;
-
-        // Find current Chair and the user to promote
-        users.forEach((user, index) => {
-            if (user.role === 'Chair') {
-                chairId = index;
-            }
-        });
-
-        // Create a copy of the users array
-        const tempUsers = [...users];
-
-        if (chairId !== undefined) {
-            tempUsers[chairId].role = 'Member';
-        }
-        tempUsers.forEach((user, index) => {
-            if (user.id === userId) {
-                tempUsers[index].role = 'Chair';
-            }
-        });
-
-        setUsers(tempUsers);
     };
-
-    const getUser = (name: string, role: string, userId: string): ReactElement => {
-        return (
-            <div className={styles.userAndRole}>
-                <div className={styles.userBox}>
-                    <div className={styles.userNameText}>{name}</div>
-                </div>
-                {getRoleBox(role, userId)}
-            </div>
-        );
-    };
-
-    const getAddUserButton = (): ReactElement => {
-        return (
-            <div>
-                <button className={styles.addUserButton} onClick={() => addUser()}>
-                    Add User
-                </button>
-            </div>
-        );
-    };
-
-    const [createModal, setCreateModal] = useState<boolean>(false);
-
-    const [newUserName, setUserName] = useState<string>('');
 
     const addUser = (): void => {
         console.log('Adding new user');
@@ -128,19 +32,58 @@ const CommitteeViewUsers: FC = () => {
         //socket.emit('addUser', newUserName);
     };
 
+    const getUser = (name: string, role: string, userId: string): ReactElement => {
+        const getRoleBox = (role: string, userId: string): ReactElement => {
+            if (role === 'owner') {
+                return (
+                    <div className={styles.role}>
+                        <i>Owner</i>
+                        <img src={HouseIcon} className={styles.iconImage} alt="Owner Icon" />
+                    </div>
+                );
+            } else if (role === 'chair') {
+                return (
+                    <div className={styles.role}>
+                        <i>Chair</i>
+                        <img src={ChairIcon} className={styles.iconImage} alt="Chair Icon" />
+                    </div>
+                );
+            } else {
+                return (
+                    <div className={styles.role}>
+                        <i>Member</i>
+                        <button onClick={() => promoteUser(userId)}>Promote</button>
+                    </div>
+                );
+            }
+        };
+
+        return (
+            <div className={styles.user}>
+                <div className={styles.name}>{name}</div>
+                {getRoleBox(role, userId)}
+            </div>
+        );
+    };
+
     return (
         <>
             <section>
+                <h1>Users</h1>
                 <ul className={styles.userList}>
-                    {users.length > 0 ? (
-                        users.map((user: CommitteeMember) => {
+                    {members.length > 0 ? (
+                        members.map((user: CommitteeMember) => {
                             console.log(user);
                             return <div key={user.id}>{getUser(user.displayname || 'Unknown', user.role, user.id)}</div>;
                         })
                     ) : (
-                        <p>Loading users... </p>
+                        <Loading />
                     )}
-                    {getAddUserButton()}
+                    <div>
+                        <button onClick={() => addUser()} data-button-type="primary">
+                            Add User +
+                        </button>
+                    </div>
                 </ul>
             </section>
             {createModal && (

@@ -30,7 +30,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    > div {
+    >div {
         min-height: 100vh;
     }
 }
@@ -58,7 +58,7 @@ fieldset {
     text-align: left;
     border: none;
 
-    > label {
+    >label {
         display: block;
         margin-bottom: var(--space-sm);
         font-weight: bold;
@@ -125,7 +125,12 @@ button,
         font-weight: normal;
     }
 
-    &:hover {
+    &[disabled] {
+        cursor: not-allowed;
+        filter: grayscale(0.4) brightness(0.9);
+    }
+
+    &:not([disabled]):hover {
         filter: brightness(0.95);
         text-decoration: none;
     }
@@ -149,4 +154,39 @@ hr {
 
 ::selection {
     background-color: #09bc8a20;
+}
+
+.react-toggle-track {
+    background-color: var(--color-primary-dark);
+}
+
+[class*='react-toggle--checked'] {
+    [class^='react-toggle-track'] {
+        background-color: var(--color-primary);
+    }
+}
+
+// react-toggle override styling for parity with design system
+.react-toggle:hover:not(.react-toggle--disabled) .react-toggle-track {
+    background-color: var(--color-primary-dark);
+}
+
+.react-toggle--checked:hover:not(.react-toggle--disabled) .react-toggle-track {
+    background-color: var(--color-primary);
+}
+
+.react-toggle--checked .react-toggle-thumb {
+    border-color: var(--color-primary);
+}
+
+.react-toggle:active:not(.react-toggle--disabled) .react-toggle-thumb {
+    box-shadow: none;
+}
+
+.react-toggle--focus .react-toggle-thumb {
+    box-shadow: none;
+}
+
+.react-toggle--checked:active:not(.react-toggle--disabled) .react-toggle-thumb {
+    box-shadow: 0px 0px 2px 2px var(--color-primary);
 }

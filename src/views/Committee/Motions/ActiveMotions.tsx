@@ -50,14 +50,20 @@ const ActiveMotions: FC = () => {
                     </button>
                 </header>
                 {currentCommittee?.motions ? (
-                    <div className={styles.motionTable} style={{ '--table-layout': '1fr 200px 200px' } as CSSProperties}>
-                        <div className={clsx(styles.row, styles.tableHeader)}>
-                            <span>Title</span>
-                            <span>Author</span>
-                            <span>Date</span>
+                    currentCommittee!.motions.length > 0 ? (
+                        <div className={styles.motionTable} style={{ '--table-layout': '1fr 200px 200px' } as CSSProperties}>
+                            <div className={clsx(styles.row, styles.tableHeader)}>
+                                <span>Title</span>
+                                <span>Author</span>
+                                <span>Date</span>
+                            </div>
+                            {displayMotions}
                         </div>
-                        {displayMotions}
-                    </div>
+                    ) : (
+                        <div className={styles.empty}>
+                            <p>No motions are currently active.</p>
+                        </div>
+                    )
                 ) : (
                     <Loading />
                 )}
