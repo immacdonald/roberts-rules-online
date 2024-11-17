@@ -17,8 +17,8 @@ const PastMotions: FC = () => {
                 <div className={clsx(styles.row, styles.motion)} key={motion.title}>
                     <button>↩️</button>
                     <h3>{motion.title}</h3>
-                    <span>{motion.authorId}</span>
-                    <span>{motion.creationDate && new Date(motion.creationDate).toISOString().slice(0, 10)}</span>
+                    <span>{motion.authorUsername || motion.authorId}</span>
+                    <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
                 </div>
             );
         });

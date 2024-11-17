@@ -23,8 +23,8 @@ const ActiveMotions: FC = () => {
 
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+        setCreateModal(false);
         console.log('Creating new motion:', motionTitle);
-        // Create the committee
         socket!.emit('createMotion', currentCommittee!.id!, motionTitle);
     };
 
@@ -33,8 +33,8 @@ const ActiveMotions: FC = () => {
             return (
                 <div className={clsx(styles.row, styles.motion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee!.id}/motions/${motion.id}`)}>
                     <h3>{motion.title}</h3>
-                    <span>{motion.authorId}</span>
-                    <span>{motion.creationDate && new Date(motion.creationDate).toISOString().slice(0, 10)}</span>
+                    <span>{motion.authorUsername || motion.authorId}</span>
+                    <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
                 </div>
             );
         });

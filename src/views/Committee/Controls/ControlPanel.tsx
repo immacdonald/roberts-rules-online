@@ -16,6 +16,7 @@ const ControlPanel: FC = () => {
 
     return (
         <section>
+            <h1>Control Panel</h1>
             <div className={styles.toggleSection}>
                 <div className={styles.toggleText}>Allow any user to create a special motion</div>
                 <div className={styles.toggle}>

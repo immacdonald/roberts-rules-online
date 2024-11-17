@@ -1,11 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
-import { CommitteeData } from '../../types';
-import { Committees } from '../controllers/committees';
+import { createCommittee, getCommitteeById } from '../controllers/committees';
 import { addUserConnection, removeUserConnection } from '../controllers/connections';
-import { Motions } from '../controllers/motions';
-import * as Users from '../controllers/users';
-import { Database } from '../db';
+import { getCommittees } from '../controllers/users';
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
@@ -43,8 +40,6 @@ const setupSocketHandlers = (io: Server): void => {
         // Add socket to the connections hashmap upon initial connection
         addUserConnection(socket.data.id, socket);
 
-        const sql = Database.getInstance();
-
         socket.on('chatMessage', (msg) => {
             console.log('message: ' + msg);
         });
@@ -56,32 +51,26 @@ const setupSocketHandlers = (io: Server): void => {
 
         socket.on('getCommittees', async () => {
             const id = socket.data.id;
-            await sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [id, id], async (err, res) => {
-                if (!err) {
-                    const data: CommitteeData[] = res.map((row: any) => ({
-                        ...row,
-                        members: JSON.parse(row.members)
-                    }));
+            const committees = await getCommittees(id);
 
-                    const clientTable = await Committees.instance.populateCommitteeMembers(data);
-                    socket.emit('setCommittees', clientTable);
-                } else {
-                    console.log(err);
-                }
-            });
+            if (committees) {
+                socket.emit('setCommittees', committees);
+            } else {
+                console.log('Error getting committees');
+            }
         });
 
         socket.on('createCommittee', async (name: string, description: string) => {
-            Committees.instance.createCommittee(name, description, socket.data.id, [{ id: socket.data.id, role: 'owner' }]);
+            createCommittee(name, description, socket.data.id, [{ id: socket.data.id, role: 'owner' }]);
         });
 
         socket.on('getMotions', async (committeeId) => {
             if (!committeeId) {
                 return;
             }
-            const thisCommittee = Committees.instance.getCommitteeById(committeeId);
-            if (thisCommittee) {
-                const motions = await thisCommittee.getMotions();
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                const motions = await committee.getMotions();
                 //console.log("Got motions", motions);
                 if (motions) {
                     socket.emit('setMotions', motions);
@@ -97,10 +86,13 @@ const setupSocketHandlers = (io: Server): void => {
                 return;
             }
 
-            const id = socket.data.id;
-            const motions = new Motions(committeeId);
-
-            motions.createLightweightMotion(committeeId, id, title);
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                const id = socket.data.id;
+                committee.createMotion(id, title);
+            } else {
+                console.log('Committee not found to create motion');
+            }
         });
 
         // Remove the socket from the connections hashmap upon disconnect

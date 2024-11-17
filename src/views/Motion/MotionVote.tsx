@@ -1,4 +1,6 @@
 import { FC, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectCurrentMotion } from '../../features/committeesSlice';
 import styles from './Motion.module.scss';
 
 type Sentiment = 'positive' | 'negative' | 'neutral';
@@ -17,8 +19,8 @@ type MotionReply = {
 };
 
 const MotionVote: FC = () => {
-    const username = 'Username';
-    const date = new Date().toLocaleDateString();
+    const motion = useSelector(selectCurrentMotion)!;
+    const username = motion.authorUsername || motion.authorId;
 
     const [comments, setComments] = useState<MotionComment[]>([]);
 
@@ -40,11 +42,13 @@ const MotionVote: FC = () => {
                 <div>
                     <div className={styles.userInfo}>
                         <span>{username}</span>
-                        <span>{date}</span>
+                        <span>Created {new Date(motion.creationDate).toLocaleDateString()}</span>
                     </div>
                     <section className={styles.overview}>
-                        <h1>Motion Title</h1>
-                        <p>Motion content.</p>
+                        <h1>{motion.title}</h1>
+                        <p>{motion.description || 'No motion description provided.'}</p>
+                        <br />
+                        <p>Vote on Motion by {new Date(motion.decisionTime).toLocaleDateString()}</p>
                     </section>
                     <div className={styles.actions}>
                         <button onClick={() => addComment('positive')} data-button-type="primary">
@@ -73,8 +77,7 @@ const MotionVote: FC = () => {
                         <div key={comment.id} className={styles.commentContainer}>
                             <div className={styles.comment} data-comment-type={comment.sentiment}>
                                 <div className={styles.userInfo}>
-                                    <span>{username}</span>
-                                    <span>{date}</span>
+                                    <span>Unknown User</span>
                                 </div>
                                 <p>{comment.content || 'No comment message.'}</p>
                                 <div className={styles.actions}>
@@ -94,8 +97,7 @@ const MotionVote: FC = () => {
                                     <div key={reply.id} className={styles.replyContainer}>
                                         <div className={styles.reply} data-comment-type={reply.sentiment}>
                                             <div className={styles.userInfo}>
-                                                <span>{username}</span>
-                                                <span>{date}</span>
+                                                <span>Unknown User</span>
                                             </div>
                                             <p>{reply.content || 'No reply message.'}</p>
                                         </div>

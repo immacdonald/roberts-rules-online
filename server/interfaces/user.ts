@@ -1,7 +1,7 @@
 import { compare } from 'bcrypt';
 import { Socket } from 'socket.io';
 import { CommitteeData } from '../../types';
-import { Committees as CommitteesClass } from '../controllers/committees';
+import * as Committees from '../controllers/committees';
 import { Database } from '../db';
 import { Motion } from './motion';
 
@@ -32,8 +32,6 @@ export class User {
     public setSocket(socket: Socket): void {
         if (this.socket == null || this.socket !== socket) {
             this.socket = socket;
-
-            const Committees: CommitteesClass = CommitteesClass.instance;
 
             this.socket.on('getCommittees', async () => {
                 console.log('Getting committees');

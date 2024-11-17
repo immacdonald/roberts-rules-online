@@ -9,7 +9,10 @@ const CommitteeNav: FC = () => {
 
     const { pathname } = useLocation();
 
-    const activeLink = (link: string): string => (pathname.endsWith(link) ? 'primary' : 'secondary');
+    const activeLink = (link: string, subroutes: boolean = false): string => {
+        const active = subroutes ? pathname.includes(link) : pathname.endsWith(link);
+        return active ? 'primary' : 'secondary';
+    };
 
     return (
         <header className={styles.header}>
@@ -23,7 +26,7 @@ const CommitteeNav: FC = () => {
                 <Link to={`/committees/${currentCommittee!.id}/home`} data-button-type={activeLink('/home')}>
                     Overview
                 </Link>
-                <Link to={`/committees/${currentCommittee!.id}/active-motions`} data-button-type={activeLink('/active-motions')}>
+                <Link to={`/committees/${currentCommittee!.id}/motions`} data-button-type={activeLink('/motions', true)}>
                     Active Motions
                 </Link>
                 <Link to={`/committees/${currentCommittee!.id}/past-motions`} data-button-type={activeLink('/past-motions')}>

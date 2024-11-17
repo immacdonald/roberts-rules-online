@@ -1,26 +1,12 @@
 import { nanoid } from 'nanoid';
-import { CommitteeMember } from '../../types';
+import { CommitteeMember, MotionData } from '../../types';
+import { config } from '../config';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
 import { Database } from '../db';
 import { Motion } from './motion';
 
 const sql = Database.getInstance();
-
-type MotionData = {
-    id: string;
-    committeeId: string;
-    authorId: string;
-    title: string;
-    flag: string;
-    description: string;
-    vote: string;
-    summary: string;
-    relatedId: string;
-    status: string;
-    decisionTime: number;
-    creationDate: number;
-};
 
 async function doesMotionExist(id: string): Promise<boolean> {
     const res = await sql.query('SELECT id FROM motions WHERE id = ?', [id]);
@@ -111,11 +97,13 @@ export class Committee {
             summary: '',
             relatedId: '',
             status: 'pending',
-            decisionTime: Date.now() + 7 * 24 * 60 * 60 * 1000,
+            decisionTime: Date.now() + config.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
             creationDate: Date.now()
         };
 
         await this.motions.createMotion(info);
+        const updatedMotions = await this.getMotions();
+        this.sendToAllMembers('setMotions', updatedMotions);
         return id;
     }
 

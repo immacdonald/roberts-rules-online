@@ -7,12 +7,14 @@ interface CommitteesState {
     committees: CommitteeData[] | null;
     currentCommitteeId: string | null;
     previousCommitteeId: string | null;
+    currentMotionId: string | null;
 }
 
 const initialState: CommitteesState = {
     committees: null,
     currentCommitteeId: null,
-    previousCommitteeId: null
+    previousCommitteeId: null,
+    currentMotionId: null
 };
 
 const committeesSlice = createSlice({
@@ -39,13 +41,17 @@ const committeesSlice = createSlice({
                     currentCommittee.motions = action.payload;
                 }
             }
+        },
+        setCurrentMotion: (state, action: PayloadAction<string | null>) => {
+            state.currentMotionId = action.payload;
         }
     }
 });
 
-export const { setCommittees, setCurrentCommittee, setCommitteeMotions } = committeesSlice.actions;
+export const { setCommittees, setCurrentCommittee, setCommitteeMotions, setCurrentMotion } = committeesSlice.actions;
 
 export const selectCommittees = (state: RootState): CommitteeData[] | null => state.committees.committees;
 export const selectCurrentCommittee = (state: RootState): CommitteeData | null => state.committees.committees?.find((committee) => committee.id === state.committees.currentCommitteeId) ?? null;
+export const selectCurrentMotion = (state: RootState): MotionData | null => selectCurrentCommittee(state)?.motions?.find((motion) => motion.id == state.committees.currentMotionId) ?? null;
 
 export default committeesSlice.reducer;

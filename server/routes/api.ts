@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { UserWithToken } from '../../types';
-import * as Users from '../controllers/users';
+import { createUser, loginUserWithToken, loginUser } from '../controllers/users';
 import { isUsernameValid, isEmailValid, isPasswordValid, isDisplayNameValid } from '../controllers/validation';
 
 const router = Router();
@@ -14,7 +14,7 @@ router.post('/login', async (req, res) => {
 
     if (email && password) {
         try {
-            const [isLoggedIn, response] = await Users.loginUser(email, password);
+            const [isLoggedIn, response] = await loginUser(email, password);
             if (isLoggedIn) {
                 const data = response as UserWithToken;
                 res.status(200).json({ success: true, data });
@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
         }
     } else {
         try {
-            const response = await Users.getUserProfile(token);
+            const response = await loginUserWithToken(token);
             if (response) {
                 res.status(200).json({ success: true, data: response });
             } else {
@@ -56,7 +56,7 @@ router.post('signup', async (req, res) => {
     }
 
     try {
-        const [userCreated, response] = await Users.createUser(username, email, password, displayname);
+        const [userCreated, response] = await createUser(username, email, password, displayname);
         if (userCreated) {
             const data = response as UserWithToken;
             res.status(200).json({ success: true, data });

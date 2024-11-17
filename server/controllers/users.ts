@@ -1,18 +1,18 @@
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
-import { UserWithToken } from '../../types';
+import { CommitteeData, UserWithToken } from '../../types';
 import { Database } from '../db';
 import { User } from '../interfaces/user';
+import { populateCommitteeMembers } from './committees';
 
-const saltRounds = 10; // Typically a value between 10 and 12
 const sql = Database.getInstance();
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
 const users: User[] = [];
 
-const addToCache = (user: User) => {
+const addToCache = (user: User): void => {
     users.push(user);
 };
 
@@ -44,7 +44,7 @@ const loginUser = async (email: string, password: string): Promise<[boolean, str
     }
 };
 
-const getUserProfile = async (token: string): Promise<UserWithToken | null> => {
+const loginUserWithToken = async (token: string): Promise<UserWithToken | null> => {
     try {
         // Verify the token if it is present
         const decoded = await jwt.verify(token, SECRET_KEY);
@@ -60,7 +60,25 @@ const getUserProfile = async (token: string): Promise<UserWithToken | null> => {
     }
 };
 
-const debugUsers = () => {
+const getCommittees = async (id: string): Promise<CommitteeData[] | null> => {
+    return new Promise((resolve, reject) => {
+        sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [id, id], async (err, res) => {
+            if (!err) {
+                const data: CommitteeData[] = res.map((row: any) => ({
+                    ...row,
+                    members: JSON.parse(row.members)
+                }));
+
+                const clientTable = populateCommitteeMembers(data);
+                resolve(clientTable);
+            } else {
+                reject(null);
+            }
+        });
+    });
+};
+
+const debugUsers = (): void => {
     console.log(users);
 };
 
@@ -159,9 +177,14 @@ const findCachedUserByEmail = (email: string): User | null => {
 // Database query
 async function createUserQuery(username: string, email: string, password: string, displayname: string): Promise<[boolean, string]> {
     return new Promise((resolve, reject) => {
-        if (!displayname) displayname = username;
-        if (!sql.initialized) return reject(false);
-        bcrypt.genSalt(saltRounds, (err, salt) => {
+        if (!displayname) {
+            displayname = username;
+        }
+        if (!sql.initialized) {
+            return reject(false);
+        }
+
+        bcrypt.genSalt(10, (err, salt) => {
             if (err) {
                 // Handle error
                 return reject(err);
@@ -242,4 +265,4 @@ async function createUserQuery(username: string, email: string, password: string
     });
 }
 
-export { createUser, loginUser, getUserProfile, debugUsers, findUserById, findUserByEmail };
+export { createUser, loginUser, loginUserWithToken, getCommittees, debugUsers, findUserById, findUserByEmail };

@@ -20,6 +20,7 @@ type MotionData = {
     id: string;
     committeeId: string;
     authorId: string;
+    authorUsername?: string;
     title: string;
     flag: string;
     description: string;

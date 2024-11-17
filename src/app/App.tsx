@@ -66,7 +66,7 @@ const RoutedApp: FC = () => {
             setIsLoading(false);
         }
 
-        const debugSocket = (e: Event) => {
+        const debugSocket = (e: Event): void => {
             if ((e as KeyboardEvent).key === 'q') {
                 socket?.emit('test');
             }
@@ -74,7 +74,7 @@ const RoutedApp: FC = () => {
 
         document.addEventListener('keydown', debugSocket);
 
-        return () => {
+        return (): void => {
             document.removeEventListener('keydown', debugSocket);
         };
     }, []);
@@ -179,7 +179,7 @@ const router = createBrowserRouter([
                         element: <ControlPanel />
                     },
                     {
-                        path: 'active-motions',
+                        path: 'motions',
                         element: <ActiveMotions />
                     },
                     {

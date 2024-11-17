@@ -5,8 +5,8 @@ export default [
     {
         rules: {
             '@typescript-eslint/no-explicit-any': 'off',
-            'jsx-a11y/click-events-have-key-events': 'warn',
-            'jsx-a11y/no-static-element-interactions': 'warn'
+            'jsx-a11y/click-events-have-key-events': 'off',
+            'jsx-a11y/no-static-element-interactions': 'off'
         }
     }
 ];

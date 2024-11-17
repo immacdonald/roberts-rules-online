@@ -3,8 +3,8 @@ import { Database } from './db';
 const db = Database.getInstance();
 
 async function createUsersTable(): Promise<void> {
-    const exits = await db.query(`SHOW TABLES LIKE 'users'`);
-    if (exits.length <= 0) {
+    const exists = await db.query(`SHOW TABLES LIKE 'users'`);
+    if (exists.length <= 0) {
         const res = await db.query(`
 			CREATE TABLE IF NOT EXISTS users (
 				id varchar(64) NOT NULL,
@@ -23,11 +23,11 @@ async function createUsersTable(): Promise<void> {
 }
 
 async function createMotionsTable(): Promise<void> {
-    const exits = await db.query(`SHOW TABLES LIKE 'users'`);
-    if (exits.length <= 0) {
+    const exists = await db.query(`SHOW TABLES LIKE 'motions'`);
+    if (exists.length <= 0) {
         const res = await db.query(`
 			CREATE TABLE IF NOT EXISTS motions (
-                id int(11) NOT NULL,
+                id varchar(64) NOT NULL,
                 committeeId varchar(32) NOT NULL,
                 authorId varchar(32) NOT NULL,
                 title longtext NOT NULL,
