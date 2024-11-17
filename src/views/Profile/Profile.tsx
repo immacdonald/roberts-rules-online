@@ -22,13 +22,13 @@ const Profile: FC = () => {
                 <hr />
                 <h3>Account Settings</h3>
                 <p>
-                    <b>Name:</b> {user.displayname}
+                    <b>Name:</b> {user!.displayname}
                 </p>
                 <p>
-                    <b>Username:</b> {user.username}
+                    <b>Username:</b> {user!.username}
                 </p>
                 <p>
-                    <b>Email:</b> {user.email}
+                    <b>Email:</b> {user!.email}
                 </p>
             </section>
         </Page>

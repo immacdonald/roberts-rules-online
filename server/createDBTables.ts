@@ -33,6 +33,7 @@ async function createMotionsTable(): Promise<void> {
                 title longtext NOT NULL,
                 flag longtext NOT NULL,
                 description longtext NOT NULL,
+                comments longtext NOT NULL,
                 vote longtext NOT NULL,
                 summary longtext NOT NULL,
                 relatedId varchar(32) DEFAULT NULL,

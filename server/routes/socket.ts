@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
+import { Sentiment } from '../../types';
 import { createCommittee, getCommitteeById } from '../controllers/committees';
 import { addUserConnection, removeUserConnection } from '../controllers/connections';
 import { getCommittees } from '../controllers/users';
@@ -40,7 +41,7 @@ const setupSocketHandlers = (io: Server): void => {
         // Add socket to the connections hashmap upon initial connection
         addUserConnection(socket.data.id, socket);
 
-        const userId = socket.data.id;
+        const userId: string = socket.data.id;
 
         // General testing socket endpoint for debugging the backend (triggered by 'Q' on the website)
         socket.on('test', () => {
@@ -161,6 +162,24 @@ const setupSocketHandlers = (io: Server): void => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
                 committee.setMotionSummary(motionId, userId, summary);
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('addMotionComment', async (committeeId: string, motionId: string, sentiment: Sentiment, comment: string, parentCommentId?: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.addMotionComment(motionId, userId, sentiment, comment, parentCommentId);
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('removeMotionComment', async (committeeId: string, motionId: string, commentId: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.removeMotionComment(motionId, userId, commentId);
             } else {
                 console.log('Committee not found to modify motion');
             }
