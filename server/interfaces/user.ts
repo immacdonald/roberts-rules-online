@@ -1,9 +1,9 @@
 import { compare } from 'bcrypt';
 import { Socket } from 'socket.io';
 import { CommitteeData } from '../../types';
-import * as Committees from '../controllers/committees';
 import { Database } from '../db';
 import { Motion } from './motion';
+import { getCommitteeById, populateCommitteeMembers } from '../controllers/committees';
 
 const sql = Database.getInstance();
 
@@ -43,7 +43,7 @@ export class User {
                             members: JSON.parse(row.members)
                         }));
 
-                        const clientTable = await Committees.populateCommitteeMembers(data);
+                        const clientTable = await populateCommitteeMembers(data);
                         this.socket!.emit('setCommittees', clientTable);
                         //this.socket.emit('setCommittees', data);
                     }
@@ -51,29 +51,29 @@ export class User {
             });
 
             this.socket.on('getMotions', async (committeeId) => {
-                if (!committeeId) {
-                    return;
-                }
-                const thisCommittee = Committees.getCommitteeById(committeeId);
-                if (thisCommittee) {
-                    if (thisCommittee.isMember(this.id)) {
-                        const motions = await thisCommittee.getMotions();
-                        if (motions) {
-                            console.log('Motions were sent to all clients');
+                if (committeeId) {
+                    const thisCommittee = getCommitteeById(committeeId);
+                    if (thisCommittee) {
+                        if (thisCommittee.isMember(this.id)) {
+                            const motions = await thisCommittee.getMotions();
+                            if (motions) {
+                                console.log('Motions were sent to all clients');
+                            }
+                        } else {
+                            console.log('User is not a member');
+                            this.socket!.emit('setMotions', []);
                         }
                     } else {
-                        console.log('User is not a member');
-                        return this.socket!.emit('setMotions', []);
+                        console.log('Committee not found');
+                        this.socket!.emit('setMotions', []);
                     }
-                } else {
-                    console.log('Committee not found');
-                    return this.socket!.emit('setMotions', []);
                 }
+
             });
 
             this.socket.on('createMotion', async (data) => {
                 console.log('Creating motion', data);
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     console.log('Committee found');
                     if (thisCommittee.isMember(this.id)) {
@@ -93,7 +93,7 @@ export class User {
             });
 
             this.socket.on('motion.changeTitle', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
@@ -109,7 +109,7 @@ export class User {
             });
 
             this.socket.on('motion.setFlag', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
@@ -125,7 +125,7 @@ export class User {
             });
 
             this.socket.on('motion.setVote', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
@@ -141,7 +141,7 @@ export class User {
             });
 
             this.socket.on('motion.removeVote', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
@@ -157,7 +157,7 @@ export class User {
             });
 
             this.socket.on('motion.setSummary', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
@@ -173,7 +173,7 @@ export class User {
             });
 
             this.socket.on('motion.setDescription', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
@@ -189,7 +189,7 @@ export class User {
             });
 
             this.socket.on('motion.attachMotion', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
@@ -205,7 +205,7 @@ export class User {
             });
 
             this.socket.on('motion.detachMotion', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
@@ -221,7 +221,7 @@ export class User {
             });
 
             this.socket.on('motion.setDecisionTime', (data) => {
-                const thisCommittee = Committees.getCommitteeById(data.committeeId);
+                const thisCommittee = getCommitteeById(data.committeeId);
                 if (thisCommittee) {
                     if (thisCommittee.isMember(this.id)) {
                         const motion: Motion | null = thisCommittee.getMotionById(data.id) ?? null;
