@@ -1,6 +1,7 @@
 import { FC, ReactNode } from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
-import { useWebsiteContext } from '../contexts/useWebsiteContext';
+import { selectIsLoggedIn } from '../features/userSlice';
 
 interface ProtectedRoute {
     redirect?: string;
@@ -8,7 +9,7 @@ interface ProtectedRoute {
 }
 
 const ProtectedRoute: FC<ProtectedRoute> = ({ redirect = '/login', children }) => {
-    const { isLoggedIn } = useWebsiteContext();
+    const isLoggedIn = useSelector(selectIsLoggedIn);
 
     if (!isLoggedIn) {
         return <Navigate to={redirect} />;

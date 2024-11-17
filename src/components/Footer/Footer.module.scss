@@ -7,8 +7,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: start;
-    padding-inline: 2rem;
-    padding-top: 1rem;
+    padding-inline: var(--space-lg);
+    padding-top: var(--space);
     border-bottom: var(--border);
 
     a {
@@ -21,7 +21,7 @@
         display: flex;
         align-items: start;
         justify-content: space-evenly;
-        gap: 16px;
+        gap: var(--space);
 
         > div {
             width: 100%;
@@ -35,7 +35,7 @@
 
             p,
             a {
-                font-size: 0.875rem;
+                font-size: var(--font-sm);
             }
         }
 
@@ -46,6 +46,6 @@
 
     .copyright {
         margin-top: auto;
-        margin-bottom: 1rem;
+        margin-bottom: var(--space);
     }
 }

@@ -1,31 +1,35 @@
 import { FC } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { useWebsiteContext } from '../../contexts/useWebsiteContext';
-import style from './Header.module.scss';
+import { RobertRulesOnlineIcon } from '../../assets/icons';
+import { logout, selectIsLoggedIn } from '../../features/userSlice';
+import styles from './Header.module.scss';
 
 const Header: FC = () => {
-    const { isLoggedIn, logout } = useWebsiteContext();
+    const dispatch = useDispatch();
+    const isLoggedIn = useSelector(selectIsLoggedIn);
 
     return (
-        <header className={style.header}>
-            <div className={style.logo}>
+        <header className={styles.header}>
+            <Link to="/" className={styles.logo}>
+                <RobertRulesOnlineIcon />
                 <span>
                     <b>Robert's Rules Online</b>
                 </span>
-            </div>
-            <nav className={style.nav}>
+            </Link>
+            <nav className={styles.nav}>
                 <Link to="/" data-button-type="ghost">
                     Home
                 </Link>
-                <Link to="/committees" data-button-type="ghost">
-                    Committees
-                </Link>
                 {isLoggedIn ? (
                     <>
-                        <button onClick={() => logout()} data-button-type="primary">
+                        <Link to="/committees" data-button-type="ghost">
+                            Committees
+                        </Link>
+                        <button onClick={() => dispatch(logout())} data-button-type="primary">
                             Logout
                         </button>
-                        <Link to="/profile" className={style.profile} />
+                        <Link to="/profile" className={styles.profile} />
                     </>
                 ) : (
                     <>
@@ -33,7 +37,7 @@ const Header: FC = () => {
                             Login
                         </Link>
                         <Link to="/register" data-button-type="primary">
-                            Register
+                            Sign Up
                         </Link>
                     </>
                 )}

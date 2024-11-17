@@ -1,0 +1,14 @@
+.toggleSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggleText {
+    font-size: var(--font-lg);
+    font-weight: bold;
+}
+
+.toggle {
+    margin-right: var(--space-sm);
+}

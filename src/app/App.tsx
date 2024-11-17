@@ -1,44 +1,132 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { User } from 'server/interfaces/user';
+import { Socket } from 'socket.io-client';
+import { CommitteeData, MotionData } from 'types';
+import { login } from '../auth';
+import { Loading } from '../components';
 import { ProtectedRoute } from '../components/ProtectedRoute';
-import { useWebsiteContext } from '../contexts/useWebsiteContext';
-import { WebsiteContextProvider } from '../contexts/WebsiteContext';
-import { socket } from '../socket';
-import { Registration, ActiveMotions, PastMotions, MotionVote, ControlPanel, Home, Login, NotFound, Profile, ViewCommittees, CommitteeViewUsers, CommitteeView, CommitteeHome } from '../views';
+import { selectCommittees, setCommitteeMotions, setCommittees } from '../features/committeesSlice';
+import store from '../features/store';
+import { selectUser, setUser } from '../features/userSlice';
+import { disconnectSocket, initializeSocket, socket } from '../socket';
+import {
+    Registration,
+    ActiveMotions,
+    PastMotions,
+    ControlPanel,
+    Home,
+    Login,
+    NotFound,
+    Profile,
+    ViewCommittees,
+    CommitteeViewUsers,
+    CommitteeView,
+    CommitteeHome,
+    MotionVote,
+    MotionView
+} from '../views';
 
 const RoutedApp: FC = () => {
-    const { user, setUser, setCommittees } = useWebsiteContext();
+    const dispatch = useDispatch();
+    const user = useSelector(selectUser);
+    const committees = useSelector(selectCommittees);
+    const committeesRef = useRef<CommitteeData[] | null>(committees);
 
-    socket.on('chatMessage', (msg: any) => {
-        console.log('Message:' + msg);
-    });
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    socket.on('login', (user: { id: string; username: string; displayname: string; email: string }, token: string) => {
-        console.log(`Logged in as ${user.email}`);
-        localStorage.setItem('token', token);
-        setUser(user);
+    const [socketInternal, setSocketInternal] = useState<Socket | null>(null);
 
-        setTimeout(() => {
-            socket.emit('getCommittees');
-        }, 1000);
-    });
+    // Initialize the app and check whether the user session should be resumed
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            login(undefined, undefined, token).then((user: User | null) => {
+                if (user) {
+                    dispatch(setUser(user));
 
-    socket.on('setCommittees', (committees: any) => {
-        console.log('In RoutedApp', committees);
-        setCommittees(committees);
-		// socket.emit('createMotion', {
-		// 	committeeId: committees[0].id,
-		// 	title: "Test Motion"
-		// });
-    });
+                    const maxCommitteeWaitTime = 5000;
+                    const committeeRetryDelay = 100;
 
-    socket.on('failedRegister', (msg: any) => {
-        alert(msg);
-    });
+                    const startTime = Date.now();
+
+                    const interval = setInterval(() => {
+                        if (committeesRef.current || Date.now() - startTime >= maxCommitteeWaitTime) {
+                            clearInterval(interval);
+                            setIsLoading(false);
+                        }
+                    }, committeeRetryDelay);
+                } else {
+                    localStorage.removeItem('token');
+                    setIsLoading(false);
+                }
+            });
+        } else {
+            setIsLoading(false);
+        }
+
+        const debugSocket = (e: Event): void => {
+            if ((e as KeyboardEvent).key === 'q') {
+                socket?.emit('test');
+            }
+        };
+
+        document.addEventListener('keydown', debugSocket);
+
+        return (): void => {
+            document.removeEventListener('keydown', debugSocket);
+        };
+    }, []);
 
     useEffect(() => {
-        console.log('Set user to', user);
+        if (user) {
+            setSocketInternal(initializeSocket());
+        } else {
+            disconnectSocket();
+            setSocketInternal(null);
+        }
     }, [user]);
+
+    useEffect(() => {
+        // Keep the ref updated with the latest value of committees to avoid stale data
+        committeesRef.current = committees;
+    }, [committees]);
+
+    // Update socket listeners each time the socket is opened or closed
+    useEffect(() => {
+        if (socket) {
+            // Register socket event listeners
+            socket.on('chatMessage', (msg: any) => {
+                console.log('Message:', msg);
+            });
+
+            socket.on('setCommittees', (committees: CommitteeData[]) => {
+                //console.log('Got committees', committees);
+                dispatch(setCommittees(committees));
+            });
+
+            socket.on('setMotions', (motions: MotionData[]) => {
+                console.log('Setting motions', motions);
+                dispatch(setCommitteeMotions(motions));
+            });
+
+            socket!.emit('getCommittees');
+        }
+
+        // Cleanup function to remove listeners if socket changes or on component unmount
+        return (): void => {
+            if (socket) {
+                socket.off('chatMessage');
+                socket.off('setCommittees');
+                socket.off('setMotions');
+            }
+        };
+    }, [socketInternal]);
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
     return <Outlet />;
 };
@@ -66,7 +154,11 @@ const router = createBrowserRouter([
             },
             {
                 path: '/committees',
-                element: <ViewCommittees />
+                element: (
+                    <ProtectedRoute>
+                        <ViewCommittees />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: '/committees/:id',
@@ -87,7 +179,7 @@ const router = createBrowserRouter([
                         element: <ControlPanel />
                     },
                     {
-                        path: 'active-motions',
+                        path: 'motions',
                         element: <ActiveMotions />
                     },
                     {
@@ -95,12 +187,24 @@ const router = createBrowserRouter([
                         element: <PastMotions />
                     },
                     {
-                        path: 'motion-vote',
-                        element: <MotionVote />
-                    },
-                    {
                         path: 'users',
                         element: <CommitteeViewUsers />
+                    },
+                    {
+                        path: 'motions/:motion',
+                        element: (
+                            <ProtectedRoute>
+                                <MotionView>
+                                    <Outlet />
+                                </MotionView>
+                            </ProtectedRoute>
+                        ),
+                        children: [
+                            {
+                                path: '',
+                                element: <MotionVote />
+                            }
+                        ]
                     }
                 ]
             },
@@ -114,9 +218,9 @@ const router = createBrowserRouter([
 
 const App: FC = () => {
     return (
-        <WebsiteContextProvider>
+        <Provider store={store}>
             <RouterProvider router={router} />
-        </WebsiteContextProvider>
+        </Provider>
     );
 };
 

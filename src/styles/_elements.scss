@@ -41,7 +41,7 @@ section {
 
     width: 100%;
     padding-inline: max(calc((100% - #{$max-width}) / 2), #{$min-padding});
-    padding-block: 2rem;
+    padding-block: var(--space-lg);
 }
 
 a {
@@ -69,7 +69,7 @@ input {
     width: 100%;
     height: 38px;
     font-family: var(--font);
-    font-size: 1rem;
+    font-size: var(--font-md);
     padding-inline: var(--space);
     background-color: var(--color-background);
     border: var(--border);
@@ -90,8 +90,9 @@ button,
     padding: var(--space-sm);
     text-align: center;
     text-decoration: none;
+    white-space: nowrap;
     display: inline-block;
-    font-size: 1rem;
+    font-size: var(--font-md);
     font-weight: 600;
     cursor: pointer;
     border-radius: var(--border-radius);
@@ -102,11 +103,20 @@ button,
         background-color: var(--color-primary);
         color: var(--color-text-inverse);
         border: none;
+
+        &[data-button-context='critical'] {
+            background-color: var(--color-critical);
+        }
     }
 
     &[data-button-type='secondary'] {
         border: var(--border);
         background-color: var(--color-foreground);
+        color: var(--color-text);
+
+        &[data-button-context='critical'] {
+            border-color: var(--color-critical);
+        }
     }
 
     &[data-button-type='ghost'] {
@@ -115,7 +125,12 @@ button,
         font-weight: normal;
     }
 
-    &:hover {
+    &[disabled] {
+        cursor: not-allowed;
+        filter: grayscale(0.4) brightness(0.9);
+    }
+
+    &:not([disabled]):hover {
         filter: brightness(0.95);
         text-decoration: none;
     }
@@ -136,3 +151,43 @@ h3 {
 hr {
     margin-block: var(--space);
 }
+
+::selection {
+    background-color: #09bc8a20;
+}
+
+// react-toggle override styling for parity with design system
+/* stylelint-disable */
+.react-toggle-track {
+    background-color: var(--color-primary-dark);
+}
+
+.react-toggle--checked .react-toggle-track {
+    background-color: var(--color-primary);
+}
+
+.react-toggle:hover:not(.react-toggle--disabled) .react-toggle-track {
+    background-color: var(--color-primary-dark);
+}
+
+.react-toggle--checked:hover:not(.react-toggle--disabled) .react-toggle-track {
+    background-color: var(--color-primary);
+}
+
+.react-toggle--checked .react-toggle-thumb {
+    border-color: var(--color-primary);
+}
+
+.react-toggle:active:not(.react-toggle--disabled) .react-toggle-thumb {
+    box-shadow: none;
+}
+
+.react-toggle--focus .react-toggle-thumb {
+    box-shadow: none;
+}
+
+.react-toggle--checked:active:not(.react-toggle--disabled) .react-toggle-thumb {
+    box-shadow: 0 0 2px 2px var(--color-primary);
+}
+
+/* stylelint-enable */

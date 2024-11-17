@@ -1,0 +1,25 @@
+.background {
+    background-image: radial-gradient(var(--color-primary), white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    font-size: var(--font-xl);
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.formGroup {
+    width: 600px;
+    border: var(--border);
+    padding: var(--space-lg);
+    text-align: center;
+    background-color: var(--color-foreground);
+    border-radius: var(--border-radius);
+}
+
+.form {
+    margin-bottom: var(--space);
+}
