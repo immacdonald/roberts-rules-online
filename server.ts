@@ -10,6 +10,9 @@ const port = 3000;
 const app: Express = express();
 app.use(express.json());
 
+// Determine environment to set CORS origin
+const origin = process.env.NODE_ENV == 'production' ? 'https://roberts-rules-online.vercel.app' : `http://localhost:${port}`;
+
 // Initialize database
 const database = await createDatabase();
 
@@ -35,7 +38,7 @@ app.use('/api/v1', apiRoutes);
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: `http://localhost:${port}`
+        origin
     }
 });
 
@@ -57,5 +60,5 @@ app.use(express.static('static'));
 setupSocketHandlers(io);
 
 server.listen(port, () => {
-    console.log(`Robert's Rules Online listening at http://localhost:${port}`);
+    console.log(`Robert's Rules Online listening at ${origin}`);
 });

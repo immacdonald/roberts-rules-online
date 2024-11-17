@@ -1,7 +1,9 @@
 import { User } from 'server/interfaces/user';
 
+const urlBase = process.env.NODE_ENV == 'production' ? 'https://roberts-rules-online.vercel.app' : 'http://localhost:3000';
+
 const login = async (email?: string, password?: string, token?: string): Promise<User | null> => {
-    const url = 'http://localhost:3000/api/v1/login';
+    const url = `${urlBase}/api/v1/login`;
 
     const options: RequestInit = {
         method: 'POST',
@@ -27,7 +29,7 @@ const login = async (email?: string, password?: string, token?: string): Promise
 };
 
 const signup = async (username: string, email: string, password: string, displayname: string): Promise<User | null> => {
-    const url = 'http://localhost:3000/api/v1/signup';
+    const url = `${urlBase}/api/v1/signup`;
 
     const options: RequestInit = {
         method: 'POST',
