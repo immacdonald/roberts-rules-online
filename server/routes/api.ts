@@ -21,8 +21,9 @@ router.post('/login', async (req, res) => {
             } else {
                 res.status(401).json({ success: false, message: response });
             }
-        } catch (error) {
-            res.status(500).json({ success: false, message: error.message });
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown Error';
+            res.status(500).json({ success: false, message });
         }
     } else {
         try {
@@ -32,8 +33,9 @@ router.post('/login', async (req, res) => {
             } else {
                 res.status(401).json({ success: false, message: 'Invalid or expired token.' });
             }
-        } catch (error) {
-            res.status(500).json({ success: false, message: error.message });
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown Error';
+            res.status(500).json({ success: false, message });
         }
     }
 });
@@ -43,28 +45,26 @@ router.post('signup', async (req, res) => {
 
     const [validUsername, error] = isUsernameValid(username);
     if (!validUsername) {
-        return res.status(500).json({ success: false, message: error });
-    }
-    if (!isEmailValid(email)) {
-        return res.status(400).json({ success: false, message: 'Email is not valid.' });
-    }
-    if (!isPasswordValid(password)) {
-        return res.status(400).json({ success: false, message: 'Password is not valid.' });
-    }
-    if (!isDisplayNameValid(displayname)) {
-        return res.status(400).json({ success: false, message: 'Display name is not valid.' });
-    }
-
-    try {
-        const [userCreated, response] = await createUser(username, email, password, displayname);
-        if (userCreated) {
-            const data = response as UserWithToken;
-            res.status(200).json({ success: true, data });
-        } else {
-            res.status(401).json({ success: false, message: response });
+        res.status(500).json({ success: false, message: error });
+    } else if (!isEmailValid(email)) {
+        res.status(400).json({ success: false, message: 'Email is not valid.' });
+    } else if (!isPasswordValid(password)) {
+        res.status(400).json({ success: false, message: 'Password is not valid.' });
+    } else if (!isDisplayNameValid(displayname)) {
+        res.status(400).json({ success: false, message: 'Display name is not valid.' });
+    } else {
+        try {
+            const [userCreated, response] = await createUser(username, email, password, displayname);
+            if (userCreated) {
+                const data = response as UserWithToken;
+                res.status(200).json({ success: true, data });
+            } else {
+                res.status(401).json({ success: false, message: response });
+            }
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown Error';
+            res.status(500).json({ success: false, message });
         }
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
     }
 });
 

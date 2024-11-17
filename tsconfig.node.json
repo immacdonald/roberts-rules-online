@@ -2,7 +2,8 @@
     "extends": "phantom-config/tsconfig",
     "compilerOptions": {
         "noEmit": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "outDir": "dist"
     },
     "include": ["vite.config.ts"]
 }

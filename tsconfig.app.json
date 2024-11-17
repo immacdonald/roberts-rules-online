@@ -1,10 +1,13 @@
 {
     "extends": "phantom-config/tsconfig",
     "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "target": "es2022",
         "outDir": "dist",
         "baseUrl": ".",
         "noEmit": true,
         "skipLibCheck": true
     },
-    "include": ["src", "server"]
+    "include": ["src", "server", "server.ts", "types.ts", "vite.config.ts", "eslint.config.js"]
 }
