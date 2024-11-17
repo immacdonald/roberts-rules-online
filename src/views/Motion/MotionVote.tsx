@@ -1,8 +1,8 @@
 import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectCurrentMotion } from '../../features/committeesSlice';
-import styles from './Motion.module.scss';
 import { socket } from '../../socket';
+import styles from './Motion.module.scss';
 
 type Sentiment = 'positive' | 'negative' | 'neutral';
 
@@ -40,12 +40,12 @@ const MotionVote: FC = () => {
     const [editMode, setEditMode] = useState<boolean>(false);
     const [editMotionTitle, setEditMotionTitle] = useState<string>(motion.title);
 
-    const updateMotionTitle = () => {
+    const updateMotionTitle = (): void => {
         if (editMotionTitle.length > 0) {
-            socket!.emit("changeMotionTitle", motion.committeeId, motion.id, editMotionTitle)
+            socket!.emit('changeMotionTitle', motion.committeeId, motion.id, editMotionTitle);
             setEditMode(false);
         }
-    }
+    };
 
     return (
         <section>
@@ -60,13 +60,19 @@ const MotionVote: FC = () => {
                             {!editMode ? (
                                 <>
                                     <h1>{motion.title}</h1>
-                                    <button data-button-type='ghost' onClick={() => setEditMode(true)} style={{ marginLeft: "auto" }}>Edit</button>
+                                    <button data-button-type="ghost" onClick={() => setEditMode(true)} style={{ marginLeft: 'auto' }}>
+                                        Edit
+                                    </button>
                                 </>
                             ) : (
                                 <>
-                                    <input type='text' onChange={(ev) => setEditMotionTitle(ev.target.value)} value={editMotionTitle} className={styles.titleEdit} />
-                                    <button data-button-type='secondary' onClick={() => setEditMode(false)}>Cancel</button>
-                                    <button data-button-type='primary' onClick={() => updateMotionTitle()}>Change Title</button>
+                                    <input type="text" onChange={(ev) => setEditMotionTitle(ev.target.value)} value={editMotionTitle} className={styles.titleEdit} />
+                                    <button data-button-type="secondary" onClick={() => setEditMode(false)}>
+                                        Cancel
+                                    </button>
+                                    <button data-button-type="primary" onClick={() => updateMotionTitle()}>
+                                        Change Title
+                                    </button>
                                 </>
                             )}
                         </header>

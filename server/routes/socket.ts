@@ -38,16 +38,17 @@ const setupSocketHandlers = (io: Server): void => {
         console.log(`Client is connected (${socket.data.username})`);
 
         // Add socket to the connections hashmap upon initial connection
-        addUserConnection(socket.data.id, socket)
+        addUserConnection(socket.data.id, socket);
+
+        const userId = socket.data.id;
 
         // General testing socket endpoint for debugging the backend (triggered by 'Q' on the website)
         socket.on('test', () => {
-            //Users.debugUsers();
+            //debugUsers();
         });
 
         socket.on('getCommittees', async () => {
-            const id = socket.data.id;
-            const committees = await getCommittees(id);
+            const committees = await getCommittees(userId);
 
             if (committees) {
                 socket.emit('setCommittees', committees);
@@ -57,50 +58,111 @@ const setupSocketHandlers = (io: Server): void => {
         });
 
         socket.on('createCommittee', async (name: string, description: string) => {
-            createCommittee(name, description, socket.data.id, [{ id: socket.data.id, role: 'owner' }]);
+            createCommittee(name, description, userId, [{ id: userId, role: 'owner' }]);
         });
 
-        socket.on('getMotions', async (committeeId) => {
-            if (!committeeId) {
-                return;
-            }
+        socket.on('getMotions', async (committeeId: string) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
                 const motions = await committee.getMotions();
-                //console.log("Got motions", motions);
                 if (motions) {
                     socket.emit('setMotions', motions);
                 }
             } else {
                 console.log('Committee not found');
-                return socket.emit('setMotions', []);
+                socket.emit('setMotions', []);
             }
         });
 
-        socket.on('createMotion', async (committeeId, title) => {
-            if (!committeeId) {
-                return;
-            }
-
+        socket.on('createMotion', async (committeeId: string, title: string, description?: string, relatedMotionId?: string) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
-                const id = socket.data.id;
-                committee.createMotion(id, title);
+                committee.createMotion(userId, title, description, relatedMotionId);
             } else {
                 console.log('Committee not found to create motion');
             }
         });
 
-        socket.on("changeMotionTitle", async (committeeId: string, motionId: string, title: string) => {
-            if (!committeeId) {
-                return;
-            }
-
+        socket.on('changeMotionTitle', async (committeeId: string, motionId: string, title: string) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
-                committee.changeMotionTitle(motionId, title);
+                committee.changeMotionTitle(motionId, userId, title);
             } else {
-                console.log('Committee not found to create motion');
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('changeMotionDescription', async (committeeId: string, motionId: string, description: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.changeMotionDescription(motionId, userId, description);
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('setMotionFlag', async (committeeId: string, motionId: string, flag: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.setMotionFlag(motionId, userId, flag);
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('addMotionVote', async (committeeId: string, motionId: string, vote: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.addMotionVote(motionId, userId, vote);
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('removeMotionVote', async (committeeId: string, motionId: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.removeMotionVote(motionId, userId);
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('setMotionRelatedTo', async (committeeId: string, motionId: string, relatedId: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.setMotionRelatedTo(motionId, userId, relatedId);
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('unsetMotionRelatedTo', async (committeeId: string, motionId: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                // Use '' to unset the motion's related field
+                committee.setMotionRelatedTo(motionId, userId, '');
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('changeMotionDecisionTime', async (committeeId: string, motionId: string, decisionTime: string | number) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                const time: number = typeof decisionTime == 'string' ? parseInt(decisionTime) : decisionTime;
+                committee.changeMotionDecisionTime(motionId, userId, time);
+            } else {
+                console.log('Committee not found to modify motion');
+            }
+        });
+
+        socket.on('setMotionSummary', async (committeeId: string, motionId: string, summary: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.setMotionSummary(motionId, userId, summary);
+            } else {
+                console.log('Committee not found to modify motion');
             }
         });
 

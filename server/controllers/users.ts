@@ -16,15 +16,22 @@ const addToCache = (user: User): void => {
     users.push(user);
 };
 
+const signUserToken = (id: string): string => {
+    return jwt.sign({ id }, SECRET_KEY, { expiresIn: '1h' });
+};
+
 const createUser = async (username: string, email: string, password: string, displayname: string): Promise<(boolean | string | UserWithToken)[]> => {
     const res = await createUserQuery(username, email, password, displayname);
+
     if (!res || !res[0]) {
         return [false, res[1]];
     }
+
     const idAndDate: string = res[1] as string;
     const user = new User(idAndDate.split('+')[0], username, email, password, displayname, idAndDate.split('+')[1]);
     addToCache(user);
-    const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+
+    const token = signUserToken(user.id);
     return [true, { user, token }];
 };
 
@@ -36,7 +43,7 @@ const loginUser = async (email: string, password: string): Promise<[boolean, str
     }
 
     if (await user.isPasswordCorrect(password)) {
-        const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+        const token = signUserToken(user.id);
 
         return [true, { user, token }];
     } else {

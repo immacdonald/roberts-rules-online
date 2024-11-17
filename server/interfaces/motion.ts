@@ -114,15 +114,6 @@ export class Motion {
             [relatedId]
         );
     }
-    /*
-	public detachMotion(): void {
-		this.relatedId = '';
-		sql.query(`
-			UPDATE motions
-			SET relatedId = ''
-			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`)
-	}*/
 
     public setStatus(status: string): void {
         this.status = status;

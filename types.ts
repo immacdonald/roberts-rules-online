@@ -2,21 +2,21 @@ import { User } from './server/interfaces/user';
 
 type CommitteeRole = 'owner' | 'chair' | 'member' | 'observer';
 
-interface CommitteeMember {
+type CommitteeMember = {
     id: string;
     role: CommitteeRole;
     username?: string;
     displayname?: string;
-}
+};
 
-interface CommitteeData {
+type CommitteeData = {
     id: string;
     name: string;
     description: string;
     owner: string;
     members: CommitteeMember[];
     motions: MotionData[] | null;
-}
+};
 
 type MotionData = {
     id: string;
@@ -34,9 +34,9 @@ type MotionData = {
     creationDate: number;
 };
 
-interface UserWithToken {
+type UserWithToken = {
     user: User;
     token: string;
-}
+};
 
 export type { CommitteeMember, CommitteeData, CommitteeRole, MotionData, UserWithToken };

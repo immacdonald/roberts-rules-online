@@ -52,20 +52,6 @@ export class Committee {
         }
     }
 
-    public getMotions(): Promise<Motion[]> {
-        const motions = this.motions.getMotions();
-        return motions;
-    }
-
-    public getMotionById(id: string): Motion | null {
-        return this.motions.findMotion(id) ?? null;
-    }
-
-    public sendUpdatedMotions = async (): Promise<void> => {
-        const updatedMotions = await this.getMotions();
-        await this.sendToAllMembers('setMotions', updatedMotions);
-    }
-
     public canUserDoAction(userId: string, action: string): boolean {
         if (userId == this.owner) {
             // Owners can do everything
@@ -89,6 +75,21 @@ export class Committee {
         return this.owner === userId || this.members.some((member) => member.id == userId);
     }
 
+    public getMotions(): Promise<Motion[]> {
+        const motions = this.motions.getMotions();
+        return motions;
+    }
+
+    public getMotionById(id: string): Motion | null {
+        return this.motions.findMotion(id) ?? null;
+    }
+
+    public sendUpdatedMotions = async (): Promise<void> => {
+        const updatedMotions = await this.getMotions();
+        await this.sendToAllMembers('setMotions', updatedMotions);
+    };
+
+    // Motion creation/update methods
     public createMotion = async (userId: string, title: string, description?: string, relatedMotionId?: string): Promise<void> => {
         let id = nanoid(16);
         while (await doesMotionExist(id)) {
@@ -114,13 +115,81 @@ export class Committee {
             await this.motions.createMotion(info);
             await this.sendUpdatedMotions();
         }
-    }
+    };
 
-    public changeMotionTitle = async (motionId: string, title: string) => {
+    public changeMotionTitle = async (motionId: string, userId: string, title: string): Promise<void> => {
         const motion: Motion | null = this.getMotionById(motionId);
         if (motion) {
-            await motion.alterTitle(title);
-            await this.sendUpdatedMotions()
+            if (motion.authorId == userId) {
+                await motion.alterTitle(title);
+                await this.sendUpdatedMotions();
+            }
         }
-    }
+    };
+
+    public changeMotionDescription = async (motionId: string, userId: string, description: string): Promise<void> => {
+        const motion: Motion | null = this.getMotionById(motionId);
+        if (motion) {
+            if (motion.authorId == userId) {
+                await motion.setDescription(description);
+                await this.sendUpdatedMotions();
+            }
+        }
+    };
+
+    public setMotionFlag = async (motionId: string, userId: string, flag: string): Promise<void> => {
+        const motion: Motion | null = this.getMotionById(motionId);
+        if (motion) {
+            if (motion.authorId == userId) {
+                await motion.setFlag(flag);
+                await this.sendUpdatedMotions();
+            }
+        }
+    };
+
+    public addMotionVote = async (motionId: string, userId: string, vote: string): Promise<void> => {
+        const motion: Motion | null = this.getMotionById(motionId);
+        if (motion) {
+            await motion.addVote(userId, vote);
+            await this.sendUpdatedMotions();
+        }
+    };
+
+    public removeMotionVote = async (motionId: string, userId: string): Promise<void> => {
+        const motion: Motion | null = this.getMotionById(motionId);
+        if (motion) {
+            await motion.removeVote(userId);
+            await this.sendUpdatedMotions();
+        }
+    };
+
+    public setMotionRelatedTo = async (motionId: string, userId: string, relatedId: string): Promise<void> => {
+        const motion: Motion | null = this.getMotionById(motionId);
+        if (motion) {
+            if (motion.authorId == userId) {
+                await motion.attachMotion(relatedId);
+                await this.sendUpdatedMotions();
+            }
+        }
+    };
+
+    public changeMotionDecisionTime = async (motionId: string, userId: string, decisionTime: number): Promise<void> => {
+        const motion: Motion | null = this.getMotionById(motionId);
+        if (motion) {
+            if (motion.authorId == userId) {
+                await motion.setDecisionTime(decisionTime);
+                await this.sendUpdatedMotions();
+            }
+        }
+    };
+
+    public setMotionSummary = async (motionId: string, userId: string, summary: string): Promise<void> => {
+        const motion: Motion | null = this.getMotionById(motionId);
+        if (motion) {
+            if (motion.authorId == userId) {
+                await motion.setSummary(summary);
+                await this.sendUpdatedMotions();
+            }
+        }
+    };
 }
