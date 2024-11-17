@@ -4,6 +4,7 @@ import { CommitteeData } from '../../types';
 import { Committees } from '../controllers/committees';
 import { addUserConnection, removeUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
+import * as Users from '../controllers/users';
 import { Database } from '../db';
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
@@ -46,6 +47,11 @@ const setupSocketHandlers = (io: Server): void => {
 
         socket.on('chatMessage', (msg) => {
             console.log('message: ' + msg);
+        });
+
+        // General testing socket endpoint for debugging the backend (triggered by 'Q' on the website)
+        socket.on('test', () => {
+            //Users.debugUsers();
         });
 
         socket.on('getCommittees', async () => {

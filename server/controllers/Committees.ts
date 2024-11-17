@@ -3,7 +3,7 @@ import { CommitteeData } from '../../types';
 import { Database } from '../db';
 import { Committee } from '../interfaces/committee';
 import { User } from '../interfaces/user';
-import { Users } from './users';
+import * as Users from './users';
 
 const sql = Database.getInstance();
 
@@ -51,10 +51,7 @@ export class Committees {
     public async populateCommitteeMembers(committees: CommitteeData[]): Promise<CommitteeData[]> {
         for (let i = 0; i < committees.length; i++) {
             for (let j = 0; j < committees[i].members.length; j++) {
-                let user: User | undefined | null = Users.instance.findUserById(committees[i].members[j].id);
-                if (!user) {
-                    user = await Users.instance.getUserById(committees[i].members[j].id);
-                }
+                const user: User | null = await Users.findUserById(committees[i].members[j].id);
 
                 if (user) {
                     committees[i].members[j].displayname = user.displayname;

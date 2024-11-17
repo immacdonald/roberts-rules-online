@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { UserWithToken } from '../../types';
-import { Users as UsersClass } from '../controllers/users';
+import * as Users from '../controllers/users';
+import { isUsernameValid, isEmailValid, isPasswordValid, isDisplayNameValid } from '../controllers/validation';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.post('/login', async (req, res) => {
 
     if (email && password) {
         try {
-            const [isLoggedIn, response] = await UsersClass.instance.loginUser(email, password);
+            const [isLoggedIn, response] = await Users.loginUser(email, password);
             if (isLoggedIn) {
                 const data = response as UserWithToken;
                 res.status(200).json({ success: true, data });
@@ -25,7 +26,7 @@ router.post('/login', async (req, res) => {
         }
     } else {
         try {
-            const response = await UsersClass.instance.getUserProfile(token);
+            const response = await Users.getUserProfile(token);
             if (response) {
                 res.status(200).json({ success: true, data: response });
             } else {
@@ -40,22 +41,22 @@ router.post('/login', async (req, res) => {
 router.post('signup', async (req, res) => {
     const { username, email, password, displayname } = req.body;
 
-    const [validUsername, error] = UsersClass.instance.isUsernameValid(username);
+    const [validUsername, error] = isUsernameValid(username);
     if (!validUsername) {
         return res.status(500).json({ success: false, message: error });
     }
-    if (!UsersClass.instance.isEmailValid(email)) {
+    if (!isEmailValid(email)) {
         return res.status(400).json({ success: false, message: 'Email is not valid.' });
     }
-    if (!UsersClass.instance.isPasswordValid(password)) {
+    if (!isPasswordValid(password)) {
         return res.status(400).json({ success: false, message: 'Password is not valid.' });
     }
-    if (!UsersClass.instance.isDisplayNameValid(displayname)) {
+    if (!isDisplayNameValid(displayname)) {
         return res.status(400).json({ success: false, message: 'Display name is not valid.' });
     }
 
     try {
-        const [userCreated, response] = await UsersClass.instance.createUser(username, email, password, displayname);
+        const [userCreated, response] = await Users.createUser(username, email, password, displayname);
         if (userCreated) {
             const data = response as UserWithToken;
             res.status(200).json({ success: true, data });

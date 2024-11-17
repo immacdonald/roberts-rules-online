@@ -2,6 +2,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { User } from 'server/interfaces/user';
+import { Socket } from 'socket.io-client';
 import { CommitteeData, MotionData } from 'types';
 import { login } from '../auth';
 import { Loading } from '../components';
@@ -35,6 +36,8 @@ const RoutedApp: FC = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
+    const [socketInternal, setSocketInternal] = useState<Socket | null>(null);
+
     // Initialize the app and check whether the user session should be resumed
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -62,13 +65,26 @@ const RoutedApp: FC = () => {
         } else {
             setIsLoading(false);
         }
+
+        const debugSocket = (e: Event) => {
+            if ((e as KeyboardEvent).key === 'q') {
+                socket?.emit('test');
+            }
+        };
+
+        document.addEventListener('keydown', debugSocket);
+
+        return () => {
+            document.removeEventListener('keydown', debugSocket);
+        };
     }, []);
 
     useEffect(() => {
         if (user) {
-            initializeSocket();
+            setSocketInternal(initializeSocket());
         } else {
             disconnectSocket();
+            setSocketInternal(null);
         }
     }, [user]);
 
@@ -86,7 +102,7 @@ const RoutedApp: FC = () => {
             });
 
             socket.on('setCommittees', (committees: CommitteeData[]) => {
-                console.log('Got committees', committees);
+                //console.log('Got committees', committees);
                 dispatch(setCommittees(committees));
             });
 
@@ -106,7 +122,7 @@ const RoutedApp: FC = () => {
                 socket.off('setMotions');
             }
         };
-    }, [socket]);
+    }, [socketInternal]);
 
     if (isLoading) {
         return <Loading />;

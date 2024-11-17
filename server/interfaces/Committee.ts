@@ -2,12 +2,10 @@ import { nanoid } from 'nanoid';
 import { CommitteeMember } from '../../types';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
-import { Users as UsersClass } from '../controllers/users';
 import { Database } from '../db';
 import { Motion } from './motion';
 
 const sql = Database.getInstance();
-let Users: UsersClass;
 
 type MotionData = {
     id: string;
@@ -38,10 +36,6 @@ export class Committee {
     public motions: Motions;
 
     constructor(id: string, name: string, owner: string, members: string | CommitteeMember[]) {
-        if (!Users) {
-            Users = UsersClass.instance;
-        }
-
         this.id = id;
         this.name = name;
         this.owner = owner;
@@ -82,25 +76,21 @@ export class Committee {
     }
 
     public canUserDoAction(userId: string, action: string): boolean {
-        const user = Users.findUserById(userId);
-        if (user) {
-            if (userId === this.owner) {
-                // Owners can do everything
+        if (userId === this.owner) {
+            // Owners can do everything
+            return true;
+        }
+
+        const member = this.members.find((user: CommitteeMember) => user.id == userId);
+        if (member) {
+            // This is the permission system for committees
+            if (action === 'createMotion') {
                 return true;
             }
-
-            const member = this.members.find((user: CommitteeMember) => user.id == userId);
-            if (member) {
-                // this is the permission system for committees
-                if (action === 'createMotion') {
-                    return true;
-                }
-            } else {
-                console.log('User not member');
-            }
         } else {
-            console.log('User not found');
+            console.log('User not member');
         }
+
         return false;
     }
 

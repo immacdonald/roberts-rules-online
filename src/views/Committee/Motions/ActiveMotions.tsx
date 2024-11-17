@@ -77,7 +77,7 @@ const ActiveMotions: FC = () => {
                             <input type="text" name="motionTitle" id="motionTitle" required={true} onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} />
                         </fieldset>
                         <Modal.Actions>
-                            <button onClick={() => setCreateModal(false)} data-button-type="secondary">
+                            <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">
                                 Cancel
                             </button>
                             <button type="submit" id="createButton" data-button-type="primary">

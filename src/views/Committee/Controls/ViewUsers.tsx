@@ -73,7 +73,6 @@ const CommitteeViewUsers: FC = () => {
                 <ul className={styles.userList}>
                     {members.length > 0 ? (
                         members.map((user: CommitteeMember) => {
-                            console.log(user);
                             return <div key={user.id}>{getUser(user.displayname || 'Unknown', user.role, user.id)}</div>;
                         })
                     ) : (
@@ -95,7 +94,9 @@ const CommitteeViewUsers: FC = () => {
                             <input type="text" name="userName" id="userName" required={true} onChange={(ev) => setUserName(ev.target.value)} value={newUserName} />
                         </fieldset>
                         <Modal.Actions>
-                            <button onClick={() => setCreateModal(false)}>Cancel</button>
+                            <button type="button" onClick={() => setCreateModal(false)}>
+                                Cancel
+                            </button>
                             <button type="submit" id="submitUserButton" data-button-type="primary">
                                 Add User
                             </button>

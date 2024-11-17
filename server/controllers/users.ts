@@ -10,7 +10,154 @@ const sql = Database.getInstance();
 
 const SECRET_KEY = 'DEV_SECRET_KEY';
 
-async function createUser(username: string, email: string, password: string, displayname: string): Promise<[boolean, string]> {
+const users: User[] = [];
+
+const addToCache = (user: User) => {
+    users.push(user);
+};
+
+const createUser = async (username: string, email: string, password: string, displayname: string): Promise<(boolean | string | UserWithToken)[]> => {
+    const res = await createUserQuery(username, email, password, displayname);
+    if (!res || !res[0]) {
+        return [false, res[1]];
+    }
+    const idAndDate: string = res[1] as string;
+    const user = new User(idAndDate.split('+')[0], username, email, password, displayname, idAndDate.split('+')[1]);
+    addToCache(user);
+    const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+    return [true, { user, token }];
+};
+
+const loginUser = async (email: string, password: string): Promise<[boolean, string | UserWithToken]> => {
+    const user: User | null = await findUserByEmail(email);
+
+    if (!user) {
+        return [false, 'User not found'];
+    }
+
+    if (await user.isPasswordCorrect(password)) {
+        const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+
+        return [true, { user, token }];
+    } else {
+        return [false, 'Password is incorrect'];
+    }
+};
+
+const getUserProfile = async (token: string): Promise<UserWithToken | null> => {
+    try {
+        // Verify the token if it is present
+        const decoded = await jwt.verify(token, SECRET_KEY);
+
+        const user = await findUserById((decoded as { id: string }).id);
+        if (user) {
+            return { user, token };
+        } else {
+            return null;
+        }
+    } catch {
+        return null;
+    }
+};
+
+const debugUsers = () => {
+    console.log(users);
+};
+
+// Get methods query the database for the user
+const getUserByEmail = async (email: string): Promise<User | null> => {
+    return new Promise((resolve, reject) => {
+        if (!sql.initialized) {
+            return reject(false);
+        }
+        if (!email) {
+            return reject(false);
+        }
+
+        sql.query(`SELECT * FROM users WHERE email = ?`, [email], function (err, rows) {
+            if (!err) {
+                if (rows.length > 0) {
+                    const row = rows[0];
+                    const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
+
+                    // Add to users cache
+                    addToCache(user);
+                    return resolve(user);
+                } else {
+                    return resolve(null);
+                }
+            } else {
+                console.log('Error while performing Query: ' + err);
+                return reject(err);
+            }
+        });
+    });
+};
+
+const getUserById = async (id: string): Promise<User | null> => {
+    return new Promise((resolve, reject) => {
+        if (!sql.initialized) {
+            return reject(false);
+        }
+
+        if (!id) {
+            return reject(false);
+        }
+
+        sql.query(`SELECT * FROM users WHERE id = ?`, [id], (err, rows) => {
+            if (!err) {
+                if (rows.length > 0) {
+                    const row = rows[0];
+                    const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
+
+                    // Add to users cache
+                    addToCache(user);
+                    return resolve(user);
+                } else {
+                    return resolve(null);
+                }
+            } else {
+                console.log('Error while performing Query: ' + err);
+                return reject(err);
+            }
+        });
+    });
+};
+
+// Find methods first check the cache and then query the database
+const findUserById = async (id: string): Promise<User | null> => {
+    const cached = findCachedUserById(id);
+
+    if (cached) {
+        return cached;
+    } else {
+        const user = await getUserById(id);
+        return user;
+    }
+};
+
+const findUserByEmail = async (email: string): Promise<User | null> => {
+    const cached = findCachedUserByEmail(email);
+
+    if (cached) {
+        return cached;
+    } else {
+        const user = await getUserByEmail(email);
+        return user;
+    }
+};
+
+// findCached methods are to search the users cache array synchronously
+const findCachedUserById = (id: string): User | null => {
+    return users.find((user) => user.id === id) ?? null;
+};
+
+const findCachedUserByEmail = (email: string): User | null => {
+    return users.find((user) => user.email === email) ?? null;
+};
+
+// Database query
+async function createUserQuery(username: string, email: string, password: string, displayname: string): Promise<[boolean, string]> {
     return new Promise((resolve, reject) => {
         if (!displayname) displayname = username;
         if (!sql.initialized) return reject(false);
@@ -95,152 +242,4 @@ async function createUser(username: string, email: string, password: string, dis
     });
 }
 
-export class Users {
-    public static instance: Users = new Users();
-    private users: User[];
-    private constructor() {
-        this.users = [];
-    }
-    async createUser(username: string, email: string, password: string, displayname: string): Promise<(boolean | string | UserWithToken)[]> {
-        const res = await createUser(username, email, password, displayname);
-        if (!res || !res[0]) {
-            return [false, res[1]];
-        }
-        const idAndDate: string = res[1] as string;
-        const user = new User(idAndDate.split('+')[0], username, email, password, displayname, idAndDate.split('+')[1]);
-        this.users.push(user);
-        const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
-        return [true, { user, token }];
-    }
-    async loginUser(email: string, password: string): Promise<[boolean, string | UserWithToken]> {
-        let user: User | undefined | null = this.findUserByEmail(email);
-        if (!user) {
-            user = await this.getUserFromEmail(email);
-            if (user == null) {
-                return [false, 'User not found'];
-            }
-        }
-        if (await user.isPasswordCorrect(password)) {
-            const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
-            return [true, { user, token }];
-        } else {
-            return [false, 'Password is incorrect'];
-        }
-    }
-
-    async getUserProfile(token: string): Promise<UserWithToken | null> {
-        // Verify the token if it is present
-        try {
-            const decoded = await jwt.verify(token, SECRET_KEY);
-
-            const user = await this.getUserById((decoded as { id: string }).id);
-            if (user) {
-                return { user, token };
-            }
-
-            return null;
-        } catch {
-            return null;
-        }
-    }
-
-    // Get Names are to query the database for the user
-    getUserFromEmail(email: string): Promise<User | null> {
-        return new Promise((resolve, reject) => {
-            if (!sql.initialized) {
-                return reject(false);
-            }
-            if (!email) {
-                return reject(false);
-            }
-
-            sql.query(`SELECT * FROM users WHERE email = ?`, [email], function (err, rows) {
-                if (!err) {
-                    if (rows.length > 0) {
-                        const row = rows[0];
-                        const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
-                        return resolve(user);
-                    } else {
-                        return resolve(null);
-                    }
-                } else {
-                    console.log('Error while performing Query: ' + err);
-                    return reject(err);
-                }
-            });
-        });
-    }
-    getUserById(id: string): Promise<User | null> {
-        return new Promise((resolve, reject) => {
-            if (!sql.initialized) {
-                return reject(false);
-            }
-
-            if (!id) {
-                return reject(false);
-            }
-
-            sql.query(`SELECT * FROM users WHERE id = ?`, [id], (err, rows) => {
-                if (!err) {
-                    if (rows.length > 0) {
-                        const row = rows[0];
-                        const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
-
-                        // Add to users cache
-                        this.users.push(user);
-                        return resolve(user);
-                    } else {
-                        return resolve(null);
-                    }
-                } else {
-                    console.log('Error while performing Query: ' + err);
-                    return reject(err);
-                }
-            });
-        });
-    }
-
-    // Find Names are to search the users array
-    findUserById(id: string): User | undefined {
-        return this.users.find((user) => user.id === id);
-    }
-    findUserByUsername(username: string): User | undefined {
-        return this.users.find((user) => user.username === username);
-    }
-    findUserByEmail(email: string): User | undefined {
-        return this.users.find((user) => user.email === email);
-    }
-
-    // Checkers
-    isEmailValid(email: string): boolean {
-        if (!email) return false;
-        if (email.length < 5) return false;
-        if (email.length > 320) return false;
-        // make sure there is text then an @ then text then a . then text
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
-        return true;
-    }
-    isUsernameValid(username: string): Array<boolean | string> {
-        if (!username) return [false, 'Username must be at least 3 characters long'];
-        if (username.length < 3) return [false, 'Username must be at least 3 characters long'];
-        if (username.length > 32) return [false, 'Username must be at most 32 characters long'];
-        if (/^(?!.*[_]{2})[a-zA-Z0-9_]*[^_]$/.test(username) == false) return [false, 'Username must only contain letters, numbers, underscores and periods'];
-        return [true, ''];
-    }
-    isPasswordValid(password: string): boolean {
-        if (!password) return false;
-        if (password.length < 3) return false;
-        if (password.length > 64) return false;
-        // make sure no spaces
-        if (password.includes(' ')) return false;
-        // make sure only english letters and numbers and some special characters
-        if (!/^[a-zA-Z0-9!@#$%^&*()_+-=]*$/.test(password)) return false;
-        return true;
-    }
-    isDisplayNameValid(displayname: string): boolean {
-        if (!displayname) return false;
-        if (displayname.length < 3) return false;
-        if (displayname.length > 32) return false;
-        return true;
-    }
-}
+export { createUser, loginUser, getUserProfile, debugUsers, findUserById, findUserByEmail };

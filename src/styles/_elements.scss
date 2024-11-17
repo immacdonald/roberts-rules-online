@@ -30,7 +30,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    >div {
+    > div {
         min-height: 100vh;
     }
 }
@@ -58,7 +58,7 @@ fieldset {
     text-align: left;
     border: none;
 
-    >label {
+    > label {
         display: block;
         margin-bottom: var(--space-sm);
         font-weight: bold;
@@ -156,17 +156,16 @@ hr {
     background-color: #09bc8a20;
 }
 
+// react-toggle override styling for parity with design system
+/* stylelint-disable */
 .react-toggle-track {
     background-color: var(--color-primary-dark);
 }
 
-[class*='react-toggle--checked'] {
-    [class^='react-toggle-track'] {
-        background-color: var(--color-primary);
-    }
+.react-toggle--checked .react-toggle-track {
+    background-color: var(--color-primary);
 }
 
-// react-toggle override styling for parity with design system
 .react-toggle:hover:not(.react-toggle--disabled) .react-toggle-track {
     background-color: var(--color-primary-dark);
 }
@@ -188,5 +187,7 @@ hr {
 }
 
 .react-toggle--checked:active:not(.react-toggle--disabled) .react-toggle-thumb {
-    box-shadow: 0px 0px 2px 2px var(--color-primary);
+    box-shadow: 0 0 2px 2px var(--color-primary);
 }
+
+/* stylelint-enable */

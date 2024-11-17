@@ -78,7 +78,7 @@ const ViewCommittees: FC = () => {
                             <input type="text" id="committeeDesc" required={true} onChange={(ev) => setCommitteeDesc(ev.target.value)} value={committeeDesc} />
                         </fieldset>
                         <Modal.Actions>
-                            <button onClick={() => setCreateModal(false)} data-button-type="secondary">
+                            <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">
                                 Cancel
                             </button>
                             <button type="submit" id="createButton" data-button-type="primary">
