@@ -1,17 +1,22 @@
 import { createServer } from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import express, { Express } from 'express';
 import { Server } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
-import ViteExpress from 'vite-express';
 import { createDatabase } from './server/createDBTables';
 import { apiRoutes, setupSocketHandlers } from './server/routes';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const port = 3000;
 const app: Express = express();
 app.use(express.json());
 
 // Determine environment to set CORS origin
-const origin = process.env.NODE_ENV == 'production' ? 'https://roberts-rules-online.vercel.app' : `http://localhost:${port}`;
+const production = process.env.NODE_ENV == 'production';
+const origin = production ? 'https://robert-rules-online.onrender.com' : `http://localhost:${port}`;
 
 // Initialize database
 const database = await createDatabase();
@@ -42,21 +47,25 @@ const io = new Server(server, {
     }
 });
 
-const vite = await createViteServer({
-    server: {
-        middlewareMode: true,
-        hmr: {
-            server,
-            // @ts-expect-error when connecting ViteExpress
-            ViteExpress
-        }
-    },
-    appType: 'spa'
-});
+if (production) {
+    // Serve static files from the "dist" directory
+    const distPath = path.resolve(__dirname, 'dist');
+    app.use(express.static(distPath));
 
-app.use(vite.middlewares);
-app.use(express.static('static'));
+    // Serve the SPA index.html for unmatched routes
+    app.get('*', (_, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+    });
+} else {
+    // Vite middleware for development
+    const vite = await createViteServer({
+        server: { middlewareMode: true }
+    });
 
+    app.use(vite.middlewares);
+}
+
+// Socket.IO setup
 setupSocketHandlers(io);
 
 server.listen(port, () => {

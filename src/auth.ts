@@ -1,6 +1,6 @@
 import { User } from 'server/interfaces/user';
 
-const urlBase = process.env.NODE_ENV == 'production' ? 'https://roberts-rules-online.vercel.app' : 'http://localhost:3000';
+const urlBase = process.env.NODE_ENV == 'production' ? 'https://robert-rules-online.onrender.com' : 'http://localhost:3000';
 
 const login = async (email?: string, password?: string, token?: string): Promise<User | null> => {
     const url = `${urlBase}/api/v1/login`;

@@ -8,7 +8,7 @@ This project is a [React](https://react.dev/) website written in [TypeScript](ht
 
 On the top level of the project are all the configuration files related to Vite, TypeScript, the [package.json](package.json), and utilities related to linting and formatting. The [src](src/) folder contains the contents of the React app.
 
-The main file of the React app is [main.tsx](src/main.tsx), which contains the contexts for persistent data, URL routing, responsive styling, and the application itself. [App.tsx](src/App.tsx) contains the actual routing (done with [react-router-dom](https://reactrouter.com/en/main)).
+The main file of the React app is [main.tsx](src/main.tsx), which contains the contexts for persistent data, URL routing, responsive styling, and the application itself. [App.tsx](src/app/App.tsx) contains the actual routing (done with [react-router-dom](https://reactrouter.com/en/main)).
 
 ##### Styling
 
