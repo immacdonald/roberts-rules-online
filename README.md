@@ -2,7 +2,7 @@
 
 ### Development
 
-This project is a [React](https://react.dev/) website written in [TypeScript](https://www.typescriptlang.org/) built with [Vite](https://vitejs.dev/). The backend is [Express](https://expressjs.com/) and also uses TypeScript. Packages and dependencies are managed with [npm](https://www.npmjs.com/). In order to develop and deploy this website you will need to have installed `npm` on your system.
+This project is a [React](https://react.dev/) website written in [TypeScript](https://www.typescriptlang.org/) built with [Vite](https://vitejs.dev/). The backend is [Express](https://expressjs.com/) and also uses TypeScript. Packages and dependencies are managed with [npm](https://www.npmjs.com/). In order to develop and deploy this website you will need to have installed `npm` on your system. Deployments for the project are hosted on [Render](https://render.com/).
 
 #### Frontend
 
@@ -16,27 +16,41 @@ Styling for this project is done with [SCSS](https://sass-lang.com/) contained i
 
 #### Backend
 
-The backend is still a work in progress, it uses Express and socket.io.
+The backend is built using Express and [socket.io](https://socket.io/). All authentication-related methods (`/api/v1/login` and `/api/v1/signup`) are handled through an Express API, returning a JWT token that is used for authorizing the user's connection to the website. That token is passed in when initializing a socket.io connection, which is used for realtime communication for all committee-related data.
 
-#### Running Locally
+#### Operation
 
-To run the web app locally for development, use the following command from the root directory:
+##### Running Locally
+
+To run the web app locally for development, use the following commands from the root directory:
 
 ```
+npm install
 npm run dev
 ```
 
-The project is then accessible at `localhost:3000`. Note that quick refreshing is not enabled yet, so to see changes make sure to refresh the page.
+The project is then accessible at `localhost:3000`. Note that quick refreshing is possible for frontend changes but any modifications of the backend require the development server to be restarted.
+
+##### Building for Production
+
+To simulate buildig and running the website for production use:
+
+```
+npm run build
+npm run start
+```
+
+These are the build and activation scripts used by the deployment platform. Upon any successful merge into the `main` branch the CI/CD pipeline will automatically trigger and deploy the new version of the website to production.
 
 #### Linting & Formatting
 
-Linting is done with [ESLint](https://eslint.org/) while code formatting is done with [Prettier](https://prettier.io/) and [Stylelint](https://stylelint.io/). These can be triggered by executing `npm run format`.
+Linting is done with [ESLint 9](https://eslint.org/) while code formatting is done with [Prettier](https://prettier.io/) and [Stylelint](https://stylelint.io/). These can be triggered by executing `npm run format`.
 
 ### Best Practices
 
 #### Pre-Commit Hooks
 
-All linting, formatting, and TypeScript checking is automatically ran using Husky and lint-staged upon each commit.
+All linting, formatting, and TypeScript checking is automatically ran using [Husky](https://typicode.github.io/husky/) and [lint-staged](https://github.com/lint-staged/lint-staged) upon each commit.
 
 #### Branches
 
