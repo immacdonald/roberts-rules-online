@@ -15,14 +15,12 @@ export class Motions {
     }
 
     public async loadMotions(): Promise<Motion[]> {
-        console.log('Loaded motions for', this.committeeId);
         this.motions = [];
         const res = await sql.query(`SELECT * FROM motions WHERE committeeId = '${this.committeeId}'`);
 
         for (const motion of res) {
             const createdMotion = new Motion(motion);
             await createdMotion.initializeAuthors();
-            console.log(createdMotion);
             this.motions.push(createdMotion);
         }
 

@@ -1,6 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MotionComment, Sentiment } from '../../../types';
+import { DeleteIcon, EditIcon } from '../../assets/icons';
 import { selectCurrentMotion } from '../../features/committeesSlice';
 import { selectUser } from '../../features/userSlice';
 import { socket } from '../../socket';
@@ -42,8 +43,8 @@ const MotionVote: FC = () => {
         <section>
             <div className={styles.motionContainer}>
                 <div>
-                    <div className={styles.userInfo}>
-                        <span>{username}</span>
+                    <div className={styles.info}>
+                        <b>{username}</b>
                         <span>Created {new Date(motion.creationDate).toLocaleDateString()}</span>
                     </div>
                     <div className={styles.overview}>
@@ -52,7 +53,7 @@ const MotionVote: FC = () => {
                                 <>
                                     <h1>{motion.title}</h1>
                                     <button data-button-type="ghost" onClick={() => setEditMode(true)} style={{ marginLeft: 'auto' }}>
-                                        Edit
+                                        <EditIcon />
                                     </button>
                                 </>
                             ) : (
@@ -99,15 +100,17 @@ const MotionVote: FC = () => {
                         return (
                             <div key={comment.id} className={styles.commentContainer}>
                                 <div className={styles.comment} data-comment-type={comment.sentiment}>
-                                    <div className={styles.userInfo}>
-                                        <span>{comment.author || comment.authorId}</span>
+                                    <div className={styles.info}>
+                                        <div>
+                                            <b>{comment.author || comment.authorId}</b>
+                                            <span>Posted {new Date(comment.creationDate).toLocaleDateString()}</span>
+                                        </div>
                                         <div>
                                             {comment.authorId == user.id && (
                                                 <button data-button-type="ghost" onClick={() => removeComment(`${comment.id}`)}>
-                                                    Delete
+                                                    <DeleteIcon />
                                                 </button>
                                             )}
-                                            <span>Posted {new Date(comment.creationDate).toLocaleDateString()}</span>
                                         </div>
                                     </div>
                                     <p>{comment.content || 'No comment message.'}</p>
@@ -129,15 +132,17 @@ const MotionVote: FC = () => {
                                         .map((reply) => (
                                             <div key={reply.id} className={styles.replyContainer}>
                                                 <div className={styles.reply} data-comment-type={reply.sentiment}>
-                                                    <div className={styles.userInfo}>
-                                                        <span>{reply.author || reply.authorId}</span>
+                                                    <div className={styles.info}>
+                                                        <div>
+                                                            <b>{reply.author || reply.authorId}</b>
+                                                            <span>Posted {new Date(comment.creationDate).toLocaleDateString()}</span>
+                                                        </div>
                                                         <div>
                                                             {reply.authorId == user.id && (
                                                                 <button data-button-type="ghost" onClick={() => removeComment(`${comment.id}`)}>
-                                                                    Delete
+                                                                    <DeleteIcon />
                                                                 </button>
                                                             )}
-                                                            <span>Posted {new Date(comment.creationDate).toLocaleDateString()}</span>
                                                         </div>
                                                     </div>
                                                     <p>{reply.content || 'No reply message.'}</p>

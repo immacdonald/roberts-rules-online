@@ -30,17 +30,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        gap: var(--space-sm);
     }
-}
-
-.userNameText {
-    font-size: var(--font-lg);
-    font-weight: bold;
-    padding-left: var(--space);
-}
-
-.iconImage {
-    height: 2.5em;
-    width: 2.5em;
-    padding: var(--space-sm);
 }

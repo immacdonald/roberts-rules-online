@@ -83,10 +83,16 @@
     margin-bottom: var(--space-sm);
 }
 
-.userInfo {
+.info {
     display: flex;
     justify-content: space-between;
     margin-bottom: var(--space);
     font-size: var(--font-sm);
     color: var(--color-text);
+
+    > div {
+        display: flex;
+        place-items: center start;
+        gap: var(--space);
+    }
 }

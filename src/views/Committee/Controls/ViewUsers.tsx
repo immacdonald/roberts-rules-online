@@ -1,7 +1,7 @@
 import { FC, useState, FormEvent, ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import { CommitteeMember } from 'types';
-import { chairIcon, houseIcon } from '../../../assets/images';
+import { ChairIcon, HomeIcon } from '../../../assets/icons';
 import { Loading } from '../../../components';
 import { Modal } from '../../../components/Modal';
 import { selectCurrentCommittee } from '../../../features/committeesSlice';
@@ -25,8 +25,7 @@ const CommitteeViewUsers: FC = () => {
     const handleAddUser = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         console.log('Adding new user:', newUserName);
-        // add the new user
-        //do backend stuff here
+        // Add the new user
 
         //socket.emit('addUser', newUserName);
     };
@@ -36,22 +35,24 @@ const CommitteeViewUsers: FC = () => {
             if (role === 'owner') {
                 return (
                     <div className={styles.role}>
-                        <i>Owner</i>
-                        <img src={houseIcon} className={styles.iconImage} alt="Owner Icon" />
+                        <b>Owner</b>
+                        <HomeIcon />
                     </div>
                 );
             } else if (role === 'chair') {
                 return (
                     <div className={styles.role}>
-                        <i>Chair</i>
-                        <img src={chairIcon} className={styles.iconImage} alt="Chair Icon" />
+                        <b>Chair</b>
+                        <ChairIcon />
                     </div>
                 );
             } else {
                 return (
                     <div className={styles.role}>
-                        <i>Member</i>
-                        <button onClick={() => promoteUser(userId)}>Promote</button>
+                        <b>Member</b>
+                        <button onClick={() => promoteUser(userId)} disabled>
+                            Promote
+                        </button>
                     </div>
                 );
             }
