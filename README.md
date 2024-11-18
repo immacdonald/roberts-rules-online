@@ -33,7 +33,7 @@ The project is then accessible at `localhost:3000`. Note that quick refreshing i
 
 ##### Building for Production
 
-To simulate buildig and running the website for production use:
+To simulate building and running the website for production use:
 
 ```
 npm run build
@@ -54,7 +54,7 @@ All linting, formatting, and TypeScript checking is automatically ran using [Hus
 
 #### Branches
 
-While developing, to keep the repository more organized, try to work on a seperate branch following the naming convention of {_name or username_}/{_short description of issue / feature_}. This will be helpful for writing weekly progress reports to get a sense of what everyone has been working on. The `main` branch has branch protection enabled, so just make a pull request to merge in the feature branch when done.
+While developing, to keep the repository more organized, try to work on a separate branch following the naming convention of {_name or username_}/{_short description of issue / feature_}. This will be helpful for writing weekly progress reports to get a sense of what everyone has been working on. The `main` branch has branch protection enabled, so just make a pull request to merge in the feature branch when done.
 
 ### Design
 
