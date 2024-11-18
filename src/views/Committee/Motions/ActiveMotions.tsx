@@ -33,7 +33,7 @@ const ActiveMotions: FC = () => {
             return (
                 <div className={clsx(styles.row, styles.motion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee!.id}/motions/${motion.id}`)}>
                     <h3>{motion.title}</h3>
-                    <span>{motion.authorUsername || motion.authorId}</span>
+                    <span>{motion.author || motion.authorId}</span>
                     <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
                 </div>
             );

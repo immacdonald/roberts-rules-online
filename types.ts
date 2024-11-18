@@ -22,10 +22,11 @@ type MotionData = {
     id: string;
     committeeId: string;
     authorId: string;
-    authorUsername?: string;
+    author?: string;
     title: string;
     flag: string;
     description: string;
+    comments: MotionComment[];
     vote: string;
     summary: string;
     relatedId: string;
@@ -34,9 +35,21 @@ type MotionData = {
     creationDate: number;
 };
 
+type Sentiment = 'positive' | 'negative' | 'neutral';
+
+type MotionComment = {
+    id: string;
+    authorId: string;
+    author?: string;
+    sentiment: Sentiment;
+    content: string;
+    parentCommentId?: string;
+    creationDate: number;
+};
+
 type UserWithToken = {
     user: User;
     token: string;
 };
 
-export type { CommitteeMember, CommitteeData, CommitteeRole, MotionData, UserWithToken };
+export type { CommitteeMember, CommitteeData, CommitteeRole, MotionData, Sentiment, MotionComment, UserWithToken };

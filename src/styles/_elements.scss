@@ -78,7 +78,7 @@ input {
 
     &:active,
     &:focus {
-        outline-color: var(--color-primary);
+        outline: var(--color-primary) solid 2px;
     }
 }
 

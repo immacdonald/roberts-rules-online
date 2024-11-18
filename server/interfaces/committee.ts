@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { CommitteeMember, MotionData } from '../../types';
+import { CommitteeMember, MotionData, Sentiment } from '../../types';
 import { config } from '../config';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
@@ -27,7 +27,8 @@ export class Committee {
         this.owner = owner;
         this.members = typeof members == 'string' ? (JSON.parse(members) as CommitteeMember[]) : members;
         this.motions = new Motions(id);
-        this.motions.getMotions(); // Populate motions (We can put notifications on the list of committees if a motion needs attention)
+
+        this.motions.getMotions();
     }
 
     public sendToMember = (event: string, data: any, id: string): void => {
@@ -80,9 +81,9 @@ export class Committee {
         return motions;
     }
 
-    public getMotionById(id: string): Motion | null {
-        return this.motions.findMotion(id) ?? null;
-    }
+    public getMotionById = async (id: string): Promise<Motion | null> => {
+        return (await this.motions.findMotion(id)) ?? null;
+    };
 
     public sendUpdatedMotions = async (): Promise<void> => {
         const updatedMotions = await this.getMotions();
@@ -104,6 +105,7 @@ export class Committee {
                 title: title,
                 flag: '',
                 description: description || '',
+                comments: [],
                 vote: '{}',
                 summary: '',
                 relatedId: relatedMotionId || '',
@@ -118,7 +120,7 @@ export class Committee {
     };
 
     public changeMotionTitle = async (motionId: string, userId: string, title: string): Promise<void> => {
-        const motion: Motion | null = this.getMotionById(motionId);
+        const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             if (motion.authorId == userId) {
                 await motion.alterTitle(title);
@@ -128,7 +130,7 @@ export class Committee {
     };
 
     public changeMotionDescription = async (motionId: string, userId: string, description: string): Promise<void> => {
-        const motion: Motion | null = this.getMotionById(motionId);
+        const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             if (motion.authorId == userId) {
                 await motion.setDescription(description);
@@ -138,7 +140,7 @@ export class Committee {
     };
 
     public setMotionFlag = async (motionId: string, userId: string, flag: string): Promise<void> => {
-        const motion: Motion | null = this.getMotionById(motionId);
+        const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             if (motion.authorId == userId) {
                 await motion.setFlag(flag);
@@ -148,7 +150,7 @@ export class Committee {
     };
 
     public addMotionVote = async (motionId: string, userId: string, vote: string): Promise<void> => {
-        const motion: Motion | null = this.getMotionById(motionId);
+        const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             await motion.addVote(userId, vote);
             await this.sendUpdatedMotions();
@@ -156,7 +158,7 @@ export class Committee {
     };
 
     public removeMotionVote = async (motionId: string, userId: string): Promise<void> => {
-        const motion: Motion | null = this.getMotionById(motionId);
+        const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             await motion.removeVote(userId);
             await this.sendUpdatedMotions();
@@ -164,7 +166,7 @@ export class Committee {
     };
 
     public setMotionRelatedTo = async (motionId: string, userId: string, relatedId: string): Promise<void> => {
-        const motion: Motion | null = this.getMotionById(motionId);
+        const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             if (motion.authorId == userId) {
                 await motion.attachMotion(relatedId);
@@ -174,7 +176,7 @@ export class Committee {
     };
 
     public changeMotionDecisionTime = async (motionId: string, userId: string, decisionTime: number): Promise<void> => {
-        const motion: Motion | null = this.getMotionById(motionId);
+        const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             if (motion.authorId == userId) {
                 await motion.setDecisionTime(decisionTime);
@@ -184,10 +186,28 @@ export class Committee {
     };
 
     public setMotionSummary = async (motionId: string, userId: string, summary: string): Promise<void> => {
-        const motion: Motion | null = this.getMotionById(motionId);
+        const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             if (motion.authorId == userId) {
                 await motion.setSummary(summary);
+                await this.sendUpdatedMotions();
+            }
+        }
+    };
+
+    public addMotionComment = async (motionId: string, userId: string, sentiment: Sentiment, comment: string, parentCommentId?: string): Promise<void> => {
+        const motion: Motion | null = await this.getMotionById(motionId);
+        if (motion) {
+            await motion.addComment(userId, sentiment, comment, parentCommentId);
+            await this.sendUpdatedMotions();
+        }
+    };
+
+    public removeMotionComment = async (motionId: string, userId: string, commentId: string): Promise<void> => {
+        const motion: Motion | null = await this.getMotionById(motionId);
+        if (motion) {
+            if (motion.authorId == userId) {
+                await motion.removeComment(commentId);
                 await this.sendUpdatedMotions();
             }
         }

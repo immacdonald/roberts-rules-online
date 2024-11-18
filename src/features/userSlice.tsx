@@ -30,7 +30,7 @@ const userSlice = createSlice({
 
 export const { setUser, logout } = userSlice.actions;
 
-export const selectUser = (state: RootState): any | null => state.user.user;
+export const selectUser = (state: RootState): User | null => state.user.user;
 export const selectIsLoggedIn = (state: RootState): boolean => state.user.isLoggedIn;
 
 export default userSlice.reducer;

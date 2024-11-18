@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
+import { BackArrowIcon } from '../../assets/icons';
 import { selectCurrentCommittee } from '../../features/committeesSlice';
 import styles from './CommitteeNav.module.scss';
 
@@ -16,8 +17,8 @@ const CommitteeNav: FC = () => {
 
     return (
         <header className={styles.header}>
-            <Link to="/committees" data-button-type="ghost">
-                &larr;
+            <Link to="/committees" data-button-type="ghost" style={{ color: 'var(--color-text' }}>
+                <BackArrowIcon />
             </Link>
             <div className={styles.committee}>
                 <span>{currentCommittee!.name}</span>

@@ -5,59 +5,59 @@ import { Motion } from '../interfaces/motion';
 const sql = Database.getInstance();
 
 export class Motions {
+    private loadedMotions: boolean;
     public motions: Motion[] = [];
     public readonly committeeId: string;
 
     constructor(committeeId: string) {
         this.committeeId = committeeId;
+        this.loadedMotions = false;
     }
 
-    public async getMotions(): Promise<Motion[]> {
+    public async loadMotions(): Promise<Motion[]> {
         this.motions = [];
         const res = await sql.query(`SELECT * FROM motions WHERE committeeId = '${this.committeeId}'`);
+
         for (const motion of res) {
-            this.motions.push(new Motion(motion));
+            const createdMotion = new Motion(motion);
+            await createdMotion.initializeAuthors();
+            this.motions.push(createdMotion);
         }
+
+        this.loadedMotions = true;
         return this.motions;
     }
 
-    public async getMotion(id: string): Promise<Motion> {
-        const res = await sql.query(`SELECT * FROM motions WHERE id = '${id} AND committeeId = '${this.committeeId}'`);
-        return new Motion(res[0]);
-    }
+    public getMotions = async (): Promise<Motion[]> => {
+        if (this.loadedMotions) {
+            return this.motions;
+        } else {
+            return await this.loadMotions();
+        }
+    };
 
-    public findMotion(id: string): Motion | undefined {
-        return this.motions.find((motion) => motion.id === id);
+    public async findMotion(id: string): Promise<Motion | null> {
+        if (!this.loadedMotions) {
+            await this.loadMotions();
+        }
+
+        return this.motions.find((motion: Motion) => motion.id == id) ?? null;
     }
 
     public async createMotion(data: MotionData): Promise<Motion> {
         const motion = new Motion(data);
+        await motion.initializeAuthors();
         this.motions.push(motion);
+
         await sql.query(`
-            INSERT INTO motions (id, committeeId, authorId, title, flag, description, vote, summary, relatedId, status, decisionTime, creationDate)
-            VALUES ('${data.id}', '${data.committeeId}', '${data.authorId}', '${data.title}', '${data.flag}', '${data.description}', '${data.vote}', '${data.summary}', '${data.relatedId}', '${data.status}', '${data.decisionTime}', '${data.creationDate}')
+            INSERT INTO motions (id, committeeId, authorId, title, flag, description, comments, vote, summary, relatedId, status, decisionTime, creationDate)
+            VALUES ('${data.id}', '${data.committeeId}', '${data.authorId}', '${data.title}', '${data.flag}', '${data.description}', '${JSON.stringify(data.comments)}', '${data.vote}', '${data.summary}', '${data.relatedId}', '${data.status}', '${data.decisionTime}', '${data.creationDate}')
         `);
         return motion;
     }
 
-    public async updateMotion(data: MotionData): Promise<Motion> {
-        const motion = new Motion(data);
-        // Find the motion and remove it then push the new motion version
-        const index = this.motions.findIndex((m) => m.id === motion.id);
-        if (index) {
-            this.motions[index] = motion;
-        } else {
-            this.motions.push(motion);
-        }
-
-        await sql.query(`
-            UPDATE motions SET title = '${motion.title}', flag = '${motion.flag}', description = '${motion.description}', vote = '${motion.vote}', summary = '${motion.summary}', relatedId = '${motion.relatedId}', status = '${motion.status}', decisionTime = '${motion.decisionTime}', creationDate = '${motion.creationDate}'
-            WHERE id = '${motion.id}' AND committeeId = '${this.committeeId}'
-        `);
-        return motion;
-    }
     public async deleteMotion(id: string): Promise<void> {
-        this.motions = this.motions.filter((motion) => motion.id !== id);
+        this.motions = this.motions.filter((motion) => motion.id != id);
         await sql.query(`DELETE FROM motions WHERE id = '${id}' AND committeeId = '${this.committeeId}'`);
     }
 }

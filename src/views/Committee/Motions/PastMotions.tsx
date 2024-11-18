@@ -2,6 +2,7 @@ import { CSSProperties, FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import clsx from 'clsx';
 import { MotionData } from 'types';
+import { RetryIcon } from '../../../assets/icons';
 import { Loading } from '../../../components';
 import { selectCurrentCommittee } from '../../../features/committeesSlice';
 import styles from './Motions.module.scss';
@@ -15,9 +16,12 @@ const PastMotions: FC = () => {
         return currentCommittee!.motions!.map((motion: MotionData) => {
             return (
                 <div className={clsx(styles.row, styles.motion)} key={motion.title}>
-                    <button>↩️</button>
+                    <button>
+                        <RetryIcon />
+                    </button>
                     <h3>{motion.title}</h3>
-                    <span>{motion.authorUsername || motion.authorId}</span>
+                    <span>{motion.author || motion.authorId}</span>
+                    <span>n/a</span>
                     <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
                 </div>
             );
@@ -40,11 +44,12 @@ const PastMotions: FC = () => {
                 </header>
                 {currentCommittee?.motions ? (
                     currentCommittee!.motions.length > 0 ? (
-                        <div className={styles.motionTable} style={{ '--table-layout': '72px 1fr 200px 200px' } as CSSProperties}>
+                        <div className={styles.motionTable} style={{ '--table-layout': '70px 1fr 200px 200px 160px' } as CSSProperties}>
                             <div className={clsx(styles.row, styles.tableHeader)}>
                                 <span>Revote</span>
                                 <span>Title</span>
                                 <span>Author</span>
+                                <span>Status</span>
                                 <span>Date</span>
                             </div>
                             {displayMotions}

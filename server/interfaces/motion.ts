@@ -1,14 +1,19 @@
-import { MotionData } from '../../types';
+import { nanoid } from 'nanoid';
+import { MotionComment, MotionData, Sentiment } from '../../types';
+import { findUserById } from '../controllers/users';
 import { Database } from '../db';
+
 const sql = Database.getInstance();
 
 export class Motion {
     public readonly id: string;
     public readonly committeeId: string;
     public readonly authorId;
+    public author?: string;
     public title: string;
     public flag: string;
     public description: string;
+    public comments: MotionComment[];
     public vote: Record<string, string>;
     public summary: string;
     public relatedId: string;
@@ -23,6 +28,7 @@ export class Motion {
         this.title = data.title;
         this.flag = data.flag;
         this.description = data.description;
+        this.comments = typeof data.comments == 'string' ? (JSON.parse(data.comments) as MotionComment[]) : data.comments;
         this.vote = JSON.parse(data.vote || '{}');
         this.summary = data.summary;
         this.relatedId = data.relatedId;
@@ -31,9 +37,31 @@ export class Motion {
         this.creationDate = data.creationDate;
     }
 
-    public alterTitle(title: string): void {
+    public initializeAuthors = async (): Promise<void> => {
+        // Set motion author
+        const author = await findUserById(this.authorId);
+        if (author) {
+            this.author = author.displayname;
+        }
+
+        // Set comment authors
+        this.comments = await Promise.all(
+            this.comments.map(async (comment) => {
+                const author = await findUserById(comment.authorId);
+                if (author) {
+                    return {
+                        ...comment,
+                        author: author.displayname
+                    };
+                }
+                return comment;
+            })
+        );
+    };
+
+    public alterTitle = async (title: string): Promise<void> => {
         this.title = title;
-        sql.query(
+        await sql.query(
             `
 			UPDATE motions
 			SET title = ?
@@ -41,11 +69,11 @@ export class Motion {
 		`,
             [title]
         );
-    }
+    };
 
-    public setFlag(flag: string): void {
+    public setFlag = async (flag: string): Promise<void> => {
         this.flag = flag;
-        sql.query(
+        await sql.query(
             `
 			UPDATE motions
 			SET flag = ?
@@ -53,11 +81,11 @@ export class Motion {
 		`,
             [flag]
         );
-    }
+    };
 
-    public setDescription(description: string): void {
+    public setDescription = async (description: string): Promise<void> => {
         this.description = description;
-        sql.query(
+        await sql.query(
             `
 			UPDATE motions
 			SET description = ?
@@ -65,11 +93,11 @@ export class Motion {
 		`,
             [description]
         );
-    }
+    };
 
-    public setSummary(summary: string): void {
+    public setSummary = async (summary: string): Promise<void> => {
         this.summary = summary;
-        sql.query(
+        await sql.query(
             `
 			UPDATE motions
 			SET summary = ?
@@ -77,11 +105,11 @@ export class Motion {
 		`,
             [summary]
         );
-    }
+    };
 
-    public addVote(userId: string, value: string): void {
+    public addVote = async (userId: string, value: string): Promise<void> => {
         this.vote[userId] = value;
-        sql.query(
+        await sql.query(
             `
 			UPDATE motions
 			SET vote = JSON_SET(vote, '$.?', '?')
@@ -89,23 +117,23 @@ export class Motion {
 		`,
             [userId, value]
         );
-    }
+    };
 
-    public removeVote(userId: string): void {
+    public removeVote = async (userId: string): Promise<void> => {
         delete this.vote[userId];
         sql.query(
-            `
+            await `
 			UPDATE motions
 			SET vote = JSON_REMOVE(vote, '$.?')
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
 		`,
             [userId]
         );
-    }
+    };
 
-    public attachMotion(relatedId: string): void {
+    public attachMotion = async (relatedId: string): Promise<void> => {
         this.relatedId = relatedId;
-        sql.query(
+        await sql.query(
             `
 			UPDATE motions
 			SET relatedId = ?
@@ -113,11 +141,11 @@ export class Motion {
 		`,
             [relatedId]
         );
-    }
+    };
 
-    public setStatus(status: string): void {
+    public setStatus = async (status: string): Promise<void> => {
         this.status = status;
-        sql.query(
+        await sql.query(
             `
 			UPDATE motions
 			SET status = ?
@@ -125,21 +153,71 @@ export class Motion {
 		`,
             [status]
         );
-    }
+    };
 
-    public setDecisionTime(decisionTime: number): void {
+    public setDecisionTime = async (decisionTime: number): Promise<void> => {
         this.decisionTime = decisionTime;
-        sql.query(`
+        await sql.query(`
 			UPDATE motions
 			SET decisionTime = '${decisionTime}'
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
 		`);
-    }
+    };
 
-    public delete(): void {
-        sql.query(`
-			DELETE FROM motions
+    public addComment = async (userId: string, sentiment: Sentiment, comment: string, parentCommentId?: string): Promise<void> => {
+        let id: string = nanoid(16);
+        while (this.comments.some((comment: MotionComment) => comment.id == id)) {
+            id = nanoid(16);
+        }
+
+        const createdComment: MotionComment = {
+            id,
+            authorId: userId,
+            sentiment,
+            content: comment || '',
+            creationDate: Date.now(),
+            parentCommentId: parentCommentId || ''
+        };
+
+        const author = await findUserById(userId);
+        if (author) {
+            createdComment.author = author.displayname;
+        }
+
+        this.comments = [...this.comments, createdComment];
+
+        const databaseComments = this.comments.map((comment: MotionComment) => {
+            const commentCopy = { ...comment };
+            delete commentCopy.author;
+            return commentCopy;
+        });
+
+        await sql.query(
+            `
+			UPDATE motions
+			SET comments = ?
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`);
-    }
+		`,
+            [JSON.stringify(databaseComments)]
+        );
+    };
+
+    public removeComment = async (commentId: string): Promise<void> => {
+        this.comments = this.comments.filter((comment: MotionComment) => comment.id != commentId);
+
+        const databaseComments = this.comments.map((comment: MotionComment) => {
+            const commentCopy = { ...comment };
+            delete commentCopy.author;
+            return commentCopy;
+        });
+
+        await sql.query(
+            `
+			UPDATE motions
+			SET comments = ?
+			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
+		`,
+            [JSON.stringify(databaseComments)]
+        );
+    };
 }
