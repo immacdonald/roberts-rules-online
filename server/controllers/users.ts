@@ -4,11 +4,10 @@ import { nanoid } from 'nanoid';
 import { CommitteeData, UserWithToken } from '../../types';
 import { Database } from '../db';
 import { User } from '../interfaces/user';
+import { serverConfig } from '../server-config';
 import { populateCommitteeMembers } from './committees';
 
 const sql = Database.getInstance();
-
-const SECRET_KEY = 'DEV_SECRET_KEY';
 
 const users: User[] = [];
 
@@ -17,7 +16,7 @@ const addToCache = (user: User): void => {
 };
 
 const signUserToken = (id: string, username: string): string => {
-    return jwt.sign({ id, username }, SECRET_KEY, { expiresIn: '1h' });
+    return jwt.sign({ id, username }, serverConfig.jwt.secretKey, { expiresIn: serverConfig.jwt.expiration });
 };
 
 const createUser = async (username: string, email: string, password: string, displayname: string): Promise<(boolean | string | UserWithToken)[]> => {
@@ -54,7 +53,7 @@ const loginUser = async (email: string, password: string): Promise<[boolean, str
 const loginUserWithToken = async (token: string): Promise<UserWithToken | null> => {
     try {
         // Verify the token if it is present
-        const decoded = await jwt.verify(token, SECRET_KEY);
+        const decoded = await jwt.verify(token, serverConfig.jwt.secretKey);
 
         const user = await findUserById((decoded as { id: string }).id);
         if (user) {

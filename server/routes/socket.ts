@@ -4,8 +4,7 @@ import { Sentiment } from '../../types';
 import { createCommittee, getCommitteeById } from '../controllers/committees';
 import { addUserConnection, removeUserConnection } from '../controllers/connections';
 import { getCommittees } from '../controllers/users';
-
-const SECRET_KEY = 'DEV_SECRET_KEY';
+import { serverConfig } from '../server-config';
 
 const setupSocketHandlers = (io: Server): void => {
     io.use((socket, next) => {
@@ -18,7 +17,7 @@ const setupSocketHandlers = (io: Server): void => {
         }
 
         // Verify the token if it is present
-        jwt.verify(token as string, SECRET_KEY, (err, decoded) => {
+        jwt.verify(token as string, serverConfig.jwt.secretKey, (err, decoded) => {
             if (err) {
                 console.log('Failed to authenticate token:', err.message);
                 return next(new Error('Authentication error'));

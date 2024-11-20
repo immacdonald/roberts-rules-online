@@ -1,9 +1,9 @@
 import { nanoid } from 'nanoid';
 import { CommitteeMember, MotionData, Sentiment } from '../../types';
-import { config } from '../config';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
 import { Database } from '../db';
+import { serverConfig } from '../server-config';
 import { Motion } from './motion';
 
 const sql = Database.getInstance();
@@ -110,7 +110,7 @@ export class Committee {
                 summary: '',
                 relatedId: relatedMotionId || '',
                 status: 'pending',
-                decisionTime: Date.now() + config.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
+                decisionTime: Date.now() + serverConfig.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
                 creationDate: Date.now()
             };
 
