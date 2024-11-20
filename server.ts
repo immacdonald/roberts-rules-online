@@ -16,7 +16,7 @@ app.use(express.json());
 
 // Determine environment to set CORS origin
 const production = process.env.NODE_ENV == 'production';
-const origin = production ? 'https://robert-rules-online.onrender.com' : `http://localhost:${port}`;
+const origin = production ? 'https://roberts-rules-online.onrender.com' : `http://localhost:${port}`;
 
 // Initialize database
 const database = await createDatabase();
