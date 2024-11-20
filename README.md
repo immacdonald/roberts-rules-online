@@ -64,8 +64,8 @@ The website uses a lightweight design system for ease-of-use during development 
 
 #### Color Tokens
 
-Primary: <span style="color: '#09BC8A'">#09BC8A</span>
+Primary: ${\color{#09BC8A} \verb|#| \text{09BC8A}}$
 
-Darker Primary: <span style="color: '#004346'">#004346</span>
+Darker Primary: ${\color{#004346} \verb|#| \text{004346}}$
 
-Primary Background: <span style="background-color: '#09bc8a40'">#09bc8a40</span>
+Primary Background: ${\color{#09bc8a40} \verb|#| \text{09bc8a40}}$
