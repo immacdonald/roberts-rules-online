@@ -1,4 +1,5 @@
 import { FC, FormEvent, useState } from 'react';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { CommitteeData } from 'types';
@@ -31,7 +32,10 @@ const ViewCommittees: FC = () => {
     };
 
     return (
-        <>
+        <HelmetProvider>
+            <Helmet>
+                <title>My Committees - Robert's Rules</title>
+            </Helmet>
             <Page>
                 <section>
                     <header className={styles.committeeViewTitle}>
@@ -88,7 +92,7 @@ const ViewCommittees: FC = () => {
                     </form>
                 </Modal>
             )}
-        </>
+        </HelmetProvider>
     );
 };
 
