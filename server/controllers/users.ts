@@ -3,12 +3,12 @@ import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 import { CommitteeData, UserWithToken } from '../../types';
 import { Database } from '../db';
+import { Committee } from '../interfaces/committee';
 import { User } from '../interfaces/user';
-import { populateCommitteeMembers } from './committees';
+import { serverConfig } from '../server-config';
+import { getCommitteesForUser } from './committees';
 
 const sql = Database.getInstance();
-
-const SECRET_KEY = 'DEV_SECRET_KEY';
 
 const users: User[] = [];
 
@@ -17,7 +17,7 @@ const addToCache = (user: User): void => {
 };
 
 const signUserToken = (id: string, username: string): string => {
-    return jwt.sign({ id, username }, SECRET_KEY, { expiresIn: '1h' });
+    return jwt.sign({ id, username }, serverConfig.jwt.secretKey, { expiresIn: serverConfig.jwt.expiration });
 };
 
 const createUser = async (username: string, email: string, password: string, displayname: string): Promise<(boolean | string | UserWithToken)[]> => {
@@ -54,7 +54,7 @@ const loginUser = async (email: string, password: string): Promise<[boolean, str
 const loginUserWithToken = async (token: string): Promise<UserWithToken | null> => {
     try {
         // Verify the token if it is present
-        const decoded = await jwt.verify(token, SECRET_KEY);
+        const decoded = await jwt.verify(token, serverConfig.jwt.secretKey);
 
         const user = await findUserById((decoded as { id: string }).id);
         if (user) {
@@ -68,21 +68,17 @@ const loginUserWithToken = async (token: string): Promise<UserWithToken | null> 
 };
 
 const getCommittees = async (id: string): Promise<CommitteeData[] | null> => {
-    return new Promise((resolve, reject) => {
-        sql.query("SELECT * FROM committees WHERE owner = ? OR JSON_EXISTS(members, CONCAT('$.', ?))", [id, id], async (err, res) => {
-            if (!err) {
-                const data: CommitteeData[] = res.map((row: any) => ({
-                    ...row,
-                    members: JSON.parse(row.members)
-                }));
-
-                const clientTable = populateCommitteeMembers(data);
-                resolve(clientTable);
-            } else {
-                reject(null);
-            }
-        });
+    const committees = getCommitteesForUser(id);
+    const data = committees.map((committee: Committee) => {
+        return {
+            id: committee.id,
+            name: committee.name,
+            description: '',
+            owner: committee.owner,
+            members: committee.members
+        } as CommitteeData;
     });
+    return data;
 };
 
 const debugUsers = (): void => {
@@ -90,6 +86,36 @@ const debugUsers = (): void => {
 };
 
 // Get methods query the database for the user
+const getUserById = async (id: string): Promise<User | null> => {
+    return new Promise((resolve, reject) => {
+        if (!sql.initialized) {
+            return reject(false);
+        }
+
+        if (!id) {
+            return reject(false);
+        }
+
+        sql.query(`SELECT * FROM users WHERE id = ?`, [id], (err, rows) => {
+            if (!err) {
+                if (rows.length > 0) {
+                    const row = rows[0];
+                    const user = new User(row.id, row.username, row.email, row.password, row.displayname, row.creationDate);
+
+                    // Add to users cache
+                    addToCache(user);
+                    return resolve(user);
+                } else {
+                    return resolve(null);
+                }
+            } else {
+                console.log('Error while performing Query: ' + err);
+                return reject(err);
+            }
+        });
+    });
+};
+
 const getUserByEmail = async (email: string): Promise<User | null> => {
     return new Promise((resolve, reject) => {
         if (!sql.initialized) {
@@ -119,17 +145,16 @@ const getUserByEmail = async (email: string): Promise<User | null> => {
     });
 };
 
-const getUserById = async (id: string): Promise<User | null> => {
+const getUserByUsername = async (username: string): Promise<User | null> => {
     return new Promise((resolve, reject) => {
         if (!sql.initialized) {
             return reject(false);
         }
-
-        if (!id) {
+        if (!username) {
             return reject(false);
         }
 
-        sql.query(`SELECT * FROM users WHERE id = ?`, [id], (err, rows) => {
+        sql.query(`SELECT * FROM users WHERE username = ?`, [username], function (err, rows) {
             if (!err) {
                 if (rows.length > 0) {
                     const row = rows[0];
@@ -172,13 +197,28 @@ const findUserByEmail = async (email: string): Promise<User | null> => {
     }
 };
 
+const findUserByUsername = async (username: string): Promise<User | null> => {
+    const cached = findCachedUserByUsername(username);
+
+    if (cached) {
+        return cached;
+    } else {
+        const user = await getUserByUsername(username);
+        return user;
+    }
+};
+
 // findCached methods are to search the users cache array synchronously
 const findCachedUserById = (id: string): User | null => {
-    return users.find((user) => user.id === id) ?? null;
+    return users.find((user) => user.id == id) ?? null;
 };
 
 const findCachedUserByEmail = (email: string): User | null => {
-    return users.find((user) => user.email === email) ?? null;
+    return users.find((user) => user.email == email) ?? null;
+};
+
+const findCachedUserByUsername = (username: string): User | null => {
+    return users.find((user) => user.username == username) ?? null;
 };
 
 // Database query
@@ -272,4 +312,4 @@ async function createUserQuery(username: string, email: string, password: string
     });
 }
 
-export { createUser, loginUser, loginUserWithToken, getCommittees, debugUsers, findUserById, findUserByEmail };
+export { createUser, loginUser, loginUserWithToken, getCommittees, debugUsers, findUserById, findUserByEmail, findUserByUsername };

@@ -1,9 +1,10 @@
 import { nanoid } from 'nanoid';
 import { CommitteeMember, MotionData, Sentiment } from '../../types';
-import { config } from '../config';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
+import { findUserByEmail, findUserByUsername } from '../controllers/users';
 import { Database } from '../db';
+import { serverConfig } from '../server-config';
 import { Motion } from './motion';
 
 const sql = Database.getInstance();
@@ -62,8 +63,10 @@ export class Committee {
         const member = this.members.find((user: CommitteeMember) => user.id == userId);
         if (member) {
             // This is the permission system for committees
-            if (action === 'createMotion') {
+            if (action == 'createMotion') {
                 return true;
+            } else if (action == 'inviteUser') {
+                return member.role == 'chair';
             }
         } else {
             console.log('User not member');
@@ -75,6 +78,39 @@ export class Committee {
     public isMember(userId: string): boolean {
         return this.owner === userId || this.members.some((member) => member.id == userId);
     }
+
+    private getMembersForDatabase = (): string => {
+        return JSON.stringify(
+            this.members.map((member: CommitteeMember) => {
+                const memberCopy = { ...member };
+                delete memberCopy.displayname;
+                delete memberCopy.username;
+                return memberCopy;
+            })
+        );
+    };
+
+    public addUser = async (originatorId: string, newUser: string): Promise<void> => {
+        if (this.canUserDoAction(originatorId, 'inviteUser')) {
+            let user = await findUserByUsername(newUser);
+            if (!user) {
+                user = await findUserByEmail(newUser);
+            }
+
+            if (user && !this.isMember(user.id)) {
+                this.members.push({ id: user.id, role: 'member' });
+                console.log(this.getMembersForDatabase());
+                await sql.query(
+                    `
+                    UPDATE committees
+                    SET members = ?
+                    WHERE id = '${this.id}';
+                `,
+                    [this.getMembersForDatabase()]
+                );
+            }
+        }
+    };
 
     public getMotions(): Promise<Motion[]> {
         const motions = this.motions.getMotions();
@@ -110,7 +146,7 @@ export class Committee {
                 summary: '',
                 relatedId: relatedMotionId || '',
                 status: 'pending',
-                decisionTime: Date.now() + config.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
+                decisionTime: Date.now() + serverConfig.committees.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
                 creationDate: Date.now()
             };
 

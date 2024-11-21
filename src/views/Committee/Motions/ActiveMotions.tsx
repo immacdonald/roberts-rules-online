@@ -35,6 +35,7 @@ const ActiveMotions: FC = () => {
                     <h3>{motion.title}</h3>
                     <span>{motion.author || motion.authorId}</span>
                     <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
+                    <span>{motion.decisionTime && new Date(motion.decisionTime).toLocaleDateString()}</span>
                 </div>
             );
         });
@@ -51,11 +52,12 @@ const ActiveMotions: FC = () => {
                 </header>
                 {currentCommittee?.motions ? (
                     currentCommittee!.motions.length > 0 ? (
-                        <div className={styles.motionTable} style={{ '--table-layout': '1fr 200px 200px' } as CSSProperties}>
+                        <div className={styles.motionTable} style={{ '--table-layout': '1fr 200px 200px 200px' } as CSSProperties}>
                             <div className={clsx(styles.row, styles.tableHeader)}>
                                 <span>Title</span>
                                 <span>Author</span>
                                 <span>Date</span>
+                                <span>Vote By</span>
                             </div>
                             {displayMotions}
                         </div>

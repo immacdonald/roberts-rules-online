@@ -55,7 +55,7 @@ async function createMotionsTable(): Promise<void> {
     }
 }
 
-const createDatabase = async (): Promise<Database> => {
+const initializeDatabase = async (): Promise<Database> => {
     await db.ready(async () => {
         createUsersTable();
         createMotionsTable();
@@ -64,4 +64,4 @@ const createDatabase = async (): Promise<Database> => {
     return db;
 };
 
-export { createDatabase };
+export { initializeDatabase };

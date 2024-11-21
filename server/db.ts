@@ -1,6 +1,5 @@
 import { createPool, Pool } from 'mysql';
 import { wrap } from 'node-mysql-wrapper';
-import 'dotenv/config';
 
 export class Database {
     private static instance: Database;

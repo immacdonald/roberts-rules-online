@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { CommitteeData, CommitteeRole } from '../../types';
+import { CommitteeMember, CommitteeRole } from '../../types';
 import { Database } from '../db';
 import { Committee } from '../interfaces/committee';
 import { User } from '../interfaces/user';
@@ -16,8 +16,17 @@ const addToCache = (committee: Committee): void => {
 sql.ready(async function () {
     // Build the initial cache of committees
     const queriedCommittees = await sql.query('SELECT * FROM committees');
-    queriedCommittees.forEach((committee: Committee) => {
-        addToCache(new Committee(committee.id, committee.name, committee.owner, committee.members));
+    queriedCommittees.forEach(async (committee: Committee) => {
+        const newCommittee = new Committee(committee.id, committee.name, committee.owner, committee.members);
+        for (let j = 0; j < newCommittee.members.length; j++) {
+            const user: User | null = await findUserById(newCommittee.members[j].id);
+
+            if (user) {
+                newCommittee.members[j].displayname = user.displayname;
+                newCommittee.members[j].username = user.username;
+            }
+        }
+        addToCache(newCommittee);
     });
 
     console.log('Committees Database is ready');
@@ -44,19 +53,8 @@ const createCommittee = (name: string, description: string, owner: string, membe
     });
 };
 
-const populateCommitteeMembers = async (committees: CommitteeData[]): Promise<CommitteeData[]> => {
-    for (let i = 0; i < committees.length; i++) {
-        for (let j = 0; j < committees[i].members.length; j++) {
-            const user: User | null = await findUserById(committees[i].members[j].id);
-
-            if (user) {
-                committees[i].members[j].displayname = user.displayname;
-                committees[i].members[j].username = user.username;
-            }
-        }
-    }
-
-    return committees;
+const getCommitteesForUser = (userId: string): Committee[] => {
+    return committees.filter((committee: Committee) => committee.members.some((member: CommitteeMember) => member.id == userId));
 };
 
 const getCommitteeById = (id: string): Committee | null => {
@@ -71,4 +69,4 @@ const isUserInCommittee = (userId: string, committeeId: string): boolean => {
     return false;
 };
 
-export { createCommittee, populateCommitteeMembers, getCommitteeById, isUserInCommittee };
+export { createCommittee, getCommitteesForUser, getCommitteeById, isUserInCommittee };

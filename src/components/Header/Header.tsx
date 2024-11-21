@@ -2,12 +2,13 @@ import { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { RobertRulesOnlineIcon } from '../../assets/icons';
-import { logout, selectIsLoggedIn } from '../../features/userSlice';
+import { logout, selectIsLoggedIn, selectUser } from '../../features/userSlice';
 import styles from './Header.module.scss';
 
 const Header: FC = () => {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector(selectIsLoggedIn);
+    const user = useSelector(selectUser);
 
     return (
         <header className={styles.header}>
@@ -29,7 +30,10 @@ const Header: FC = () => {
                         <button onClick={() => dispatch(logout())} data-button-type="primary">
                             Logout
                         </button>
-                        <Link to="/profile" className={styles.profile} />
+                        {/*<Link to="/profile" className={styles.profile} />*/}
+                        <Link to="/profile" className={styles.profileName}>
+                            {user!.displayname}
+                        </Link>
                     </>
                 ) : (
                     <>

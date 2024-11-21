@@ -1,27 +1,52 @@
 .header {
     width: 100%;
-    height: 80px;
+    min-height: 80px;
     background-color: var(--color-foreground);
     color: var(--color-text);
     display: flex;
     align-items: center;
     justify-content: start;
-    padding-inline: var(--space-lg);
+    padding-inline: var(--space);
+    padding-block: var(--space-sm);
     border-bottom: var(--border);
     position: sticky;
     inset: 0;
+    top: 64px;
     z-index: 98;
 
     .committee {
         font-size: var(--font-xl);
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        width: 210px;
     }
 
     .nav {
         display: flex;
         align-items: center;
         justify-content: start;
-        gap: var(--space);
+        gap: var(--space-sm);
         margin-left: var(--space-lg);
+        flex-wrap: wrap;
+    }
+
+    @media (width <= 880px) {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .nav {
+            margin-top: var(--space-sm);
+            margin-left: 0;
+        }
+    }
+
+    @media (width <= 640px) {
+        align-items: center;
+
+        .nav {
+            justify-content: center;
+        }
     }
 }
 

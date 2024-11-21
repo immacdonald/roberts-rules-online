@@ -1,0 +1,13 @@
+.textbox {
+    width: 100%;
+    min-height: 64px;
+    font-family: var(--font);
+    font-size: var(--font-md);
+    background-color: unset;
+    color: var(--color-text);
+    border: none;
+    outline: none !important;
+    padding: var(--space-sm);
+    resize: none;
+    overflow: hidden;
+}

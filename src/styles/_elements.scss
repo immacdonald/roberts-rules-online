@@ -9,6 +9,14 @@
     box-sizing: inherit;
 }
 
+*:focus-visible {
+    outline: var(--color-primary) solid 2px;
+}
+
+::selection {
+    background-color: #09bc8a20;
+}
+
 html {
     height: 100%;
     display: block;
@@ -85,6 +93,7 @@ input {
 button,
 [data-button-type] {
     height: 42px;
+    color: var(--color-text);
     background-color: var(--color-background);
     border: none;
     padding: var(--space-sm);
@@ -150,10 +159,6 @@ h3 {
 
 hr {
     margin-block: var(--space);
-}
-
-::selection {
-    background-color: #09bc8a20;
 }
 
 // react-toggle override styling for parity with design system

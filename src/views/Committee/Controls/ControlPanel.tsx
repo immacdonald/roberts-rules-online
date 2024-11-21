@@ -18,7 +18,7 @@ const ControlPanel: FC = () => {
         <section>
             <h1>Control Panel</h1>
             <div className={styles.toggleSection}>
-                <div className={styles.toggleText}>Allow any user to create a special motion</div>
+                <div className={styles.toggleText}>Allow members to create a special motion</div>
                 <div className={styles.toggle}>
                     <label htmlFor="specialMotionToggle">
                         <Toggle id="specialMotionToggle" defaultChecked={specialMotionAllowed} icons={false} onChange={handleSpecialMotionChange} />
@@ -26,7 +26,7 @@ const ControlPanel: FC = () => {
                 </div>
             </div>
             <div className={styles.toggleSection}>
-                <div className={styles.toggleText}>Allow any user to create a procedure motion</div>
+                <div className={styles.toggleText}>Allow members to create a procedure motion</div>
                 <div className={styles.toggle}>
                     <label htmlFor="procedureMotionToggle">
                         <Toggle id="procedureMotionToggle" defaultChecked={procedureMotionAllowed} icons={false} onChange={handleProcedureMotionChange} />

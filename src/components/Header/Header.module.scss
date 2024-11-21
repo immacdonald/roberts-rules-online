@@ -45,3 +45,10 @@
     border-radius: 50%;
     margin-left: var(--space);
 }
+
+.profileName {
+    margin-left: var(--space);
+    text-decoration: none !important;
+    font-weight: bold;
+    font-style: italic;
+}
