@@ -93,6 +93,7 @@ input {
 button,
 [data-button-type] {
     height: 42px;
+    color: var(--color-text);
     background-color: var(--color-background);
     border: none;
     padding: var(--space-sm);
@@ -131,7 +132,6 @@ button,
         border: none;
         background-color: unset;
         font-weight: normal;
-        color: var(--color-text);
     }
 
     &[disabled] {

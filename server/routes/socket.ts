@@ -61,6 +61,15 @@ const setupSocketHandlers = (io: Server): void => {
             createCommittee(name, description, userId, [{ id: userId, role: 'owner' }]);
         });
 
+        socket.on('addUserToCommittee', async (committeeId: string, user: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.addUser(userId, user);
+            } else {
+                console.log('Committee not found to create motion');
+            }
+        });
+
         socket.on('getMotions', async (committeeId: string) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
