@@ -35,7 +35,7 @@ const CommitteeViewUsers: FC = () => {
         socket!.emit('addUserToCommittee', currentCommittee.id, newUser);
     };
 
-    const getUser = (name: string, role: string, userId: string): ReactElement => {
+    const getUser = (name: string, username: string, role: string, userId: string): ReactElement => {
         const getRoleBox = (role: string, userId: string): ReactElement => {
             if (role == 'owner') {
                 if (currentCommittee.members.some((member: CommitteeMember) => member.role == 'chair')) {
@@ -72,7 +72,9 @@ const CommitteeViewUsers: FC = () => {
 
         return (
             <div className={styles.user}>
-                <div className={styles.name}>{name}</div>
+                <div className={styles.name}>
+                    {name} (@{username})
+                </div>
                 {getRoleBox(role, userId)}
             </div>
         );
@@ -85,7 +87,7 @@ const CommitteeViewUsers: FC = () => {
                 <ul className={styles.userList}>
                     {currentCommittee.members.length > 0 ? (
                         currentCommittee.members.map((user: CommitteeMember) => {
-                            return <div key={user.id}>{getUser(user.displayname || 'Unknown', user.role, user.id)}</div>;
+                            return <div key={user.id}>{getUser(user.displayname || 'Unknown', user.username || 'Unknown', user.role, user.id)}</div>;
                         })
                     ) : (
                         <Loading />

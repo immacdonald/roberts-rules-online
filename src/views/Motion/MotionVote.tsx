@@ -229,15 +229,17 @@ const MotionVote: FC = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'positive' })} data-button-type="primary">
-                                            Comment For
-                                        </button>
-                                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'negative' })} data-button-type="primary" data-button-context="critical">
-                                            Comment Against
-                                        </button>
-                                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'neutral' })} data-button-type="secondary">
-                                            Neutral Comment
-                                        </button>
+                                        <div>
+                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'positive' })} data-button-type="primary">
+                                                Comment For
+                                            </button>
+                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'negative' })} data-button-type="primary" data-button-context="critical">
+                                                Comment Against
+                                            </button>
+                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'neutral' })} data-button-type="secondary">
+                                                Neutral Comment
+                                            </button>
+                                        </div>
                                         <div className={styles.modify}>
                                             <button className={styles.postpone} data-button-type="secondary">
                                                 Postpone Vote
