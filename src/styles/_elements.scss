@@ -9,6 +9,14 @@
     box-sizing: inherit;
 }
 
+*:focus-visible {
+    outline: var(--color-primary) solid 2px;
+}
+
+::selection {
+    background-color: #09bc8a20;
+}
+
 html {
     height: 100%;
     display: block;
@@ -123,6 +131,7 @@ button,
         border: none;
         background-color: unset;
         font-weight: normal;
+        color: var(--color-text);
     }
 
     &[disabled] {
@@ -150,10 +159,6 @@ h3 {
 
 hr {
     margin-block: var(--space);
-}
-
-::selection {
-    background-color: #09bc8a20;
 }
 
 // react-toggle override styling for parity with design system

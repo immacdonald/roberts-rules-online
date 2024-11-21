@@ -8,7 +8,7 @@ import RetryIconSVG from './retry.svg?react';
 import RobertsRulesOnlineIconSVG from './RobertsRulesOnlineIcon.svg?react';
 
 const asIcon = (WrappedSVG: FC<SVGProps<SVGSVGElement>>): FC<SVGProps<SVGSVGElement>> => {
-    return (props) => <WrappedSVG {...props} style={{ height: '24px' }} />;
+    return (props) => <WrappedSVG {...props} style={{ height: '24px', fill: 'var(--color-text)' }} />;
 };
 
 export const RobertRulesOnlineIcon = asIcon(RobertsRulesOnlineIconSVG);

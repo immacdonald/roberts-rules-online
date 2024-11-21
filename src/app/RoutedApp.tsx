@@ -89,7 +89,7 @@ const RoutedApp: FC = () => {
             });
 
             socket.on('setMotions', (motions: MotionData[]) => {
-                console.log('Setting motions', motions);
+                //console.log('Setting motions', motions);
                 dispatch(setCommitteeMotions(motions));
             });
 
