@@ -1,14 +1,14 @@
-import { ChangeEvent, FC, FormEvent, ReactElement, useEffect, useMemo, useState} from 'react';
-import { Textbox } from '../../components';
+import { ChangeEvent, FC, FormEvent, ReactElement, useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { MotionComment, Sentiment } from '../../../types';
 import { DeleteIcon, EditIcon } from '../../assets/icons';
+import { Textbox } from '../../components';
 import { Modal } from '../../components/Modal';
 import { VoteDisplay } from '../../components/Vote';
 import { selectCurrentMotion } from '../../features/committeesSlice';
 import { selectUser } from '../../features/userSlice';
 import { socket } from '../../socket';
 import styles from './Motion.module.scss';
-import { useSelector } from 'react-redux';
 
 type Reply = {
     id: string;
@@ -77,8 +77,8 @@ const MotionVote: FC = () => {
                 </div>
             </div>
         );
-    }
-    
+    };
+
     const [votesInfavor, setVotesInFavor] = useState<number>(0);
     const [votesAgainst, setVotesAgainst] = useState<number>(0);
     const [threshold, setThreshold] = useState<number>(0);
@@ -209,23 +209,6 @@ const MotionVote: FC = () => {
                         <p>Vote on Motion by {new Date(motion.decisionTime).toLocaleDateString()}</p>
                     </div>
                     <div className={styles.actions}>
-                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'positive' })} data-button-type="primary">
-                            Comment For
-                        </button>
-                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'negative' })} data-button-type="primary" data-button-context="critical">
-                            Comment Against
-                        </button>
-                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'neutral' })} data-button-type="secondary">
-                            Neutral Comment
-                        </button>
-                        <div className={styles.modify}>
-                            <button className={styles.postpone} data-button-type="secondary">
-                                Postpone Vote
-                            </button>
-                            <button className={styles.amend} data-button-type="secondary">
-                                Amend Motion
-                            </button>
-                        </div>
                         {!votingEnded ? (
                             <>
                                 {votingBegun ? (
@@ -244,13 +227,33 @@ const MotionVote: FC = () => {
                                             <></>
                                         )}
                                     </>
-                                ) : false }
+                                ) : (
+                                    <>
+                                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'positive' })} data-button-type="primary">
+                                            Comment For
+                                        </button>
+                                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'negative' })} data-button-type="primary" data-button-context="critical">
+                                            Comment Against
+                                        </button>
+                                        <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'neutral' })} data-button-type="secondary">
+                                            Neutral Comment
+                                        </button>
+                                        <div className={styles.modify}>
+                                            <button className={styles.postpone} data-button-type="secondary">
+                                                Postpone Vote
+                                            </button>
+                                            <button className={styles.amend} data-button-type="secondary">
+                                                Amend Motion
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </>
                         ) : (
                             <>
                                 {!discusionHasBeenWritten ? (
                                     <button onClick={() => addDiscusionSummary()} data-button-type="primary">
-                                        Add discusion
+                                        Write Summary
                                     </button>
                                 ) : (
                                     <div className={styles.discusionBox}>
@@ -270,7 +273,7 @@ const MotionVote: FC = () => {
                 <div style={{ marginLeft: '10%' }}>
                     {!votingBegun ? (
                         <button style={{ marginTop: '100px' }} onClick={() => setVotingBegun(true)} data-button-type="secondary">
-                            Start Voting
+                            Cast Vote
                         </button>
                     ) : (
                         <VoteDisplay yeas={votesInfavor} nays={votesAgainst} threshold={threshold} totalUsers={totalUsers} />
