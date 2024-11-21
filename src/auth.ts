@@ -1,9 +1,8 @@
 import { User } from 'server/interfaces/user';
-
-const urlBase = process.env.NODE_ENV == 'production' ? 'https://roberts-rules-online.onrender.com' : 'http://localhost:3000';
+import { clientConfig } from './client-config';
 
 const login = async (email?: string, password?: string, token?: string): Promise<User | null> => {
-    const url = `${urlBase}/api/v1/login`;
+    const url = `${clientConfig.url}/api/v1/login`;
 
     const options: RequestInit = {
         method: 'POST',
@@ -29,7 +28,7 @@ const login = async (email?: string, password?: string, token?: string): Promise
 };
 
 const signup = async (username: string, email: string, password: string, displayname: string): Promise<User | null> => {
-    const url = `${urlBase}/api/v1/signup`;
+    const url = `${clientConfig.url}/api/v1/signup`;
 
     const options: RequestInit = {
         method: 'POST',

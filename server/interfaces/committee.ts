@@ -110,7 +110,7 @@ export class Committee {
                 summary: '',
                 relatedId: relatedMotionId || '',
                 status: 'pending',
-                decisionTime: Date.now() + serverConfig.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
+                decisionTime: Date.now() + serverConfig.committees.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
                 creationDate: Date.now()
             };
 
