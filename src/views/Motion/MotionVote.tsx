@@ -1,12 +1,14 @@
-import { ChangeEvent, FC, ReactElement, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { ChangeEvent, FC, FormEvent, ReactElement, useEffect, useMemo, useState} from 'react';
+import { Textbox } from '../../components';
 import { MotionComment, Sentiment } from '../../../types';
 import { DeleteIcon, EditIcon } from '../../assets/icons';
-import { Textbox } from '../../components';
+import { Modal } from '../../components/Modal';
+import { VoteDisplay } from '../../components/Vote';
 import { selectCurrentMotion } from '../../features/committeesSlice';
 import { selectUser } from '../../features/userSlice';
 import { socket } from '../../socket';
 import styles from './Motion.module.scss';
+import { useSelector } from 'react-redux';
 
 type Reply = {
     id: string;
@@ -75,6 +77,100 @@ const MotionVote: FC = () => {
                 </div>
             </div>
         );
+    }
+    
+    const [votesInfavor, setVotesInFavor] = useState<number>(0);
+    const [votesAgainst, setVotesAgainst] = useState<number>(0);
+    const [threshold, setThreshold] = useState<number>(0);
+    const [totalUsers, setTotalUsers] = useState<number>(0);
+
+    const [alreadyVoted, setAlreadyVoted] = useState<boolean>(false);
+
+    const [votingBegun, setVotingBegun] = useState(false);
+
+    const [votingEnded, setVotingEnded] = useState(false);
+
+    const [discusionHasBeenWritten, setDiscusionHasBeenWritten] = useState(false);
+    const [createDiscusionModal, setCreateDiscusionModal] = useState(false);
+    const [discusionSummary, setDiscusionSummary] = useState('');
+    const [pros, setPros] = useState('');
+    const [cons, setCons] = useState('');
+
+    //const [isActiveMotion, setIsActiveMotion] = useState(true);
+
+    const setUpVoting = (): void => {
+        //TODO
+        //basic setup for front end, should retrive data from database
+
+        //set Threshold from server
+        setThreshold(3);
+        //set TotalUsers from server
+        setTotalUsers(5);
+        //set VotesInFavor from server
+        setVotesInFavor(2);
+        //set VotesAgainst from server
+        setVotesAgainst(2);
+        //check if a user has already voted and set alreadyVoted
+        setAlreadyVoted(false);
+        //check if voting has begun from server and set votingBegun
+        setVotingBegun(false);
+        //check if voting if has ended and set votingEnded
+        if (votesInfavor >= threshold || votesAgainst >= threshold) setVotingEnded(true);
+        //check if voting has ended and set votingEnded
+        setVotingEnded(false);
+        //check if discusionHasBeenWritten and set discusionHasBeenWritten
+        setDiscusionHasBeenWritten(false);
+        //check if its an active motion and set isActiveMotion
+        //setIsActiveMotion(true);
+    };
+
+    useEffect(() => {
+        //runs on page load
+        setUpVoting();
+    }, []);
+
+    const userPerformsVote = (vote: boolean): void => {
+        if (vote) setVotesInFavor(votesInfavor + 1);
+        else setVotesAgainst(votesAgainst + 1);
+
+        setAlreadyVoted(true);
+    };
+
+    useEffect(() => {
+        //determines if enough votes have reached the threshold to end voting
+        if (votesInfavor >= threshold || votesAgainst >= threshold) {
+            setVotingEnded(true);
+            //TODO
+            //send winner of vote to database
+        } else {
+            setVotingEnded(false);
+        }
+    }, [votesInfavor, votesAgainst, threshold]);
+
+    useEffect(() => {
+        if (discusionHasBeenWritten) {
+            //setIsActiveMotion(false);
+            console.log('Is now a past motion');
+            // TODO
+            // set motion to past motion in database
+        } else {
+            //setIsActiveMotion(true);
+        }
+    }, [discusionHasBeenWritten]);
+
+    const addDiscusionSummary = (): void => {
+        setCreateDiscusionModal(true);
+    };
+
+    const handleAddDiscusion = (event: FormEvent<HTMLFormElement>): void => {
+        event.preventDefault();
+        console.log('Adding new discusion');
+
+        setDiscusionHasBeenWritten(true);
+        setCreateDiscusionModal(false);
+
+        // TODO
+        // Add the discusion to database
     };
 
     return (
@@ -130,8 +226,55 @@ const MotionVote: FC = () => {
                                 Amend Motion
                             </button>
                         </div>
+                        {!votingEnded ? (
+                            <>
+                                {votingBegun ? (
+                                    // Display these buttons when voting has begun
+                                    <>
+                                        {!alreadyVoted ? (
+                                            <>
+                                                <button onClick={() => userPerformsVote(true)} data-button-type="primary">
+                                                    Vote in Favor
+                                                </button>
+                                                <button onClick={() => userPerformsVote(false)} data-button-type="primary" data-button-context="critical">
+                                                    Vote Against
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <></>
+                                        )}
+                                    </>
+                                ) : false }
+                            </>
+                        ) : (
+                            <>
+                                {!discusionHasBeenWritten ? (
+                                    <button onClick={() => addDiscusionSummary()} data-button-type="primary">
+                                        Add discusion
+                                    </button>
+                                ) : (
+                                    <div className={styles.discusionBox}>
+                                        <p>Discusion Summary</p>
+                                        <p className={styles.textBox}>{discusionSummary}</p>
+                                        <p>Pros</p>
+                                        <p className={styles.textBox}>{pros}</p>
+                                        <p>Cons</p>
+                                        <p className={styles.textBox}>{cons}</p>
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
                     {replyingTo?.id == motion.id && createReplyBox(replyingTo)}
+                </div>
+                <div style={{ marginLeft: '10%' }}>
+                    {!votingBegun ? (
+                        <button style={{ marginTop: '100px' }} onClick={() => setVotingBegun(true)} data-button-type="secondary">
+                            Start Voting
+                        </button>
+                    ) : (
+                        <VoteDisplay yeas={votesInfavor} nays={votesAgainst} threshold={threshold} totalUsers={totalUsers} />
+                    )}
                 </div>
             </div>
             <div className={styles.comments}>
@@ -194,6 +337,30 @@ const MotionVote: FC = () => {
                         );
                     })}
             </div>
+
+            {createDiscusionModal && (
+                <Modal>
+                    <h2>Add Discusion Summary</h2>
+                    <form id="add User" onSubmit={handleAddDiscusion}>
+                        <fieldset>
+                            <label htmlFor="discusion">Enter Discusion</label>
+                            <textarea className={styles.textAreaStyle} id="discusion" required={true} onChange={(ev) => setDiscusionSummary(ev.target.value)} value={discusionSummary} />
+                            <label htmlFor="pros">Enter Pros</label>
+                            <textarea className={styles.textAreaStyle} id="pros" required={true} onChange={(ev) => setPros(ev.target.value)} value={pros} />
+                            <label htmlFor="cons">Enter Cons</label>
+                            <textarea className={styles.textAreaStyle} id="cons" required={true} onChange={(ev) => setCons(ev.target.value)} value={cons} />
+                        </fieldset>
+                        <Modal.Actions>
+                            <button type="button" onClick={() => setCreateDiscusionModal(false)}>
+                                Cancel
+                            </button>
+                            <button type="submit" id="submitUserButton" data-button-type="primary">
+                                Submit
+                            </button>
+                        </Modal.Actions>
+                    </form>
+                </Modal>
+            )}
         </section>
     );
 };
