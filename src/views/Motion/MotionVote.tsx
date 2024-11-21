@@ -138,7 +138,27 @@ const MotionVote: FC = () => {
                                         )}
                                     </div>
                                 ) : (
-                                    <span>Vote on Motion by {new Date(motion.decisionTime).toLocaleDateString()}</span>
+                                    <>
+                                        <div>
+                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'positive' })} data-button-type="primary">
+                                                Comment For
+                                            </button>
+                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'negative' })} data-button-type="primary" data-button-context="critical">
+                                                Comment Against
+                                            </button>
+                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'neutral' })} data-button-type="secondary">
+                                                Neutral Comment
+                                            </button>
+                                        </div>
+                                        <div className={styles.modify}>
+                                            <button className={styles.postpone} data-button-type="secondary">
+                                                Postpone Vote
+                                            </button>
+                                            <button className={styles.amend} data-button-type="secondary">
+                                                Amend Motion
+                                            </button>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </div>
