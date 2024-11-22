@@ -8,12 +8,12 @@ import { selectCurrentCommittee } from '../../../features/committeesSlice';
 import styles from './Motions.module.scss';
 
 const PastMotions: FC = () => {
-    const currentCommittee = useSelector(selectCurrentCommittee);
+    const currentCommittee = useSelector(selectCurrentCommittee)!;
 
     const [viewPassedMotions, setViewPassedMotions] = useState<boolean>(true);
 
     const displayMotions = useMemo(() => {
-        return currentCommittee!.motions!.map((motion: MotionData) => {
+        return currentCommittee.motions!.map((motion: MotionData) => {
             return (
                 <div className={clsx(styles.row, styles.motion)} key={motion.title}>
                     <button>
@@ -30,7 +30,7 @@ const PastMotions: FC = () => {
 
     const pastMotions = useMemo(() => {
         if (currentCommittee && currentCommittee.motions) {
-            return currentCommittee!.motions.filter((motion: MotionData) => motion.status != 'pending');
+            return currentCommittee.motions.filter((motion: MotionData) => motion.status != 'pending');
         } else {
             return [];
         }

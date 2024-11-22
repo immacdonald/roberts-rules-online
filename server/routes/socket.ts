@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
-import { Sentiment } from '../../types';
+import { CommitteeRole, Sentiment } from '../../types';
 import { createCommittee, getCommitteeById } from '../controllers/committees';
 import { addUserConnection, removeUserConnection } from '../controllers/connections';
 import { getCommittees, updateUserName } from '../controllers/users';
@@ -78,6 +78,15 @@ const setupSocketHandlers = (io: Server): void => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
                 committee.removeUser(userId, user);
+            } else {
+                console.log('Committee not found to remove user');
+            }
+        });
+
+        socket.on('changeUserRole', async (committeeId: string, user: string, role: CommitteeRole) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.changeUserRole(userId, user, role);
             } else {
                 console.log('Committee not found to remove user');
             }

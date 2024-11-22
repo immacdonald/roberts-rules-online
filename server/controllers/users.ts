@@ -84,7 +84,7 @@ const getCommittees = async (id: string): Promise<CommitteeData[] | null> => {
 
 const updateUserName = async (id: string, name: string): Promise<void> => {
     const user = await findUserById(id);
-    if(user && isDisplayNameValid(name)) {
+    if (user && isDisplayNameValid(name)) {
         user.displayname = name;
 
         await sql.query(
@@ -96,7 +96,7 @@ const updateUserName = async (id: string, name: string): Promise<void> => {
             [name]
         );
     }
-}
+};
 
 const debugUsers = (): void => {
     console.log(users);
@@ -327,6 +327,6 @@ const createUserQuery = (username: string, email: string, password: string, disp
             });
         });
     });
-}
+};
 
 export { createUser, loginUser, loginUserWithToken, getCommittees, updateUserName, debugUsers, findUserById, findUserByEmail, findUserByUsername };
