@@ -10,7 +10,7 @@ import { socket } from '../../../socket';
 import styles from './Motions.module.scss';
 
 const ActiveMotions: FC = () => {
-    const currentCommittee = useSelector(selectCurrentCommittee);
+    const currentCommittee = useSelector(selectCurrentCommittee)!;
     const navigate = useNavigate();
     const [createModal, setCreateModal] = useState<boolean>(false);
 
@@ -25,13 +25,13 @@ const ActiveMotions: FC = () => {
         event.preventDefault();
         setCreateModal(false);
         console.log('Creating new motion:', motionTitle);
-        socket!.emit('createMotion', currentCommittee!.id!, motionTitle);
+        socket!.emit('createMotion', currentCommittee.id!, motionTitle);
     };
 
     const displayMotions = useMemo(() => {
-        return currentCommittee!.motions!.map((motion: MotionData) => {
+        return currentCommittee.motions!.map((motion: MotionData) => {
             return (
-                <div className={clsx(styles.row, styles.motion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee!.id}/motions/${motion.id}`)}>
+                <div className={clsx(styles.row, styles.motion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
                     <h3>{motion.title}</h3>
                     <span>{motion.author || motion.authorId}</span>
                     <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
@@ -51,7 +51,7 @@ const ActiveMotions: FC = () => {
                     </button>
                 </header>
                 {currentCommittee?.motions ? (
-                    currentCommittee!.motions.length > 0 ? (
+                    currentCommittee.motions.length > 0 ? (
                         <div className={styles.motionTable} style={{ '--table-layout': '1fr 200px 200px 200px' } as CSSProperties}>
                             <div className={clsx(styles.row, styles.tableHeader)}>
                                 <span>Title</span>

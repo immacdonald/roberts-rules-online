@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CommitteeData, MotionData } from 'types';
+import { addOrReplaceInArrayById } from '../../utility';
 import { socket } from '../socket';
 import { RootState } from './store';
 
@@ -23,6 +24,11 @@ const committeesSlice = createSlice({
     reducers: {
         setCommittees: (state, action: PayloadAction<CommitteeData[]>) => {
             state.committees = action.payload.map((committee) => ({ ...committee, motions: [] }));
+        },
+        setUpdatedCommittee: (state, action: PayloadAction<CommitteeData>) => {
+            if (state.committees) {
+                state.committees = addOrReplaceInArrayById(state.committees, action.payload);
+            }
         },
         setCurrentCommittee: (state, action: PayloadAction<string | null>) => {
             state.previousCommitteeId = state.currentCommitteeId;
@@ -48,7 +54,7 @@ const committeesSlice = createSlice({
     }
 });
 
-export const { setCommittees, setCurrentCommittee, setCommitteeMotions, setCurrentMotion } = committeesSlice.actions;
+export const { setCommittees, setUpdatedCommittee, setCurrentCommittee, setCommitteeMotions, setCurrentMotion } = committeesSlice.actions;
 
 export const selectCommittees = (state: RootState): CommitteeData[] | null => state.committees.committees;
 export const selectCurrentCommittee = (state: RootState): CommitteeData | null => state.committees.committees?.find((committee) => committee.id === state.committees.currentCommitteeId) ?? null;

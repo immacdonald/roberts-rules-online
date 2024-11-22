@@ -53,7 +53,7 @@ const isDisplayNameValid = (displayname: string): boolean => {
     if (!displayname) {
         return false;
     }
-    if (displayname.length < 3) {
+    if (displayname.length < 2) {
         return false;
     }
     if (displayname.length > 32) {

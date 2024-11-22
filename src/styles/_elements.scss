@@ -84,7 +84,6 @@ input {
     color: var(--color-text);
     border-radius: var(--border-radius);
 
-    &:active,
     &:focus {
         outline: var(--color-primary) solid 2px;
     }
@@ -116,6 +115,10 @@ button,
         &[data-button-context='critical'] {
             background-color: var(--color-critical);
         }
+
+        &[data-button-context='primary'] {
+            background-color: var(--color-primary);
+        }
     }
 
     &[data-button-type='secondary'] {
@@ -126,12 +129,26 @@ button,
         &[data-button-context='critical'] {
             border-color: var(--color-critical);
         }
+
+        &[data-button-context='primary'] {
+            border-color: var(--color-primary);
+        }
     }
 
     &[data-button-type='ghost'] {
         border: none;
         background-color: unset;
         font-weight: normal;
+
+        &[data-button-context='critical'] {
+            color: var(--color-critical);
+            font-weight: bold;
+        }
+
+        &[data-button-context='primary'] {
+            color: var(--color-primary);
+            font-weight: bold;
+        }
     }
 
     &[disabled] {

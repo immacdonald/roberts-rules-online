@@ -33,13 +33,13 @@ const CommitteeNav: FC = () => {
                     Overview
                 </Link>
                 <Link to={`/committees/${currentCommittee.id}/motions`} data-button-type={activeLink('/motions', true)}>
-                    Active Motions
+                    Motions
                 </Link>
                 <Link to={`/committees/${currentCommittee.id}/past-motions`} data-button-type={activeLink('/past-motions')}>
-                    Past Motions
+                    Previous Motions
                 </Link>
                 <Link to={`/committees/${currentCommittee.id}/users`} data-button-type={activeLink('/users')}>
-                    View Users
+                    Members
                 </Link>
                 {(user.role == 'owner' || user.role == 'chair') && (
                     <Link to={`/committees/${currentCommittee.id}/control-panel`} data-button-type={activeLink('/control-panel')}>

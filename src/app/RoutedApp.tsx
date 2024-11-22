@@ -6,7 +6,7 @@ import { Socket } from 'socket.io-client';
 import { CommitteeData, MotionData } from 'types';
 import { login } from '../auth';
 import { Loading } from '../components';
-import { selectCommittees, setCommitteeMotions, setCommittees } from '../features/committeesSlice';
+import { selectCommittees, setCommitteeMotions, setCommittees, setUpdatedCommittee } from '../features/committeesSlice';
 import { selectUser, setUser } from '../features/userSlice';
 import { disconnectSocket, initializeSocket, socket } from '../socket';
 
@@ -88,6 +88,10 @@ const RoutedApp: FC = () => {
                 dispatch(setCommittees(committees));
             });
 
+            socket.on('updatedCommittee', (committee: CommitteeData) => {
+                dispatch(setUpdatedCommittee(committee));
+            });
+
             socket.on('setMotions', (motions: MotionData[]) => {
                 //console.log('Setting motions', motions);
                 dispatch(setCommitteeMotions(motions));
@@ -101,6 +105,7 @@ const RoutedApp: FC = () => {
             if (socket) {
                 socket.off('chatMessage');
                 socket.off('setCommittees');
+                socket.off('updatedCommittee');
                 socket.off('setMotions');
             }
         };
