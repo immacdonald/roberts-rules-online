@@ -27,10 +27,28 @@ const CommitteeViewUsers: FC = () => {
         setAddUserModal(false);
     };
 
-    const getUser = (name: string, username: string, role: string, userId: string): ReactElement => {
-        const getRoleBox = (role: string, userId: string): ReactElement => {
+    const removeUser = (userId: string): void => {
+        socket!.emit('removeUserFromCommittee', currentCommittee.id, userId);
+    };
+
+    const leaveCommittee = (): void => {
+        removeUser(user.id);
+        navigate('/');
+    };
+
+    const promoteUser = (userId: string): void => {
+        socket?.emit('changeUserRole', currentCommittee.id, userId, 'chair');
+    };
+
+    const demoteUser = (userId: string): void => {
+        socket?.emit('changeUserRole', currentCommittee.id, userId, 'member');
+    };
+
+    const getUserRow = (name: string, username: string, role: string, userId: string): ReactElement => {
+        const getRoleBox = (role: string): ReactElement => {
             switch (role) {
-                case "owner":
+                case 'owner':
+                    // Check if the committee has a designated chair to determine if owner is chair
                     if (currentCommittee.members.some((member: CommitteeMember) => member.role == 'chair')) {
                         return (
                             <>
@@ -46,32 +64,49 @@ const CommitteeViewUsers: FC = () => {
                             </>
                         );
                     }
-                case "chair":
+                case 'chair':
                     return (
                         <>
                             <b>Chair</b>
                             <ChairIcon />
                         </>
-                    )
+                    );
                 default:
                     return (
                         <>
                             <b>Member</b>
-                            {(user.role == 'owner' || user.role == 'chair') && <button onClick={() => promoteUser(userId)}>Promote</button>}
                         </>
-                    )
+                    );
             }
         };
 
         return (
-            <div className={styles.user}>
-                <div className={styles.name}>
-                    {name} (@{username})
+            <>
+                <div className={styles.user}>
+                    <div className={styles.name}>
+                        {name} (@{username})
+                    </div>
+                    <div className={styles.role}>{getRoleBox(role)}</div>
                 </div>
-                <div className={styles.role}>
-                    {getRoleBox(role, userId)}
-                </div>
-            </div>
+                {userId == user.id && user.role != 'owner' && (
+                    <button onClick={() => leaveCommittee()} data-button-context="critical" data-button-type="secondary">
+                        Leave Committee
+                    </button>
+                )}
+                {role == 'chair' && user.role == 'owner' && (
+                    <button onClick={() => demoteUser(userId)} data-button-context="critical" data-button-type="ghost">
+                        Demote
+                    </button>
+                )}
+                {role == 'member' && (user.role == 'owner' || user.role == 'chair') && (
+                    <>
+                        {!currentCommittee.members.some((member: CommitteeMember) => member.role == 'chair') && <button onClick={() => promoteUser(userId)}>Promote</button>}
+                        <button onClick={() => removeUser(userId)} data-button-context="critical" data-button-type="ghost">
+                            Remove
+                        </button>
+                    </>
+                )}
+            </>
         );
     };
 
@@ -82,7 +117,11 @@ const CommitteeViewUsers: FC = () => {
                 <ul className={styles.userList}>
                     {currentCommittee.members.length > 0 ? (
                         currentCommittee.members.map((user: CommitteeMember) => {
-                            return <div key={user.id}>{getUser(user.displayname || 'Unknown', user.username || 'Unknown', user.role, user.id)}</div>;
+                            return (
+                                <div className={styles.row} key={user.id}>
+                                    {getUserRow(user.displayname || 'Unknown', user.username || 'Unknown', user.role, user.id)}
+                                </div>
+                            );
                         })
                     ) : (
                         <Loading />

@@ -56,7 +56,7 @@ const createCommittee = (name: string, description: string, owner: string, membe
                             }
                         }
 
-                        committee.sendUpdatedCommittee()
+                        committee.sendUpdatedCommittee();
                         addToCache(committee);
                     }
                 });

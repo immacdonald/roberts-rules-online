@@ -12,8 +12,6 @@ import styles from './Motions.module.scss';
 
 const PastMotions: FC = () => {
     const currentCommittee = useSelector(selectCurrentCommittee)!;
-    const { id } = useSelector(selectUser)!;
-    const navigate = useNavigate();
 
     const [viewPassedMotions, setViewPassedMotions] = useState<boolean | null>(null);
 
@@ -37,12 +35,7 @@ const PastMotions: FC = () => {
     };
 
     const displayMotions = useMemo(() => {
-        return filteredPastMotions.map((motion: MotionData) => {
-            const vote: Vote | null = motion.vote[id] ?? null;
-            let votedWithThisMotion = false;
-            if (vote && (motion.status == 'passed' || motion.status == 'failed')) {
-                votedWithThisMotion = (vote == 'yea' && motion.status == 'passed') || (vote == 'nay' && motion.status == 'failed');
-            }
+        return currentCommittee.motions!.map((motion: MotionData) => {
             return (
                 <div className={clsx(styles.row, styles.motion)} key={motion.id} onClick={() => navigate(`/committees/${currentCommittee.id}/past-motions/${motion.id}`)}>
                     {votedWithThisMotion && motion.flag == '' ? (
@@ -69,7 +62,15 @@ const PastMotions: FC = () => {
                 </div>
             );
         });
-    }, [filteredPastMotions]);
+    }, [currentCommittee?.motions]);
+
+    const pastMotions = useMemo(() => {
+        if (currentCommittee && currentCommittee.motions) {
+            return currentCommittee.motions.filter((motion: MotionData) => motion.status != 'pending');
+        } else {
+            return [];
+        }
+    }, [currentCommittee?.motions]);
 
     return (
         <>

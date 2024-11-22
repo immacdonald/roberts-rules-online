@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { CommitteeMember, CommitteeRole, MotionData, MotionFlag, MotionSummary, Sentiment, Vote } from '../../types';
+import { CommitteeMember, CommitteeRole, MotionData, Sentiment } from '../../types';
 import { addOrReplaceInArrayById } from '../../utility';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
@@ -27,7 +27,7 @@ export class Committee {
     constructor(id: string, name: string, description: string, owner: string, members: string | CommitteeMember[]) {
         this.id = id;
         this.name = name;
-        this.description = description
+        this.description = description;
         this.owner = owner;
         this.members = typeof members == 'string' ? (JSON.parse(members) as CommitteeMember[]) : members;
         this.motions = new Motions(id);
@@ -69,6 +69,8 @@ export class Committee {
             } else if (action == 'inviteUser') {
                 return member.role == 'chair';
             } else if (action == 'removeUser') {
+                return member.role == 'chair';
+            } else if (action == 'changeUserRole') {
                 return member.role == 'chair';
             }
         } else {
@@ -120,7 +122,7 @@ export class Committee {
     public removeUser = async (originatorId: string, userId: string): Promise<void> => {
         if (this.canUserDoAction(originatorId, 'removeUser') || originatorId == userId) {
             if (userId != this.owner && this.isMember(userId)) {
-                this.members = this.members.filter(member => member.id != userId);
+                this.members = this.members.filter((member) => member.id != userId);
                 await sql.query(
                     `
                     UPDATE committees
@@ -130,7 +132,32 @@ export class Committee {
                     [this.getMembersForDatabase()]
                 );
 
-                this.sendUpdatedCommittee();
+                await this.sendUpdatedCommittee();
+                const removedUserCommittees = await getCommittees(userId);
+                getUserConnection(userId)?.emit('setCommittees', removedUserCommittees);
+            }
+        }
+    };
+
+    public changeUserRole = async (originatorId: string, userId: string, role: CommitteeRole): Promise<void> => {
+        if (this.canUserDoAction(originatorId, 'changeUserRole')) {
+            if (userId != this.owner && this.isMember(userId)) {
+                const updatedMember = this.members.find((member) => member.id == userId);
+                if (updatedMember && updatedMember.role != 'owner') {
+                    updatedMember.role = role;
+                    this.members = addOrReplaceInArrayById(this.members, updatedMember);
+
+                    await sql.query(
+                        `
+                    UPDATE committees
+                    SET members = ?
+                    WHERE id = '${this.id}';
+                    `,
+                        [this.getMembersForDatabase()]
+                    );
+
+                    this.sendUpdatedCommittee();
+                }
             }
         }
     };
@@ -151,9 +178,9 @@ export class Committee {
             description: this.description,
             owner: this.owner,
             members: this.members
-        }
-        await this.sendToAllMembers('updatedCommittee', data)
-    }
+        };
+        await this.sendToAllMembers('updatedCommittee', data);
+    };
 
     public sendUpdatedMotions = async (): Promise<void> => {
         const updatedMotions = await this.getMotions();
