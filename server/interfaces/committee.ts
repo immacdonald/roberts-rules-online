@@ -24,14 +24,13 @@ export class Committee {
     public motions: Motions;
     public flag: string | null;
 
-    constructor(id: string, name: string, description: string, owner: string, members: string | CommitteeMember[], flag: string | null) {
+    constructor(id: string, name: string, description: string, owner: string, members: string | CommitteeMember[]) {
         this.id = id;
         this.name = name;
-        this.description = description;
+        this.description = description
         this.owner = owner;
         this.members = typeof members == 'string' ? (JSON.parse(members) as CommitteeMember[]) : members;
         this.motions = new Motions(id);
-        this.flag = flag;
     }
 
     public sendToMember = (event: string, data: any, id: string): void => {
@@ -71,14 +70,6 @@ export class Committee {
                 return member.role == 'chair';
             } else if (action == 'removeUser') {
                 return member.role == 'chair';
-            } else if (action == 'changeUserRole') {
-                return member.role == 'chair';
-            } else if (action == 'updateFlag') {
-                return member.role == 'chair';
-            } else if (action == 'writeMotionSummary') {
-                return member.role == 'chair';
-            } else if (action == 'endMotionVoting') {
-                return member.role == 'chair';
             }
         } else {
             console.log('User not member');
@@ -111,6 +102,7 @@ export class Committee {
 
             if (user && !this.isMember(user.id)) {
                 this.members.push({ id: user.id, role: 'member', username: user.username, displayname: user.displayname });
+                console.log(this.getMembersForDatabase());
                 await sql.query(
                     `
                     UPDATE committees
@@ -128,7 +120,7 @@ export class Committee {
     public removeUser = async (originatorId: string, userId: string): Promise<void> => {
         if (this.canUserDoAction(originatorId, 'removeUser') || originatorId == userId) {
             if (userId != this.owner && this.isMember(userId)) {
-                this.members = this.members.filter((member) => member.id != userId);
+                this.members = this.members.filter(member => member.id != userId);
                 await sql.query(
                     `
                     UPDATE committees
@@ -138,55 +130,13 @@ export class Committee {
                     [this.getMembersForDatabase()]
                 );
 
-                await this.sendUpdatedCommittee();
-                const removedUserCommittees = await getCommittees(userId);
-                getUserConnection(userId)?.emit('setCommittees', removedUserCommittees);
+                this.sendUpdatedCommittee();
             }
-        }
-    };
-
-    public changeUserRole = async (originatorId: string, userId: string, role: CommitteeRole): Promise<void> => {
-        if (this.canUserDoAction(originatorId, 'changeUserRole')) {
-            if (userId != this.owner && this.isMember(userId)) {
-                const updatedMember = this.members.find((member) => member.id == userId);
-                if (updatedMember && updatedMember.role != 'owner') {
-                    updatedMember.role = role;
-                    this.members = addOrReplaceInArrayById(this.members, updatedMember);
-
-                    await sql.query(
-                        `
-                    UPDATE committees
-                    SET members = ?
-                    WHERE id = '${this.id}';
-                    `,
-                        [this.getMembersForDatabase()]
-                    );
-
-                    this.sendUpdatedCommittee();
-                }
-            }
-        }
-    };
-
-    public updateFlag = async (originatorId: string, flag: string): Promise<void> => {
-        if (this.canUserDoAction(originatorId, 'updateFlag')) {
-            this.flag = flag;
-
-            await sql.query(
-                `
-                    UPDATE committees
-                    SET flag = ?
-                    WHERE id = '${this.id}';
-                    `,
-                [this.flag]
-            );
-
-            await this.sendUpdatedCommittee();
         }
     };
 
     public getMotions = async (): Promise<Motion[]> => {
-        const motions = (await this.motions.getMotions()).filter((motion, index, self) => self.findIndex((m) => m.id === motion.id) === index);
+        const motions = await this.motions.getMotions();
         return motions;
     };
 
@@ -195,20 +145,15 @@ export class Committee {
     };
 
     public sendUpdatedCommittee = async (): Promise<void> => {
-        const motions = await this.getMotions();
-
         const data = {
             id: this.id,
             name: this.name,
             description: this.description,
             owner: this.owner,
-            members: this.members,
-            motions: motions.filter((motion, index, self) => self.findIndex((m) => m.id === motion.id) === index),
-            flag: this.flag
-        };
-
-        await this.sendToAllMembers('updatedCommittee', data);
-    };
+            members: this.members
+        }
+        await this.sendToAllMembers('updatedCommittee', data)
+    }
 
     public sendUpdatedMotions = async (): Promise<void> => {
         const updatedMotions = await this.getMotions();

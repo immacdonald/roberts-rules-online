@@ -86,33 +86,19 @@ const getCommittees = async (id: string): Promise<CommitteeData[] | null> => {
 
 const updateUserName = async (id: string, name: string): Promise<void> => {
     const user = await findUserById(id);
-    if (user && isDisplayNameValid(name)) {
+    if(user && isDisplayNameValid(name)) {
         user.displayname = name;
 
         await sql.query(
             `
 			UPDATE users
 			SET displayname = ?
-			WHERE id = '${id}';
+			WHERE id = '${id}'';
 		`,
             [name]
         );
-
-        // Update the user's name in all (cached instances) of committees they are a member of
-        const committees = getCommitteesForUser(user.id);
-
-        for (let i = 0; i < committees.length; i++) {
-            const userInCommittee = committees[i].members.find((member) => member.id == user.id);
-            if (userInCommittee) {
-                userInCommittee.displayname = user.displayname;
-                userInCommittee.username = user.username;
-
-                committees[i].members = addOrReplaceInArrayById(committees[i].members, userInCommittee);
-                await committees[i].sendUpdatedCommittee();
-            }
-        }
     }
-};
+}
 
 const debugUsers = (): void => {
     console.log(users);

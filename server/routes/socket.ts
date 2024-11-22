@@ -83,24 +83,6 @@ const setupSocketHandlers = (io: Server): void => {
             }
         });
 
-        socket.on('changeUserRole', async (committeeId: string, user: string, role: CommitteeRole) => {
-            const committee = getCommitteeById(committeeId);
-            if (committee) {
-                committee.changeUserRole(userId, user, role);
-            } else {
-                console.log('Committee not found to remove user');
-            }
-        });
-
-        socket.on('updateCommitteeFlag', async (committeeId: string, flag: string) => {
-            const committee = getCommitteeById(committeeId);
-            if (committee) {
-                committee.updateFlag(userId, flag);
-            } else {
-                console.log('Committee not found to update flag');
-            }
-        });
-
         socket.on('getMotions', async (committeeId: string) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
