@@ -24,6 +24,19 @@ const committeesSlice = createSlice({
         setCommittees: (state, action: PayloadAction<CommitteeData[]>) => {
             state.committees = action.payload.map((committee) => ({ ...committee, motions: [] }));
         },
+        setUpdatedCommittee: (state, action: PayloadAction<CommitteeData>) => {
+            if (state.committees) {
+                const index = state.committees.findIndex(committee => committee.id == action.payload.id);
+
+                if (index !== -1) {
+                    const updatedCommittees = [...state.committees];
+                    updatedCommittees[index] = action.payload;
+                    state.committees = updatedCommittees;
+                } else {
+                    state.committees = [...state.committees, action.payload];
+                }
+            }
+        },
         setCurrentCommittee: (state, action: PayloadAction<string | null>) => {
             state.previousCommitteeId = state.currentCommitteeId;
             state.currentCommitteeId = action.payload;
@@ -48,7 +61,7 @@ const committeesSlice = createSlice({
     }
 });
 
-export const { setCommittees, setCurrentCommittee, setCommitteeMotions, setCurrentMotion } = committeesSlice.actions;
+export const { setCommittees, setUpdatedCommittee, setCurrentCommittee, setCommitteeMotions, setCurrentMotion } = committeesSlice.actions;
 
 export const selectCommittees = (state: RootState): CommitteeData[] | null => state.committees.committees;
 export const selectCurrentCommittee = (state: RootState): CommitteeData | null => state.committees.committees?.find((committee) => committee.id === state.committees.currentCommitteeId) ?? null;

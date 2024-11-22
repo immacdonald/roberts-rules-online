@@ -3,7 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { Sentiment } from '../../types';
 import { createCommittee, getCommitteeById } from '../controllers/committees';
 import { addUserConnection, removeUserConnection } from '../controllers/connections';
-import { getCommittees } from '../controllers/users';
+import { getCommittees, updateUserName } from '../controllers/users';
 import { serverConfig } from '../server-config';
 
 const setupSocketHandlers = (io: Server): void => {
@@ -57,6 +57,10 @@ const setupSocketHandlers = (io: Server): void => {
             }
         });
 
+        socket.on('updateUserName', async (name: string) => {
+            await updateUserName(userId, name);
+        });
+
         socket.on('createCommittee', async (name: string, description: string) => {
             createCommittee(name, description, userId, [{ id: userId, role: 'owner' }]);
         });
@@ -66,7 +70,16 @@ const setupSocketHandlers = (io: Server): void => {
             if (committee) {
                 committee.addUser(userId, user);
             } else {
-                console.log('Committee not found to create motion');
+                console.log('Committee not found to add user');
+            }
+        });
+
+        socket.on('removeUserFromCommittee', async (committeeId: string, user: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.removeUser(userId, user);
+            } else {
+                console.log('Committee not found to remove user');
             }
         });
 
