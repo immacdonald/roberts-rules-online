@@ -1,0 +1,67 @@
+.profile {
+    height: 320px;
+    margin-top: var(--space);
+    border: var(--border);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+
+    > header {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+    }
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space);
+
+    fieldset {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+
+        label {
+            margin-bottom: 0;
+            margin-right: var(--space-sm);
+        }
+    }
+
+    input {
+        padding-inline: var(--space-sm);
+    }
+
+    &:not([data-edit-mode]) input {
+        border-color: transparent;
+        background-color: transparent;
+    }
+}
+
+.row {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+
+    > fieldset {
+        width: 100%;
+    }
+}
+
+.edit {
+    background-color: var(--color-foreground);
+}
+
+.indicator {
+    display: inline-flex;
+    gap: var(--space-sm);
+    align-items: center;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+    justify-content: center;
+}

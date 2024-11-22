@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 import { CommitteeData, UserWithToken } from '../../types';
+import { addOrReplaceInArrayById } from '../../utility';
 import { Database } from '../db';
 import { Committee } from '../interfaces/committee';
 import { User } from '../interfaces/user';
@@ -91,10 +92,24 @@ const updateUserName = async (id: string, name: string): Promise<void> => {
             `
 			UPDATE users
 			SET displayname = ?
-			WHERE id = '${id}'';
+			WHERE id = '${id}';
 		`,
             [name]
         );
+
+        // Update the user's name in all (cached instances) of committees they are a member of
+        const committees = getCommitteesForUser(user.id);
+
+        for (let i = 0; i < committees.length; i++) {
+            const userInCommittee = committees[i].members.find((member) => member.id == user.id);
+            if (userInCommittee) {
+                userInCommittee.displayname = user.displayname;
+                userInCommittee.username = user.username;
+
+                committees[i].members = addOrReplaceInArrayById(committees[i].members, userInCommittee);
+                await committees[i].sendUpdatedCommittee();
+            }
+        }
     }
 };
 

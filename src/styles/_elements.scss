@@ -84,7 +84,6 @@ input {
     color: var(--color-text);
     border-radius: var(--border-radius);
 
-    &:active,
     &:focus {
         outline: var(--color-primary) solid 2px;
     }
