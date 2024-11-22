@@ -7,6 +7,7 @@ import { Committee } from '../interfaces/committee';
 import { User } from '../interfaces/user';
 import { serverConfig } from '../server-config';
 import { getCommitteesForUser } from './committees';
+import { isDisplayNameValid } from './validation';
 
 const sql = Database.getInstance();
 
@@ -73,7 +74,7 @@ const getCommittees = async (id: string): Promise<CommitteeData[] | null> => {
         return {
             id: committee.id,
             name: committee.name,
-            description: '',
+            description: committee.description,
             owner: committee.owner,
             members: committee.members
         } as CommitteeData;
@@ -81,10 +82,74 @@ const getCommittees = async (id: string): Promise<CommitteeData[] | null> => {
     return data;
 };
 
+const updateUserName = async (id: string, name: string): Promise<void> => {
+    const user = await findUserById(id);
+    if(user && isDisplayNameValid(name)) {
+        user.displayname = name;
+
+        await sql.query(
+            `
+			UPDATE users
+			SET displayname = ?
+			WHERE id = '${id}'';
+		`,
+            [name]
+        );
+    }
+}
+
 const debugUsers = (): void => {
     console.log(users);
 };
 
+// Find methods first check the cache and then query the database
+const findUserById = async (id: string): Promise<User | null> => {
+    const cached = findCachedUserById(id);
+
+    if (cached) {
+        return cached;
+    } else {
+        const user = await getUserById(id);
+        return user;
+    }
+};
+
+const findUserByEmail = async (email: string): Promise<User | null> => {
+    const cached = findCachedUserByEmail(email);
+
+    if (cached) {
+        return cached;
+    } else {
+        const user = await getUserByEmail(email);
+        return user;
+    }
+};
+
+const findUserByUsername = async (username: string): Promise<User | null> => {
+    const cached = findCachedUserByUsername(username);
+
+    if (cached) {
+        return cached;
+    } else {
+        const user = await getUserByUsername(username);
+        return user;
+    }
+};
+
+// findCached methods are to search the users cache array synchronously
+const findCachedUserById = (id: string): User | null => {
+    return users.find((user) => user.id == id) ?? null;
+};
+
+const findCachedUserByEmail = (email: string): User | null => {
+    return users.find((user) => user.email == email) ?? null;
+};
+
+const findCachedUserByUsername = (username: string): User | null => {
+    return users.find((user) => user.username == username) ?? null;
+};
+
+// Database queries
 // Get methods query the database for the user
 const getUserById = async (id: string): Promise<User | null> => {
     return new Promise((resolve, reject) => {
@@ -174,55 +239,7 @@ const getUserByUsername = async (username: string): Promise<User | null> => {
     });
 };
 
-// Find methods first check the cache and then query the database
-const findUserById = async (id: string): Promise<User | null> => {
-    const cached = findCachedUserById(id);
-
-    if (cached) {
-        return cached;
-    } else {
-        const user = await getUserById(id);
-        return user;
-    }
-};
-
-const findUserByEmail = async (email: string): Promise<User | null> => {
-    const cached = findCachedUserByEmail(email);
-
-    if (cached) {
-        return cached;
-    } else {
-        const user = await getUserByEmail(email);
-        return user;
-    }
-};
-
-const findUserByUsername = async (username: string): Promise<User | null> => {
-    const cached = findCachedUserByUsername(username);
-
-    if (cached) {
-        return cached;
-    } else {
-        const user = await getUserByUsername(username);
-        return user;
-    }
-};
-
-// findCached methods are to search the users cache array synchronously
-const findCachedUserById = (id: string): User | null => {
-    return users.find((user) => user.id == id) ?? null;
-};
-
-const findCachedUserByEmail = (email: string): User | null => {
-    return users.find((user) => user.email == email) ?? null;
-};
-
-const findCachedUserByUsername = (username: string): User | null => {
-    return users.find((user) => user.username == username) ?? null;
-};
-
-// Database query
-async function createUserQuery(username: string, email: string, password: string, displayname: string): Promise<[boolean, string]> {
+const createUserQuery = (username: string, email: string, password: string, displayname: string): Promise<[boolean, string]> => {
     return new Promise((resolve, reject) => {
         if (!displayname) {
             displayname = username;
@@ -312,4 +329,4 @@ async function createUserQuery(username: string, email: string, password: string
     });
 }
 
-export { createUser, loginUser, loginUserWithToken, getCommittees, debugUsers, findUserById, findUserByEmail, findUserByUsername };
+export { createUser, loginUser, loginUserWithToken, getCommittees, updateUserName, debugUsers, findUserById, findUserByEmail, findUserByUsername };

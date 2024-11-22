@@ -37,36 +37,37 @@ const CommitteeViewUsers: FC = () => {
 
     const getUser = (name: string, username: string, role: string, userId: string): ReactElement => {
         const getRoleBox = (role: string, userId: string): ReactElement => {
-            if (role == 'owner') {
-                if (currentCommittee.members.some((member: CommitteeMember) => member.role == 'chair')) {
+            switch (role) {
+                case "owner":
+                    if (currentCommittee.members.some((member: CommitteeMember) => member.role == 'chair')) {
+                        return (
+                            <>
+                                <b>Owner</b>
+                                <HomeIcon />
+                            </>
+                        );
+                    } else {
+                        return (
+                            <>
+                                <b>Owner/Chair</b>
+                                <HomeIcon /> <ChairIcon />
+                            </>
+                        );
+                    }
+                case "chair":
                     return (
-                        <div className={styles.role}>
-                            <b>Owner</b>
-                            <HomeIcon />
-                        </div>
-                    );
-                } else {
+                        <>
+                            <b>Chair</b>
+                            <ChairIcon />
+                        </>
+                    )
+                default:
                     return (
-                        <div className={styles.role}>
-                            <b>Owner/Chair</b>
-                            <HomeIcon /> <ChairIcon />
-                        </div>
-                    );
-                }
-            } else if (role == 'chair') {
-                return (
-                    <div className={styles.role}>
-                        <b>Chair</b>
-                        <ChairIcon />
-                    </div>
-                );
-            } else {
-                return (
-                    <div className={styles.role}>
-                        <b>Member</b>
-                        {(user.role == 'owner' || user.role == 'chair') && <button onClick={() => promoteUser(userId)}>Promote</button>}
-                    </div>
-                );
+                        <>
+                            <b>Member</b>
+                            {(user.role == 'owner' || user.role == 'chair') && <button onClick={() => promoteUser(userId)}>Promote</button>}
+                        </>
+                    )
             }
         };
 
@@ -75,7 +76,9 @@ const CommitteeViewUsers: FC = () => {
                 <div className={styles.name}>
                     {name} (@{username})
                 </div>
-                {getRoleBox(role, userId)}
+                <div className={styles.role}>
+                    {getRoleBox(role, userId)}
+                </div>
             </div>
         );
     };
