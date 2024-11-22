@@ -27,7 +27,7 @@ const Header: FC = () => {
                         <Link to="/committees" data-button-type="ghost">
                             Committees
                         </Link>
-                        <button onClick={() => dispatch(logout())} data-button-type="primary">
+                        <button onClick={() => dispatch(logout())} data-button-type="secondary">
                             Logout
                         </button>
                         {/*<Link to="/profile" className={styles.profile} />*/}

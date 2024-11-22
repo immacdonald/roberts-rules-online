@@ -9,5 +9,5 @@
         "noEmit": true,
         "skipLibCheck": true
     },
-    "include": ["src", "server", "server.ts", "types.ts", "vite.config.ts", "eslint.config.js"]
+    "include": ["./"]
 }

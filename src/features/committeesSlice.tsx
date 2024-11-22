@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CommitteeData, MotionData } from 'types';
+import { addOrReplaceInArrayById } from '../../utility';
 import { socket } from '../socket';
 import { RootState } from './store';
 
@@ -26,15 +27,7 @@ const committeesSlice = createSlice({
         },
         setUpdatedCommittee: (state, action: PayloadAction<CommitteeData>) => {
             if (state.committees) {
-                const index = state.committees.findIndex(committee => committee.id == action.payload.id);
-
-                if (index !== -1) {
-                    const updatedCommittees = [...state.committees];
-                    updatedCommittees[index] = action.payload;
-                    state.committees = updatedCommittees;
-                } else {
-                    state.committees = [...state.committees, action.payload];
-                }
+                state.committees = addOrReplaceInArrayById(state.committees, action.payload);
             }
         },
         setCurrentCommittee: (state, action: PayloadAction<string | null>) => {
