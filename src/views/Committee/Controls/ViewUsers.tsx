@@ -22,7 +22,7 @@ const CommitteeViewUsers: FC = () => {
 
     const addUser = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        //console.log('Adding new user:', newUser);
+        console.log('Adding new user:', newUser);
         socket!.emit('addUserToCommittee', currentCommittee.id, newUser);
         setAddUserModal(false);
     };

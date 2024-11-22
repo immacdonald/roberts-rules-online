@@ -11,8 +11,4 @@ const addOrReplaceInArrayById = <T extends { id: string }>(array: T[], newItem: 
     }
 };
 
-const capitalize = (str: string): string => {
-    return str[0].toUpperCase() + str.slice(1);
-};
-
-export { addOrReplaceInArrayById, capitalize };
+export { addOrReplaceInArrayById };

@@ -33,8 +33,8 @@ const ActiveMotions: FC = () => {
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         setCreateModal(false);
-        console.log('Creating new motion:', motionTitle, motionDesc);
-        socket!.emit('createMotion', currentCommittee!.id!, motionTitle, motionDesc);
+        console.log('Creating new motion:', motionTitle);
+        socket!.emit('createMotion', currentCommittee.id!, motionTitle);
     };
 
     const activeMotions = useMemo(() => {
@@ -42,14 +42,9 @@ const ActiveMotions: FC = () => {
     }, [currentCommittee?.motions]);
 
     const displayMotions = useMemo(() => {
-        return activeMotions.map((motion: MotionData) => {
-            if (motion.relatedId) {
-                return false;
-            }
-
+        return currentCommittee.motions!.map((motion: MotionData) => {
             return (
-                <div className={clsx(styles.row, styles.motion)} key={motion.id} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
-                    <span>{capitalize(motion.flag || 'normal')}</span>
+                <div className={clsx(styles.row, styles.motion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
                     <h3>{motion.title}</h3>
                     <span>{motion.author || motion.authorId}</span>
                     <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
@@ -85,8 +80,8 @@ const ActiveMotions: FC = () => {
                     </button>
                 </header>
                 {currentCommittee?.motions ? (
-                    activeMotions.length > 0 ? (
-                        <div className={styles.motionTable} style={{ '--table-layout': '140px 1fr 100px 140px 100px' } as CSSProperties}>
+                    currentCommittee.motions.length > 0 ? (
+                        <div className={styles.motionTable} style={{ '--table-layout': '1fr 200px 200px 200px' } as CSSProperties}>
                             <div className={clsx(styles.row, styles.tableHeader)}>
                                 <span>Type</span>
                                 <span>Title</span>
