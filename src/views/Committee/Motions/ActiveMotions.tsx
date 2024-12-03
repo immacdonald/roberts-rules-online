@@ -45,6 +45,10 @@ const ActiveMotions: FC = () => {
 
     const displayMotions = useMemo(() => {
         return activeMotions.map((motion: MotionData) => {
+            if (motion.relatedId) {
+                return false;
+            }
+
             return (
                 <div className={clsx(styles.row, styles.motion)} key={motion.id} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
                     <span>{capitalize(motion.flag || 'normal')}</span>

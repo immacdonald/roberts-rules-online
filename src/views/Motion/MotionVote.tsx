@@ -18,7 +18,6 @@ type Reply = {
     text?: string;
 };
 
-const allowPostponing = false;
 const showActiveMotionVotesIndex = 2;
 
 const MotionVote: FC = () => {
@@ -179,11 +178,9 @@ const MotionVote: FC = () => {
                                     </button>
                                 </div>
                                 <div className={styles.modify}>
-                                    {allowPostponing && (
-                                        <button className={styles.postpone} data-button-type="secondary">
-                                            Postpone Vote
-                                        </button>
-                                    )}
+                                    <button className={styles.postpone} data-button-type="secondary">
+                                        Propose Submotion
+                                    </button>
                                     <button className={styles.amend} data-button-type="secondary">
                                         Amend Motion
                                     </button>
