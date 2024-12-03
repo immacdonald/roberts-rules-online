@@ -40,6 +40,8 @@ const MotionArchive: FC = () => {
         setCreateSummaryModal(true);
     };
 
+    const motionThreshold = motion.flag == 'procedural' || motion.flag == 'special' ? Math.ceil(committee.members.length * 0.66) : Math.ceil(committee.members.length * 0.5);
+
     const calculateIfMotionPassed = (): boolean => {
         if (motion.flag == 'procedural') {
             return votesAgainst < (votesInFavor + votesAgainst) / 3;
@@ -99,7 +101,7 @@ const MotionArchive: FC = () => {
                             </div>
                         </div>
                         <div>
-                            <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={Math.ceil(committee.members.length / 2)} totalUsers={committee.members.length} />
+                            <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={motionThreshold} totalUsers={committee.members.length} />
                         </div>
                     </div>
                 </div>

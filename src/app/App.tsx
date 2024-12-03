@@ -9,7 +9,12 @@ const App: FC = () => {
     return (
         <Provider store={store}>
             <HelmetProvider>
-                <RouterProvider router={router} />
+                <RouterProvider
+                    router={router}
+                    future={{
+                        v7_startTransition: true
+                    }}
+                />
             </HelmetProvider>
         </Provider>
     );

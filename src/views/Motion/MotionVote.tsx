@@ -104,8 +104,9 @@ const MotionVote: FC = () => {
 
     const showLiveVotes = isFlagged(committee.flag, showActiveMotionVotesIndex);
 
+    const motionThreshold = motion.flag == 'procedural' || motion.flag == 'special' ? Math.ceil(committee.members.length * 0.66) : Math.ceil(committee.members.length * 0.5);
+
     useEffect(() => {
-        console.log('Motion is active', activeMotion);
         if (!activeMotion) {
             navigate(`/committees/${committee.id}/past-motions`);
         }
@@ -155,7 +156,7 @@ const MotionVote: FC = () => {
                         ) : (
                             <div>
                                 {showLiveVotes ? (
-                                    <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={Math.ceil(committee.members.length / 2)} totalUsers={committee.members.length} />
+                                    <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={motionThreshold} totalUsers={committee.members.length} />
                                 ) : (
                                     <div className={styles.hiddenResults}>
                                         <span>Results are hidden during the voting period.</span>
