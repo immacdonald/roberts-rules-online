@@ -5,6 +5,7 @@ import { DeleteIcon, EditIcon } from '../../assets/icons';
 import { Textbox } from '../../components';
 import { Modal } from '../../components/Modal';
 import { VoteDisplay } from '../../components/Vote';
+import { selectCurrentCommittee } from '../../features/committeesSlice';
 import { selectCurrentMotion } from '../../features/committeesSlice';
 import { selectUser } from '../../features/userSlice';
 import { socket } from '../../socket';
@@ -16,23 +17,25 @@ type Reply = {
     text?: string;
 };
 
-const allowEditingsubmotionTitles = false;
+const allowEditingMotionTitles = true;
 
 const MotionVote: FC = () => {
+    const currentCommittee = useSelector(selectCurrentCommittee);
     const [createModal, setCreateModal] = useState<boolean>(false);
 
     const [submotionTitle, setSubmotionTitle] = useState<string>('');
     const [submotionDesc, setSubmotionDesc] = useState<string>('');
 
     const createSubmotion = (): void => {
-        console.log('Create a new motion');
+        console.log('Create a new submotion');
         setCreateModal(true);
     };
 
     const handleCreateSubmotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+        setCreateModal(false);
         console.log('Creating new submotion:', submotionTitle, submotionDesc);
-        socket!.emit('createSubmotion', submotionTitle, submotionDesc);
+        socket!.emit('createMotion', currentCommittee!.id!, submotionTitle, submotionDesc);
     };
 
     const motion = useSelector(selectCurrentMotion)!;
@@ -48,11 +51,11 @@ const MotionVote: FC = () => {
     };
 
     const [editMode, setEditMode] = useState<boolean>(false);
-    const [editsubmotionTitle, setEditsubmotionTitle] = useState<string>(motion.title);
+    const [editMotionTitle, setEditMotionTitle] = useState<string>(motion.title);
 
-    const updatesubmotionTitle = (): void => {
-        if (editsubmotionTitle.length > 0) {
-            socket!.emit('changesubmotionTitle', motion.committeeId, motion.id, editsubmotionTitle);
+    const updateMotionTitle = (): void => {
+        if (editMotionTitle.length > 0) {
+            socket!.emit('changeMotionTitle', motion.committeeId, motion.id, editMotionTitle);
             setEditMode(false);
         }
     };
@@ -202,7 +205,7 @@ const MotionVote: FC = () => {
                             {!editMode ? (
                                 <>
                                     <h1>{motion.title}</h1>
-                                    {allowEditingsubmotionTitles && (
+                                    {allowEditingMotionTitles && (
                                         <button data-button-type="ghost" onClick={() => setEditMode(true)} style={{ marginLeft: 'auto' }}>
                                             <EditIcon />
                                         </button>
@@ -210,11 +213,11 @@ const MotionVote: FC = () => {
                                 </>
                             ) : (
                                 <>
-                                    <input type="text" onChange={(ev) => setEditsubmotionTitle(ev.target.value)} value={editsubmotionTitle} className={styles.titleEdit} />
+                                    <input type="text" onChange={(ev) => setEditMotionTitle(ev.target.value)} value={editMotionTitle} className={styles.titleEdit} />
                                     <button data-button-type="secondary" onClick={() => setEditMode(false)}>
                                         Cancel
                                     </button>
-                                    <button data-button-type="primary" onClick={() => updatesubmotionTitle()}>
+                                    <button data-button-type="primary" onClick={() => updateMotionTitle()}>
                                         Change Title
                                     </button>
                                 </>
@@ -262,7 +265,7 @@ const MotionVote: FC = () => {
                                                 Amend Motion
                                             </button>
                                             <button data-button-type="primary" onClick={() => createSubmotion()}>
-                                                Create New Submotion
+                                                Create New Submotion +
                                             </button>
                                         </div>
                                     </>
