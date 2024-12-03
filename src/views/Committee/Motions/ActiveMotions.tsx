@@ -1,6 +1,7 @@
 import { CSSProperties, FC, FormEvent, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import Toggle from 'react-toggle';
 import clsx from 'clsx';
 import { MotionData } from 'types';
 import { Loading } from '../../../components';
@@ -16,6 +17,20 @@ const ActiveMotions: FC = () => {
 
     const [motionTitle, setMotionTitle] = useState<string>('');
 
+    const [motionDesc, setMotionDesc] = useState<string>('');
+
+    const [isProcedural, setIsProcedural] = useState<boolean>(false);
+
+    const [isSpecial, setIsSpecial] = useState<boolean>(false);
+
+    const handleProcedureMotionChange = (): void => {
+        setIsProcedural(!isProcedural);
+    };
+
+    const handleSpecialMotionChange = (): void => {
+        setIsSpecial(!isSpecial);
+    };
+
     const createMotion = (): void => {
         console.log('Create a new motion');
         setCreateModal(true);
@@ -25,7 +40,8 @@ const ActiveMotions: FC = () => {
         event.preventDefault();
         setCreateModal(false);
         console.log('Creating new motion:', motionTitle);
-        socket!.emit('createMotion', currentCommittee.id!, motionTitle);
+        //TODO: have this also send isProcedural and isSpecial
+        socket!.emit('createMotion', currentCommittee.id!, motionTitle, motionDesc);
     };
 
     const displayMotions = useMemo(() => {
@@ -77,6 +93,12 @@ const ActiveMotions: FC = () => {
                         <fieldset>
                             <label htmlFor="committeeName">Motion Title</label>
                             <input type="text" name="motionTitle" id="motionTitle" required={true} onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} />
+                            <label htmlFor="committeeDesc">Motion Description</label>
+                            <textarea className={styles.textAreaStyle} name="motionDesc" id="motionDesc" required={true} onChange={(ev) => setMotionDesc(ev.target.value)} value={motionDesc} />
+                            <label htmlFor="procedural">Procedural</label>
+                            <Toggle id="procedureMotionToggle" defaultChecked={isProcedural} icons={false} onChange={handleProcedureMotionChange} />
+                            <label htmlFor="special">Special</label>
+                            <Toggle id="specialMotionToggle" defaultChecked={isSpecial} icons={false} onChange={handleSpecialMotionChange} />
                         </fieldset>
                         <Modal.Actions>
                             <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">
