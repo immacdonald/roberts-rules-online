@@ -156,8 +156,13 @@ const MotionVote: FC = () => {
                                 {showLiveVotes ? (
                                     <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={motionThreshold} totalUsers={committee.members.length} />
                                 ) : (
-                                    <div className={styles.hiddenResults}>
-                                        <span>Results are hidden during the voting period.</span>
+                                    <div className={styles.discusionBox}>
+                                        <p>Discussion Summary</p>
+                                        <p className={styles.textBox}>{discusionSummary}</p>
+                                        <p>Pros</p>
+                                        <p className={styles.textBox}>{pros}</p>
+                                        <p>Cons</p>
+                                        <p className={styles.textBox}>{cons}</p>
                                     </div>
                                 )}
                             </div>

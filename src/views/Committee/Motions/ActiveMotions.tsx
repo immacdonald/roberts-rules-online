@@ -24,9 +24,7 @@ const ActiveMotions: FC = () => {
     const user = useMemo(() => currentCommittee.members.find((member) => member.id == id)!, [id, currentCommittee]);
 
     const [motionTitle, setMotionTitle] = useState<string>('');
-    const [motionDescription, setMotionDescription] = useState<string>('');
-    const [proceduralMotion, setProceduralMotion] = useState<boolean>(false);
-    const [specialMotion, setSpecialMotion] = useState<boolean>(false);
+    const [motionDesc, setMotionDesc] = useState<string>('');
 
     const createMotion = (): void => {
         setCreateModal(true);
@@ -35,8 +33,8 @@ const ActiveMotions: FC = () => {
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         setCreateModal(false);
-        //console.log('Creating new motion:', motionTitle);
-        socket!.emit('createMotion', currentCommittee.id!, motionTitle, motionDescription, proceduralMotion ? 'procedural' : specialMotion ? 'special' : null);
+        console.log('Creating new motion:', motionTitle, motionDesc);
+        socket!.emit('createMotion', currentCommittee!.id!, motionTitle, motionDesc);
     };
 
     const activeMotions = useMemo(() => {
@@ -103,44 +101,9 @@ const ActiveMotions: FC = () => {
                             <input type="text" name="motionTitle" id="motionTitle" required onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} placeholder="Title" />
                         </fieldset>
                         <fieldset>
-                            <label htmlFor="motionDescription">Motion Description</label>
-                            <Textbox
-                                autoResize
-                                type="text"
-                                name="motionDescription"
-                                id="motionDescription"
-                                required
-                                onChange={(ev: ChangeEvent<HTMLTextAreaElement>) => setMotionDescription(ev.target.value)}
-                                value={motionDescription}
-                                placeholder="Description..."
-                            />
+                            <label htmlFor="password">Motion Description</label>
+                            <input type="text" id="motionDesc" required={true} onChange={(ev) => setMotionDesc(ev.target.value)} value={motionDesc} />
                         </fieldset>
-                        {(canMakeSpecialMotion || canMakeProceduralMotion) && (
-                            <div className={styles.toggles}>
-                                {canMakeSpecialMotion && (
-                                    <div>
-                                        <span>Special Motion</span>
-                                        <Toggle
-                                            icons={false}
-                                            checked={specialMotion}
-                                            onChange={(event: ChangeEvent<HTMLInputElement>) => setSpecialMotion(event.target.checked)}
-                                            disabled={proceduralMotion}
-                                        />
-                                    </div>
-                                )}
-                                {canMakeProceduralMotion && (
-                                    <div>
-                                        <span>Procedural Motion</span>
-                                        <Toggle
-                                            icons={false}
-                                            checked={proceduralMotion}
-                                            onChange={(event: ChangeEvent<HTMLInputElement>) => setProceduralMotion(event.target.checked)}
-                                            disabled={specialMotion}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        )}
                         <Modal.Actions>
                             <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">
                                 Cancel
