@@ -1,4 +1,5 @@
 import { FC, FormEvent, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
 import { User } from 'server/interfaces/user';
@@ -29,6 +30,9 @@ const Login: FC = () => {
 
     return (
         <Page>
+            <Helmet>
+                <title>Login - Robert's Rules</title>
+            </Helmet>
             <section className={styles.background}>
                 <div className={styles.formGroup}>
                     <h2 className={styles.title}>Login</h2>

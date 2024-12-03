@@ -1,10 +1,10 @@
-import { createPool, Pool } from 'mysql';
+import { createPool, IPool } from 'mysql';
 import { wrap } from 'node-mysql-wrapper';
 
 export class Database {
     private static instance: Database;
     public initialized: boolean = false;
-    public pool: Pool;
+    public pool: IPool;
     public db: any;
 
     constructor() {

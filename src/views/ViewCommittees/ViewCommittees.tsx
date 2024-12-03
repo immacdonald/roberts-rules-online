@@ -1,4 +1,5 @@
 import { FC, FormEvent, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { CommitteeData } from 'types';
@@ -25,14 +26,18 @@ const ViewCommittees: FC = () => {
 
     const handleCreateCommittee = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        console.log('Creating new committee:', committeeName, committeeDesc);
+        //console.log('Creating new committee:', committeeName, committeeDesc);
         // Create the committee
         socket!.emit('createCommittee', committeeName, committeeDesc);
+        setCreateModal(false);
     };
 
     return (
         <>
             <Page>
+                <Helmet>
+                    <title>My Committees - Robert's Rules</title>
+                </Helmet>
                 <section>
                     <header className={styles.committeeViewTitle}>
                         <h1>My Committees</h1>

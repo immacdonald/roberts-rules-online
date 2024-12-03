@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { CloseIcon, EditIcon } from '../../assets/icons';
@@ -16,7 +17,7 @@ const Profile: FC = () => {
 
     const [loading, setLoading] = useState<boolean>(false);
 
-    const submit = () => {
+    const submit = (): void => {
         socket!.emit('updateUserName', editContents);
         setLoading(true);
         setTimeout(() => {
@@ -30,6 +31,9 @@ const Profile: FC = () => {
 
     return (
         <Page>
+            <Helmet>
+                <title>Profile - Robert's Rules</title>
+            </Helmet>
             <section>
                 <header>
                     <h1>Profile</h1>

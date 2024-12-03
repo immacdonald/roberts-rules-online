@@ -1,13 +1,20 @@
 .textbox {
     width: 100%;
-    min-height: 64px;
+    min-height: 96px;
     font-family: var(--font);
     font-size: var(--font-md);
-    background-color: unset;
+    background-color: var(--color-background);
     color: var(--color-text);
-    border: none;
+    border: var(--border);
     outline: none !important;
     padding: var(--space-sm);
     resize: none;
     overflow: hidden;
+    border-radius: var(--border-radius);
+
+    &.invisible {
+        background-color: unset;
+        border: unset;
+        border-radius: unset;
+    }
 }

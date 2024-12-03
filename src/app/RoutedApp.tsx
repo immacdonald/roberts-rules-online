@@ -79,10 +79,6 @@ const RoutedApp: FC = () => {
     useEffect(() => {
         if (socket) {
             // Register socket event listeners
-            socket.on('chatMessage', (msg: any) => {
-                console.log('Message:', msg);
-            });
-
             socket.on('setCommittees', (committees: CommitteeData[]) => {
                 //console.log('Got committees', committees);
                 dispatch(setCommittees(committees));
@@ -103,7 +99,6 @@ const RoutedApp: FC = () => {
         // Cleanup function to remove listeners if socket changes or on component unmount
         return (): void => {
             if (socket) {
-                socket.off('chatMessage');
                 socket.off('setCommittees');
                 socket.off('updatedCommittee');
                 socket.off('setMotions');

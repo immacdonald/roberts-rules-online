@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { book, spiralLines, websitePreview } from '../../assets/images';
 import { Page } from '../../components';
 import styles from './Home.module.scss';
@@ -6,6 +7,9 @@ import styles from './Home.module.scss';
 const Home: FC = () => {
     return (
         <Page>
+            <Helmet>
+                <title>Home - Robert's Rules</title>
+            </Helmet>
             <section className={styles.header}>
                 <div className={styles.headline}>
                     <h1 className={styles.title}>Organized and efficient meetings, every time.</h1>

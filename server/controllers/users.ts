@@ -77,7 +77,8 @@ const getCommittees = async (id: string): Promise<CommitteeData[] | null> => {
             name: committee.name,
             description: committee.description,
             owner: committee.owner,
-            members: committee.members
+            members: committee.members,
+            flag: committee.flag
         } as CommitteeData;
     });
     return data;

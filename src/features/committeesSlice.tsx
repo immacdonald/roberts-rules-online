@@ -23,7 +23,7 @@ const committeesSlice = createSlice({
     initialState,
     reducers: {
         setCommittees: (state, action: PayloadAction<CommitteeData[]>) => {
-            state.committees = action.payload.map((committee) => ({ ...committee, motions: [] }));
+            state.committees = action.payload.map((committee) => ({ ...committee, motions: committee.motions || [] }));
         },
         setUpdatedCommittee: (state, action: PayloadAction<CommitteeData>) => {
             if (state.committees) {

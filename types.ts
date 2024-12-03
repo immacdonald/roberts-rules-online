@@ -16,6 +16,19 @@ type CommitteeData = {
     owner: string;
     members: CommitteeMember[];
     motions: MotionData[] | null;
+    flag: string | null;
+};
+
+type Vote = 'yea' | 'nay' | 'abstain';
+
+type MotionStatus = 'pending' | 'open' | 'complete' | 'passed' | 'failed';
+
+type MotionFlag = '' | 'special' | 'procedural' | 'amendment' | 'overturn';
+
+type MotionSummary = {
+    summary: string;
+    pros: string;
+    cons: string;
 };
 
 type MotionData = {
@@ -24,13 +37,13 @@ type MotionData = {
     authorId: string;
     author?: string;
     title: string;
-    flag: string;
+    flag: MotionFlag;
     description: string;
     comments: MotionComment[];
-    vote: string;
-    summary: string;
+    vote: Record<string, Vote>;
+    summary: MotionSummary | null;
     relatedId: string;
-    status: string;
+    status: MotionStatus;
     decisionTime: number;
     creationDate: number;
 };
@@ -52,4 +65,4 @@ type UserWithToken = {
     token: string;
 };
 
-export type { CommitteeMember, CommitteeData, CommitteeRole, MotionData, Sentiment, MotionComment, UserWithToken };
+export type { CommitteeMember, CommitteeData, CommitteeRole, Vote, MotionStatus, MotionSummary, MotionFlag, MotionData, Sentiment, MotionComment, UserWithToken };
