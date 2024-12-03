@@ -15,7 +15,8 @@ import {
     CommitteeHome,
     MotionVote,
     MotionView,
-    MotionArchive
+    MotionArchive,
+    TermsOfUse
 } from '../views';
 import { RoutedApp } from './RoutedApp';
 
@@ -40,6 +41,10 @@ const router = createBrowserRouter(
                 {
                     path: '/profile',
                     element: <Profile />
+                },
+                {
+                    path: '/terms-of-use',
+                    element: <TermsOfUse />
                 },
                 {
                     path: '/committees',
