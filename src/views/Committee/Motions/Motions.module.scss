@@ -53,6 +53,14 @@
     margin-bottom: var(--space);
     transition: 0.25s linear box-shadow;
 
+    &[data-motion-status='passed'] {
+        background-color: var(--color-primary-background);
+    }
+
+    &[data-motion-status='failed'] {
+        background-color: var(--color-critical-background);
+    }
+
     &:hover {
         box-shadow: var(--shadow);
         cursor: pointer;

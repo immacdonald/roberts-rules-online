@@ -44,7 +44,12 @@ const PastMotions: FC = () => {
                 votedWithThisMotion = (vote == 'yea' && motion.status == 'passed') || (vote == 'nay' && motion.status == 'failed');
             }
             return (
-                <div className={clsx(styles.row, styles.motion)} key={motion.id} onClick={() => navigate(`/committees/${currentCommittee.id}/past-motions/${motion.id}`)}>
+                <div
+                    className={clsx(styles.row, styles.motion)}
+                    key={motion.id}
+                    onClick={() => navigate(`/committees/${currentCommittee.id}/past-motions/${motion.id}`)}
+                    data-motion-status={motion.status}
+                >
                     {votedWithThisMotion && motion.flag == '' ? (
                         <button
                             disabled={motion.status == 'open'}

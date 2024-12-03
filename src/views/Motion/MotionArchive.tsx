@@ -43,13 +43,7 @@ const MotionArchive: FC = () => {
     const motionThreshold = motion.flag == 'procedural' || motion.flag == 'special' ? Math.ceil(committee.members.length * 0.66) : Math.ceil(committee.members.length * 0.5);
 
     const calculateIfMotionPassed = (): boolean => {
-        if (motion.flag == 'procedural') {
-            return votesAgainst < (votesInFavor + votesAgainst) / 3;
-        } else if (motion.flag == 'special') {
-            return votesAgainst < (votesInFavor + votesAgainst) / 3;
-        } else {
-            return votesAgainst < (votesInFavor + votesAgainst) / 2;
-        }
+        return votesInFavor > motionThreshold;
     };
     const [passed] = useState<boolean>(calculateIfMotionPassed());
 
