@@ -67,12 +67,18 @@ const ActiveMotions: FC = () => {
                 return false;
             }
 
+            const submotions = currentCommittee!.motions!.filter((submotion) => submotion.relatedId == motion.id);
+
             return (
                 <div className={clsx(styles.row, styles.motion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
                     <h3>{motion.title}</h3>
                     <span>{motion.author || motion.authorId}</span>
                     <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
                     <span>{motion.decisionTime && new Date(motion.decisionTime).toLocaleDateString()}</span>
+                    {submotions.length > 0 &&
+                        submotions.map((submotion) => {
+                            return <span>{submotion.title}</span>;
+                        })}
                 </div>
             );
         });

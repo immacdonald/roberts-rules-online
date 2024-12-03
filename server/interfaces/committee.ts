@@ -104,6 +104,7 @@ export class Committee {
 
             if (user && !this.isMember(user.id)) {
                 this.members.push({ id: user.id, role: 'member', username: user.username, displayname: user.displayname });
+
                 await sql.query(
                     `
                     UPDATE committees
