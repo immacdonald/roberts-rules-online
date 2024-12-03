@@ -30,6 +30,11 @@ const committeesSlice = createSlice({
                 state.committees = addOrReplaceInArrayById(state.committees, action.payload);
             }
         },
+        setUpdatedCommittee: (state, action: PayloadAction<CommitteeData>) => {
+            if (state.committees) {
+                state.committees = addOrReplaceInArrayById(state.committees, action.payload);
+            }
+        },
         setCurrentCommittee: (state, action: PayloadAction<string | null>) => {
             state.previousCommitteeId = state.currentCommitteeId;
             state.currentCommitteeId = action.payload;
