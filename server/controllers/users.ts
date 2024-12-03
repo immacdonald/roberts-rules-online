@@ -321,6 +321,7 @@ const createUserQuery = (username: string, email: string, password: string, disp
                                             [id, username, email, hash, displayname, cDate],
                                             function (err) {
                                                 if (!err) {
+                                                    addToCache(new User(id, username, email, hash, displayname, cDate));
                                                     return resolve([true, `${id}+${cDate}`]);
                                                 } else {
                                                     console.log('Error while performing Query ' + err);
