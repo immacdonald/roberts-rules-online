@@ -157,7 +157,6 @@ export class Motion {
 
     public setDecisionTime = async (decisionTime: number): Promise<void> => {
         this.decisionTime = decisionTime;
-        console.log('Updated decision time to', decisionTime);
         await sql.query(`
 			UPDATE motions
 			SET decisionTime = '${decisionTime}'

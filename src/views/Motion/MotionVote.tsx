@@ -29,7 +29,6 @@ const MotionVote: FC = () => {
     const navigate = useNavigate();
 
     const addComment = (sentiment: Sentiment, comment: string, parentComment?: string): void => {
-        console.log('Commenting', comment, sentiment);
         socket!.emit('addMotionComment', motion.committeeId, motion.id, sentiment, comment, parentComment);
     };
 

@@ -26,7 +26,7 @@ const ViewCommittees: FC = () => {
 
     const handleCreateCommittee = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        console.log('Creating new committee:', committeeName, committeeDesc);
+        //console.log('Creating new committee:', committeeName, committeeDesc);
         // Create the committee
         socket!.emit('createCommittee', committeeName, committeeDesc);
         setCreateModal(false);

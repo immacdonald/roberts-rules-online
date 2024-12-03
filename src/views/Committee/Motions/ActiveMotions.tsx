@@ -30,14 +30,13 @@ const ActiveMotions: FC = () => {
     const user = useMemo(() => currentCommittee.members.find((member) => member.id == id)!, [id, currentCommittee]);
 
     const createMotion = (): void => {
-        console.log('Create a new motion');
         setCreateModal(true);
     };
 
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         setCreateModal(false);
-        console.log('Creating new motion:', motionTitle);
+        //console.log('Creating new motion:', motionTitle);
         socket!.emit('createMotion', currentCommittee.id!, motionTitle, motionDescription, proceduralMotion ? 'procedural' : specialMotion ? 'special' : null);
     };
 

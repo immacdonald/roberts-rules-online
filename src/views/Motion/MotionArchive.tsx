@@ -49,7 +49,6 @@ const MotionArchive: FC = () => {
 
     const handleAddDiscusion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        console.log('Adding summary for motion');
         socket!.emit('setMotionSummary', motion.committeeId, motion.id, passed, summary, pros, cons);
         setCreateSummaryModal(false);
     };
