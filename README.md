@@ -60,7 +60,7 @@ While developing, to keep the repository more organized, try to work on a separa
 
 ### Design
 
-The website uses a lightweight design system for ease-of-use during development and an aesthetically pleasing user interface. The tokens of the design system are located in the [styles/\_tokens.scss](src/styles/_tokens.scss) file.
+The website uses a lightweight design system for ease-of-use during development and an aesthetically pleasing user interface. The tokens of the design system are located in the [styles/\_tokens.scss](src/styles/_tokens.scss) file. Inital design of the website and prototyping was done on [Figma](https://www.figma.com/design/y0swY2lt5z6C3Y6JMNw8sy/CSCI432-Final-Project?node-id=0-1&node-type=canvas)
 
 #### Color Tokens
 
