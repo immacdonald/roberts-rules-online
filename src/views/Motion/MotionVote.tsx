@@ -16,9 +16,25 @@ type Reply = {
     text?: string;
 };
 
-const allowEditingMotionTitles = false;
+const allowEditingsubmotionTitles = false;
 
 const MotionVote: FC = () => {
+    const [createModal, setCreateModal] = useState<boolean>(false);
+
+    const [submotionTitle, setSubmotionTitle] = useState<string>('');
+    const [submotionDesc, setSubmotionDesc] = useState<string>('');
+
+    const createSubmotion = (): void => {
+        console.log('Create a new motion');
+        setCreateModal(true);
+    };
+
+    const handleCreateSubmotion = (event: FormEvent<HTMLFormElement>): void => {
+        event.preventDefault();
+        console.log('Creating new submotion:', submotionTitle, submotionDesc);
+        socket!.emit('createSubmotion', submotionTitle, submotionDesc);
+    };
+
     const motion = useSelector(selectCurrentMotion)!;
     const user = useSelector(selectUser)!;
 
@@ -32,11 +48,11 @@ const MotionVote: FC = () => {
     };
 
     const [editMode, setEditMode] = useState<boolean>(false);
-    const [editMotionTitle, setEditMotionTitle] = useState<string>(motion.title);
+    const [editsubmotionTitle, setEditsubmotionTitle] = useState<string>(motion.title);
 
-    const updateMotionTitle = (): void => {
-        if (editMotionTitle.length > 0) {
-            socket!.emit('changeMotionTitle', motion.committeeId, motion.id, editMotionTitle);
+    const updatesubmotionTitle = (): void => {
+        if (editsubmotionTitle.length > 0) {
+            socket!.emit('changesubmotionTitle', motion.committeeId, motion.id, editsubmotionTitle);
             setEditMode(false);
         }
     };
@@ -186,7 +202,7 @@ const MotionVote: FC = () => {
                             {!editMode ? (
                                 <>
                                     <h1>{motion.title}</h1>
-                                    {allowEditingMotionTitles && (
+                                    {allowEditingsubmotionTitles && (
                                         <button data-button-type="ghost" onClick={() => setEditMode(true)} style={{ marginLeft: 'auto' }}>
                                             <EditIcon />
                                         </button>
@@ -194,11 +210,11 @@ const MotionVote: FC = () => {
                                 </>
                             ) : (
                                 <>
-                                    <input type="text" onChange={(ev) => setEditMotionTitle(ev.target.value)} value={editMotionTitle} className={styles.titleEdit} />
+                                    <input type="text" onChange={(ev) => setEditsubmotionTitle(ev.target.value)} value={editsubmotionTitle} className={styles.titleEdit} />
                                     <button data-button-type="secondary" onClick={() => setEditMode(false)}>
                                         Cancel
                                     </button>
-                                    <button data-button-type="primary" onClick={() => updateMotionTitle()}>
+                                    <button data-button-type="primary" onClick={() => updatesubmotionTitle()}>
                                         Change Title
                                     </button>
                                 </>
@@ -244,6 +260,9 @@ const MotionVote: FC = () => {
                                             </button>
                                             <button className={styles.amend} data-button-type="secondary">
                                                 Amend Motion
+                                            </button>
+                                            <button data-button-type="primary" onClick={() => createSubmotion()}>
+                                                Create New Submotion
                                             </button>
                                         </div>
                                     </>
@@ -340,6 +359,30 @@ const MotionVote: FC = () => {
                         );
                     })}
             </div>
+
+            {createModal && (
+                <Modal>
+                    <h2>Create New Submotion</h2>
+                    <form id="createSubmotion" onSubmit={handleCreateSubmotion}>
+                        <fieldset>
+                            <label htmlFor="committeeName">Submotion Title</label>
+                            <input type="text" name="submotionTitle" id="submotionTitle" required={true} onChange={(ev) => setSubmotionTitle(ev.target.value)} value={submotionTitle} />
+                        </fieldset>
+                        <fieldset>
+                            <label htmlFor="password">Submotion Description</label>
+                            <input type="text" id="submotionDesc" required={true} onChange={(ev) => setSubmotionDesc(ev.target.value)} value={submotionDesc} />
+                        </fieldset>
+                        <Modal.Actions>
+                            <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" id="createButton" data-button-type="primary">
+                                Create Submotion
+                            </button>
+                        </Modal.Actions>
+                    </form>
+                </Modal>
+            )}
 
             {createDiscusionModal && (
                 <Modal>
