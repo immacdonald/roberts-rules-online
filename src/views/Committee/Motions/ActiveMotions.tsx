@@ -62,7 +62,11 @@ const ActiveMotions: FC = () => {
     }, [currentCommittee?.motions]);
 
     const displayMotions = useMemo(() => {
-        return currentCommittee.motions!.map((motion: MotionData) => {
+        return activeMotions.map((motion: MotionData) => {
+            if (motion.relatedId) {
+                return false;
+            }
+
             return (
                 <div className={clsx(styles.row, styles.motion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
                     <h3>{motion.title}</h3>
