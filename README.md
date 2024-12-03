@@ -31,7 +31,22 @@ npm install
 npm run dev
 ```
 
-The project is then accessible at `localhost:3000`. Note that quick refreshing is possible for frontend changes but any modifications of the backend require the development server to be restarted.
+Note that a .env file is required at the root of the repository containing the following variables:
+
+```
+DB_HOST=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+DB_PORT=
+JWT_SECRET_KEY=
+PRODUCTION_URL=
+PORT=
+VITE_PRODUCTION_URL=
+VITE_PORT=
+```
+
+The project is then accessible at `localhost:3000`. Note that quick refreshing is possible for frontend changes but any modifications of the backend require the Express development server to be restarted.
 
 ##### Building for Production
 
