@@ -29,20 +29,6 @@ const ActiveMotions: FC = () => {
     const { id } = useSelector(selectUser)!;
     const user = useMemo(() => currentCommittee.members.find((member) => member.id == id)!, [id, currentCommittee]);
 
-    const [motionDesc, setMotionDesc] = useState<string>('');
-
-    const [isProcedural, setIsProcedural] = useState<boolean>(false);
-
-    const [isSpecial, setIsSpecial] = useState<boolean>(false);
-
-    const handleProcedureMotionChange = (): void => {
-        setIsProcedural(!isProcedural);
-    };
-
-    const handleSpecialMotionChange = (): void => {
-        setIsSpecial(!isSpecial);
-    };
-
     const createMotion = (): void => {
         console.log('Create a new motion');
         setCreateModal(true);

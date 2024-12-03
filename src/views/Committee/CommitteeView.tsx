@@ -1,4 +1,5 @@
 import { FC, ReactNode, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Loading, Page } from '../../components';
@@ -26,6 +27,9 @@ const CommitteeView: FC<CommitteeViewProps> = ({ children }) => {
 
     return (
         <Page>
+            <Helmet>
+                <title>{currentCommittee.name} - Robert's Rules</title>
+            </Helmet>
             <CommitteeNav />
             {children}
         </Page>
