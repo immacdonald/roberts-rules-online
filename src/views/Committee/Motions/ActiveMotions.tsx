@@ -15,6 +15,7 @@ const ActiveMotions: FC = () => {
     const [createModal, setCreateModal] = useState<boolean>(false);
 
     const [motionTitle, setMotionTitle] = useState<string>('');
+    const [motionDesc, setMotionDesc] = useState<string>('');
 
     const createMotion = (): void => {
         console.log('Create a new motion');
@@ -24,8 +25,8 @@ const ActiveMotions: FC = () => {
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         setCreateModal(false);
-        console.log('Creating new motion:', motionTitle);
-        socket!.emit('createMotion', currentCommittee!.id!, motionTitle);
+        console.log('Creating new motion:', motionTitle, motionDesc);
+        socket!.emit('createMotion', currentCommittee!.id!, motionTitle, motionDesc);
     };
 
     const displayMotions = useMemo(() => {
@@ -77,6 +78,10 @@ const ActiveMotions: FC = () => {
                         <fieldset>
                             <label htmlFor="committeeName">Motion Title</label>
                             <input type="text" name="motionTitle" id="motionTitle" required={true} onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} />
+                        </fieldset>
+                        <fieldset>
+                            <label htmlFor="password">Motion Description</label>
+                            <input type="text" id="motionDesc" required={true} onChange={(ev) => setMotionDesc(ev.target.value)} value={motionDesc} />
                         </fieldset>
                         <Modal.Actions>
                             <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">

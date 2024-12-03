@@ -257,7 +257,7 @@ const MotionVote: FC = () => {
                                     </button>
                                 ) : (
                                     <div className={styles.discusionBox}>
-                                        <p>Discusion Summary</p>
+                                        <p>Discussion Summary</p>
                                         <p className={styles.textBox}>{discusionSummary}</p>
                                         <p>Pros</p>
                                         <p className={styles.textBox}>{pros}</p>
