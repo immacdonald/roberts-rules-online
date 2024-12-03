@@ -1,14 +1,15 @@
-.toggleSection {
+.toggle {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
+    margin-bottom: var(--space);
 
-.toggleText {
-    font-size: var(--font-lg);
-    font-weight: bold;
-}
+    > label {
+        font-size: var(--font-lg);
+        font-weight: normal;
+    }
 
-.toggle {
-    margin-right: var(--space-sm);
+    > [class*='react-toggle'] {
+        margin-right: var(--space-sm);
+    }
 }

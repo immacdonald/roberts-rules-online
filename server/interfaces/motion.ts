@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { MotionComment, MotionData, Sentiment } from '../../types';
+import { MotionComment, MotionData, MotionFlag, MotionStatus, MotionSummary, Sentiment, Vote } from '../../types';
 import { findUserById } from '../controllers/users';
 import { Database } from '../db';
 
@@ -11,13 +11,13 @@ export class Motion {
     public readonly authorId;
     public author?: string;
     public title: string;
-    public flag: string;
+    public flag: MotionFlag;
     public description: string;
     public comments: MotionComment[];
-    public vote: Record<string, string>;
-    public summary: string;
+    public vote: Record<string, Vote>;
+    public summary: MotionSummary | null;
     public relatedId: string;
-    public status: string;
+    public status: MotionStatus;
     public decisionTime: number;
     public creationDate: number;
 
@@ -26,13 +26,13 @@ export class Motion {
         this.committeeId = data.committeeId;
         this.authorId = data.authorId;
         this.title = data.title;
-        this.flag = data.flag;
+        this.flag = data.flag?.length > 0 ? data.flag : '';
         this.description = data.description;
         this.comments = typeof data.comments == 'string' ? (JSON.parse(data.comments) as MotionComment[]) : data.comments;
-        this.vote = JSON.parse(data.vote || '{}');
-        this.summary = data.summary;
+        this.vote = typeof data.vote == 'string' ? (JSON.parse(data.vote) as Record<string, Vote>) : data.vote;
+        this.summary = typeof data.summary == 'string' ? ((data.summary as string).length > 0 ? (JSON.parse(data.summary) as MotionSummary) : null) : data.summary;
         this.relatedId = data.relatedId;
-        this.status = data.status;
+        this.status = data.status == 'pending' ? 'open' : data.status;
         this.decisionTime = data.decisionTime;
         this.creationDate = data.creationDate;
     }
@@ -71,7 +71,7 @@ export class Motion {
         );
     };
 
-    public setFlag = async (flag: string): Promise<void> => {
+    public setFlag = async (flag: MotionFlag): Promise<void> => {
         this.flag = flag;
         await sql.query(
             `
@@ -95,7 +95,7 @@ export class Motion {
         );
     };
 
-    public setSummary = async (summary: string): Promise<void> => {
+    public setSummary = async (summary: MotionSummary): Promise<void> => {
         this.summary = summary;
         await sql.query(
             `
@@ -103,31 +103,31 @@ export class Motion {
 			SET summary = ?
 			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
 		`,
-            [summary]
+            [JSON.stringify(summary)]
         );
     };
 
-    public addVote = async (userId: string, value: string): Promise<void> => {
+    public addVote = async (userId: string, value: Vote): Promise<void> => {
         this.vote[userId] = value;
         await sql.query(
             `
-			UPDATE motions
-			SET vote = JSON_SET(vote, '$.?', '?')
-			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`,
-            [userId, value]
+            UPDATE motions
+            SET vote = JSON_SET(vote, ?, ?)
+            WHERE id = ? AND committeeId = ?;
+            `,
+            [`$.${userId}`, value, this.id, this.committeeId]
         );
     };
 
     public removeVote = async (userId: string): Promise<void> => {
         delete this.vote[userId];
-        sql.query(
-            await `
-			UPDATE motions
-			SET vote = JSON_REMOVE(vote, '$.?')
-			WHERE id = '${this.id}' AND committeeId = '${this.committeeId}';
-		`,
-            [userId]
+        await sql.query(
+            `
+            UPDATE motions
+            SET vote = JSON_REMOVE(vote, ?)
+            WHERE id = ? AND committeeId = ?;
+            `,
+            [`$.${userId}`, this.id, this.committeeId]
         );
     };
 
@@ -143,7 +143,7 @@ export class Motion {
         );
     };
 
-    public setStatus = async (status: string): Promise<void> => {
+    public setStatus = async (status: MotionStatus): Promise<void> => {
         this.status = status;
         await sql.query(
             `
@@ -157,6 +157,7 @@ export class Motion {
 
     public setDecisionTime = async (decisionTime: number): Promise<void> => {
         this.decisionTime = decisionTime;
+        console.log('Updated decision time to', decisionTime);
         await sql.query(`
 			UPDATE motions
 			SET decisionTime = '${decisionTime}'

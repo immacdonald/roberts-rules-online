@@ -4,9 +4,10 @@ import styles from './Textbox.module.scss';
 
 interface TextboxProps extends HTMLProps<HTMLTextAreaElement> {
     autoResize?: boolean;
+    invisible?: boolean;
 }
 
-const Textbox: FC<TextboxProps> = forwardRef<HTMLTextAreaElement, TextboxProps>(({ autoResize = false, onChange = (): void => {}, className = '', ...rest }, ref) => {
+const Textbox: FC<TextboxProps> = forwardRef<HTMLTextAreaElement, TextboxProps>(({ autoResize, invisible, onChange = (): void => {}, className = '', ...rest }, ref) => {
     const internalRef = useRef<HTMLTextAreaElement>(null);
     const textboxRef = ref || internalRef;
 
@@ -31,7 +32,7 @@ const Textbox: FC<TextboxProps> = forwardRef<HTMLTextAreaElement, TextboxProps>(
         onChange(event);
     };
 
-    return <textarea ref={textboxRef} onChange={handleChange} className={clsx(styles.textbox, className)} {...rest} />;
+    return <textarea ref={textboxRef} onChange={handleChange} className={clsx(styles.textbox, { [styles.invisible]: invisible }, className)} {...rest} />;
 });
 
 export { Textbox };

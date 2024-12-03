@@ -10,7 +10,8 @@
     --color-foreground: #fcfcfc;
     --color-critical: #f14c4c;
     --color-critical-background: #f14c4c40;
-    --border: 1px solid #d3d3d3;
+    --color-border: #d3d3d3;
+    --border: 1px solid var(--color-border);
     --border-radius: 8px;
     --font: inter, avenir, helvetica, arial, sans-serif;
     --font-xl: 1.5rem;

@@ -18,7 +18,10 @@ const Footer: FC = () => {
                     <span>Navigation</span>
                     <Link to="/">Home</Link>
                     {isLoggedIn ? (
-                        <Link to="/committees">Committees</Link>
+                        <>
+                            <Link to="/committees">Committees</Link>
+                            <Link to="/profile">Profile</Link>
+                        </>
                     ) : (
                         <>
                             <Link to="/login">Login</Link>

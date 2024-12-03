@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
-import { CommitteeRole, Sentiment } from '../../types';
+import { CommitteeRole, MotionFlag, Sentiment, Vote } from '../../types';
 import { createCommittee, getCommitteeById } from '../controllers/committees';
 import { addUserConnection, removeUserConnection } from '../controllers/connections';
 import { getCommittees, updateUserName } from '../controllers/users';
@@ -92,6 +92,15 @@ const setupSocketHandlers = (io: Server): void => {
             }
         });
 
+        socket.on('updateCommitteeFlag', async (committeeId: string, flag: string) => {
+            const committee = getCommitteeById(committeeId);
+            if (committee) {
+                committee.updateFlag(userId, flag);
+            } else {
+                console.log('Committee not found to update flag');
+            }
+        });
+
         socket.on('getMotions', async (committeeId: string) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
@@ -105,10 +114,10 @@ const setupSocketHandlers = (io: Server): void => {
             }
         });
 
-        socket.on('createMotion', async (committeeId: string, title: string, description?: string, relatedMotionId?: string) => {
+        socket.on('createMotion', async (committeeId: string, title: string, description: string, flag: MotionFlag | null, relatedMotionId?: string) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
-                committee.createMotion(userId, title, description, relatedMotionId);
+                committee.createMotion(userId, title, description, flag, relatedMotionId);
             } else {
                 console.log('Committee not found to create motion');
             }
@@ -132,7 +141,7 @@ const setupSocketHandlers = (io: Server): void => {
             }
         });
 
-        socket.on('setMotionFlag', async (committeeId: string, motionId: string, flag: string) => {
+        socket.on('setMotionFlag', async (committeeId: string, motionId: string, flag: MotionFlag) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
                 committee.setMotionFlag(motionId, userId, flag);
@@ -141,7 +150,7 @@ const setupSocketHandlers = (io: Server): void => {
             }
         });
 
-        socket.on('addMotionVote', async (committeeId: string, motionId: string, vote: string) => {
+        socket.on('addMotionVote', async (committeeId: string, motionId: string, vote: Vote) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
                 committee.addMotionVote(motionId, userId, vote);
@@ -188,10 +197,14 @@ const setupSocketHandlers = (io: Server): void => {
             }
         });
 
-        socket.on('setMotionSummary', async (committeeId: string, motionId: string, summary: string) => {
+        socket.on('setMotionSummary', async (committeeId: string, motionId: string, passed: boolean, summary: string, pros?: string, cons?: string) => {
             const committee = getCommitteeById(committeeId);
             if (committee) {
-                committee.setMotionSummary(motionId, userId, summary);
+                committee.setMotionSummary(motionId, userId, passed, {
+                    summary,
+                    pros: pros || 'See summary.',
+                    cons: cons || 'See summary.'
+                });
             } else {
                 console.log('Committee not found to modify motion');
             }

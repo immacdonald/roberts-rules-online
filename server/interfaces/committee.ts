@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { CommitteeMember, CommitteeRole, MotionData, Sentiment } from '../../types';
+import { CommitteeMember, CommitteeRole, MotionData, MotionFlag, MotionSummary, Sentiment, Vote } from '../../types';
 import { addOrReplaceInArrayById } from '../../utility';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
@@ -22,14 +22,16 @@ export class Committee {
     public owner: string;
     public members: CommitteeMember[];
     public motions: Motions;
+    public flag: string | null;
 
-    constructor(id: string, name: string, description: string, owner: string, members: string | CommitteeMember[]) {
+    constructor(id: string, name: string, description: string, owner: string, members: string | CommitteeMember[], flag: string | null) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.owner = owner;
         this.members = typeof members == 'string' ? (JSON.parse(members) as CommitteeMember[]) : members;
         this.motions = new Motions(id);
+        this.flag = flag;
     }
 
     public sendToMember = (event: string, data: any, id: string): void => {
@@ -70,6 +72,12 @@ export class Committee {
             } else if (action == 'removeUser') {
                 return member.role == 'chair';
             } else if (action == 'changeUserRole') {
+                return member.role == 'chair';
+            } else if (action == 'updateFlag') {
+                return member.role == 'chair';
+            } else if (action == 'writeMotionSummary') {
+                return member.role == 'chair';
+            } else if (action == 'endMotionVoting') {
                 return member.role == 'chair';
             }
         } else {
@@ -160,8 +168,25 @@ export class Committee {
         }
     };
 
+    public updateFlag = async (originatorId: string, flag: string): Promise<void> => {
+        if (this.canUserDoAction(originatorId, 'updateFlag')) {
+            this.flag = flag;
+
+            await sql.query(
+                `
+                    UPDATE committees
+                    SET flag = ?
+                    WHERE id = '${this.id}';
+                    `,
+                [this.flag]
+            );
+
+            await this.sendUpdatedCommittee();
+        }
+    };
+
     public getMotions = async (): Promise<Motion[]> => {
-        const motions = await this.motions.getMotions();
+        const motions = (await this.motions.getMotions()).filter((motion, index, self) => self.findIndex((m) => m.id === motion.id) === index);
         return motions;
     };
 
@@ -170,23 +195,31 @@ export class Committee {
     };
 
     public sendUpdatedCommittee = async (): Promise<void> => {
+        const motions = await this.getMotions();
+
         const data = {
             id: this.id,
             name: this.name,
             description: this.description,
             owner: this.owner,
-            members: this.members
+            members: this.members,
+            motions: motions.filter((motion, index, self) => self.findIndex((m) => m.id === motion.id) === index),
+            flag: this.flag
         };
+
         await this.sendToAllMembers('updatedCommittee', data);
     };
 
     public sendUpdatedMotions = async (): Promise<void> => {
         const updatedMotions = await this.getMotions();
-        await this.sendToAllMembers('setMotions', updatedMotions);
+        await this.sendToAllMembers(
+            'setMotions',
+            updatedMotions.filter((motion, index, self) => self.findIndex((m) => m.id === motion.id) === index)
+        );
     };
 
     // Motion creation/update methods
-    public createMotion = async (userId: string, title: string, description?: string, relatedMotionId?: string): Promise<void> => {
+    public createMotion = async (userId: string, title: string, description: string, flag: MotionFlag | null, relatedMotionId?: string): Promise<void> => {
         let id = nanoid(16);
         while (await doesMotionExist(id)) {
             id = nanoid(16);
@@ -198,13 +231,13 @@ export class Committee {
                 committeeId: this.id,
                 authorId: userId,
                 title: title,
-                flag: '',
+                flag: flag || '',
                 description: description || '',
                 comments: [],
-                vote: '{}',
-                summary: '',
+                vote: {},
+                summary: null,
                 relatedId: relatedMotionId || '',
-                status: 'pending',
+                status: 'open',
                 decisionTime: Date.now() + serverConfig.committees.defaultDaysUntilVote * 24 * 60 * 60 * 1000,
                 creationDate: Date.now()
             };
@@ -234,7 +267,7 @@ export class Committee {
         }
     };
 
-    public setMotionFlag = async (motionId: string, userId: string, flag: string): Promise<void> => {
+    public setMotionFlag = async (motionId: string, userId: string, flag: MotionFlag): Promise<void> => {
         const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             if (motion.authorId == userId) {
@@ -244,7 +277,7 @@ export class Committee {
         }
     };
 
-    public addMotionVote = async (motionId: string, userId: string, vote: string): Promise<void> => {
+    public addMotionVote = async (motionId: string, userId: string, vote: Vote): Promise<void> => {
         const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
             await motion.addVote(userId, vote);
@@ -273,18 +306,19 @@ export class Committee {
     public changeMotionDecisionTime = async (motionId: string, userId: string, decisionTime: number): Promise<void> => {
         const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
-            if (motion.authorId == userId) {
+            if (motion.authorId == userId || this.canUserDoAction(userId, 'endMotionVoting')) {
                 await motion.setDecisionTime(decisionTime);
                 await this.sendUpdatedMotions();
             }
         }
     };
 
-    public setMotionSummary = async (motionId: string, userId: string, summary: string): Promise<void> => {
+    public setMotionSummary = async (motionId: string, userId: string, passed: boolean, summary: MotionSummary): Promise<void> => {
         const motion: Motion | null = await this.getMotionById(motionId);
         if (motion) {
-            if (motion.authorId == userId) {
+            if (this.canUserDoAction(userId, 'writeMotionSummary')) {
                 await motion.setSummary(summary);
+                await motion.setStatus(passed ? 'passed' : 'failed');
                 await this.sendUpdatedMotions();
             }
         }

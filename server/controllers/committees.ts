@@ -17,7 +17,7 @@ sql.ready(async function () {
     // Build the initial cache of committees
     const queriedCommittees = await sql.query('SELECT * FROM committees');
     queriedCommittees.forEach(async (committee: Committee) => {
-        const newCommittee = new Committee(committee.id, committee.name, committee.description, committee.owner, committee.members);
+        const newCommittee = new Committee(committee.id, committee.name, committee.description, committee.owner, committee.members, committee.flag);
         for (let j = 0; j < newCommittee.members.length; j++) {
             const user: User | null = await findUserById(newCommittee.members[j].id);
 
@@ -43,9 +43,9 @@ const createCommittee = (name: string, description: string, owner: string, membe
                 console.log('ID already exists');
             } else {
                 console.log('Creating committee: ', name, owner, members);
-                sql.query('INSERT INTO committees (id, name, description, owner, members) VALUES (?, ?, ?, ?, ?)', [id, name, description, owner, memberData], async (err) => {
+                sql.query('INSERT INTO committees (id, name, description, owner, members, flag) VALUES (?, ?, ?, ?, ?, ?)', [id, name, description, owner, memberData, '1111'], async (err) => {
                     if (!err) {
-                        const committee = new Committee(id, name, description, owner, memberData);
+                        const committee = new Committee(id, name, description, owner, memberData, '1111');
 
                         for (let i = 0; i < committee.members.length; i++) {
                             const user: User | null = await findUserById(committee.members[i].id);

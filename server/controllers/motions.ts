@@ -51,7 +51,7 @@ export class Motions {
 
         await sql.query(`
             INSERT INTO motions (id, committeeId, authorId, title, flag, description, comments, vote, summary, relatedId, status, decisionTime, creationDate)
-            VALUES ('${data.id}', '${data.committeeId}', '${data.authorId}', '${data.title}', '${data.flag}', '${data.description}', '${JSON.stringify(data.comments)}', '${data.vote}', '${data.summary}', '${data.relatedId}', '${data.status}', '${data.decisionTime}', '${data.creationDate}')
+            VALUES ('${data.id}', '${data.committeeId}', '${data.authorId}', '${data.title}', '${data.flag}', '${data.description}', '${JSON.stringify(data.comments)}', '${JSON.stringify(data.vote)}', '${data.summary}', '${data.relatedId}', '${data.status}', '${data.decisionTime}', '${data.creationDate}')
         `);
         return motion;
     }

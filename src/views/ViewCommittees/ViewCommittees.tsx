@@ -29,6 +29,7 @@ const ViewCommittees: FC = () => {
         console.log('Creating new committee:', committeeName, committeeDesc);
         // Create the committee
         socket!.emit('createCommittee', committeeName, committeeDesc);
+        setCreateModal(false);
     };
 
     return (

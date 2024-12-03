@@ -175,7 +175,10 @@ h3 {
 }
 
 hr {
-    margin-block: var(--space);
+    margin-block: var(--space-lg);
+    background-color: var(--color-border);
+    height: 1px;
+    border: 0;
 }
 
 // react-toggle override styling for parity with design system

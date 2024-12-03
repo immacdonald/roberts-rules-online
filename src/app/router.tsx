@@ -14,7 +14,8 @@ import {
     CommitteeView,
     CommitteeHome,
     MotionVote,
-    MotionView
+    MotionView,
+    MotionArchive
 } from '../views';
 import { RoutedApp } from './RoutedApp';
 
@@ -72,6 +73,22 @@ const router = createBrowserRouter([
                     {
                         path: 'past-motions',
                         element: <PastMotions />
+                    },
+                    {
+                        path: 'past-motions/:motion',
+                        element: (
+                            <ProtectedRoute>
+                                <MotionView>
+                                    <Outlet />
+                                </MotionView>
+                            </ProtectedRoute>
+                        ),
+                        children: [
+                            {
+                                path: '',
+                                element: <MotionArchive />
+                            }
+                        ]
                     },
                     {
                         path: 'users',

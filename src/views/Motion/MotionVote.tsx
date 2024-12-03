@@ -1,12 +1,14 @@
-import { ChangeEvent, FC, FormEvent, ReactElement, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { MotionComment, Sentiment } from '../../../types';
-import { DeleteIcon, EditIcon } from '../../assets/icons';
+import { capitalize } from '../../../utility';
+import { DeleteIcon } from '../../assets/icons';
 import { Textbox } from '../../components';
-import { Modal } from '../../components/Modal';
 import { VoteDisplay } from '../../components/Vote';
-import { selectCurrentMotion } from '../../features/committeesSlice';
+import { selectCurrentCommittee, selectCurrentMotion } from '../../features/committeesSlice';
 import { selectUser } from '../../features/userSlice';
+import { isFlagged } from '../../flags';
 import { socket } from '../../socket';
 import styles from './Motion.module.scss';
 
@@ -16,11 +18,15 @@ type Reply = {
     text?: string;
 };
 
-const allowEditingMotionTitles = false;
+const allowPostponing = false;
+const showActiveMotionVotesIndex = 2;
 
 const MotionVote: FC = () => {
+    const committee = useSelector(selectCurrentCommittee)!;
     const motion = useSelector(selectCurrentMotion)!;
-    const user = useSelector(selectUser)!;
+    const { id } = useSelector(selectUser)!;
+    const user = useMemo(() => committee.members.find((member) => member.id == id)!, [id, committee]);
+    const navigate = useNavigate();
 
     const addComment = (sentiment: Sentiment, comment: string, parentComment?: string): void => {
         console.log('Commenting', comment, sentiment);
@@ -31,19 +37,8 @@ const MotionVote: FC = () => {
         socket!.emit('removeMotionComment', motion.committeeId, motion.id, commentId);
     };
 
-    const [editMode, setEditMode] = useState<boolean>(false);
-    const [editMotionTitle, setEditMotionTitle] = useState<string>(motion.title);
-
-    const updateMotionTitle = (): void => {
-        if (editMotionTitle.length > 0) {
-            socket!.emit('changeMotionTitle', motion.committeeId, motion.id, editMotionTitle);
-            setEditMode(false);
-        }
-    };
-
     // Sorts from oldest to newest
     const sortedComments = useMemo(() => {
-        console.log('Comments are', motion.comments);
         if (!motion?.comments) return [];
         return [...motion.comments].sort((a, b) => b.creationDate - a.creationDate);
     }, [motion.comments]);
@@ -58,7 +53,7 @@ const MotionVote: FC = () => {
                         {!parentComment ? (reply.sentiment == 'positive' ? 'Comment in Favor of Motion' : reply.sentiment == 'negative' ? 'Comment Against Motion' : 'Comment on Motion') : 'Reply'}
                     </h4>
                 </header>
-                <Textbox autoResize placeholder="Response..." onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setReplyingTo({ ...reply, text: event.target.value })} />
+                <Textbox autoResize invisible placeholder="Response..." onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setReplyingTo({ ...reply, text: event.target.value })} />
                 <div className={styles.submit}>
                     <button onClick={() => setReplyingTo(null)} data-button-type="ghost" type="button">
                         Cancel
@@ -79,99 +74,42 @@ const MotionVote: FC = () => {
         );
     };
 
-    const [votesInfavor, setVotesInFavor] = useState<number>(0);
-    const [votesAgainst, setVotesAgainst] = useState<number>(0);
-    const [threshold, setThreshold] = useState<number>(0);
-    const [totalUsers, setTotalUsers] = useState<number>(0);
+    const hasVoted = useMemo(() => {
+        return Object.keys(motion.vote).some((userId) => userId == id);
+    }, [motion]);
 
-    const [alreadyVoted, setAlreadyVoted] = useState<boolean>(false);
+    const votesInFavor = useMemo(() => {
+        return Object.values(motion.vote).filter((vote) => vote == 'yea').length;
+    }, [motion]);
 
-    const [votingBegun, setVotingBegun] = useState(false);
+    const votesAgainst = useMemo(() => {
+        return Object.values(motion.vote).filter((vote) => vote == 'nay').length;
+    }, [motion]);
 
-    const [votingEnded, setVotingEnded] = useState(false);
+    const activeMotion = useMemo(() => {
+        return motion.decisionTime > Date.now();
+    }, [motion]);
 
-    const [discusionHasBeenWritten, setDiscusionHasBeenWritten] = useState(false);
-    const [createDiscusionModal, setCreateDiscusionModal] = useState(false);
-    const [discusionSummary, setDiscusionSummary] = useState('');
-    const [pros, setPros] = useState('');
-    const [cons, setCons] = useState('');
-
-    //const [isActiveMotion, setIsActiveMotion] = useState(true);
-
-    const setUpVoting = (): void => {
-        //TODO
-        //basic setup for front end, should retrive data from database
-
-        //set Threshold from server
-        setThreshold(3);
-        //set TotalUsers from server
-        setTotalUsers(5);
-        //set VotesInFavor from server
-        setVotesInFavor(2);
-        //set VotesAgainst from server
-        setVotesAgainst(2);
-        //check if a user has already voted and set alreadyVoted
-        setAlreadyVoted(false);
-        //check if voting has begun from server and set votingBegun
-        setVotingBegun(false);
-        //check if voting if has ended and set votingEnded
-        if (votesInfavor >= threshold || votesAgainst >= threshold) setVotingEnded(true);
-        //check if voting has ended and set votingEnded
-        setVotingEnded(false);
-        //check if discusionHasBeenWritten and set discusionHasBeenWritten
-        setDiscusionHasBeenWritten(false);
-        //check if its an active motion and set isActiveMotion
-        //setIsActiveMotion(true);
+    const userPerformsVote = (favor: boolean): void => {
+        socket!.emit('addMotionVote', motion.committeeId, motion.id, favor ? 'yea' : 'nay');
     };
 
-    useEffect(() => {
-        //runs on page load
-        setUpVoting();
-    }, []);
-
-    const userPerformsVote = (vote: boolean): void => {
-        if (vote) setVotesInFavor(votesInfavor + 1);
-        else setVotesAgainst(votesAgainst + 1);
-
-        setAlreadyVoted(true);
+    const removeVote = (): void => {
+        socket!.emit('removeMotionVote', motion.committeeId, motion.id);
     };
 
+    const endVoting = (): void => {
+        socket!.emit('changeMotionDecisionTime', motion.committeeId, motion.id, Date.now());
+    };
+
+    const showLiveVotes = isFlagged(committee.flag, showActiveMotionVotesIndex);
+
     useEffect(() => {
-        //determines if enough votes have reached the threshold to end voting
-        if (votesInfavor >= threshold || votesAgainst >= threshold) {
-            setVotingEnded(true);
-            //TODO
-            //send winner of vote to database
-        } else {
-            setVotingEnded(false);
+        console.log('Motion is active', activeMotion);
+        if (!activeMotion) {
+            navigate(`/committees/${committee.id}/past-motions`);
         }
-    }, [votesInfavor, votesAgainst, threshold]);
-
-    useEffect(() => {
-        if (discusionHasBeenWritten) {
-            //setIsActiveMotion(false);
-            console.log('Is now a past motion');
-            // TODO
-            // set motion to past motion in database
-        } else {
-            //setIsActiveMotion(true);
-        }
-    }, [discusionHasBeenWritten]);
-
-    const addDiscusionSummary = (): void => {
-        setCreateDiscusionModal(true);
-    };
-
-    const handleAddDiscusion = (event: FormEvent<HTMLFormElement>): void => {
-        event.preventDefault();
-        console.log('Adding new discusion');
-
-        setDiscusionHasBeenWritten(true);
-        setCreateDiscusionModal(false);
-
-        // TODO
-        // Add the discusion to database
-    };
+    }, [activeMotion]);
 
     return (
         <section>
@@ -182,189 +120,145 @@ const MotionVote: FC = () => {
                         <span>Created {new Date(motion.creationDate).toLocaleDateString()}</span>
                     </div>
                     <div className={styles.overview}>
-                        <header className={styles.title}>
-                            {!editMode ? (
-                                <>
-                                    <h1>{motion.title}</h1>
-                                    {allowEditingMotionTitles && (
-                                        <button data-button-type="ghost" onClick={() => setEditMode(true)} style={{ marginLeft: 'auto' }}>
-                                            <EditIcon />
-                                        </button>
-                                    )}
-                                </>
-                            ) : (
-                                <>
-                                    <input type="text" onChange={(ev) => setEditMotionTitle(ev.target.value)} value={editMotionTitle} className={styles.titleEdit} />
-                                    <button data-button-type="secondary" onClick={() => setEditMode(false)}>
-                                        Cancel
-                                    </button>
-                                    <button data-button-type="primary" onClick={() => updateMotionTitle()}>
-                                        Change Title
-                                    </button>
-                                </>
-                            )}
-                        </header>
-                        <p>{motion.description || 'No motion description provided.'}</p>
-                        <br />
-                        <p>Vote on Motion by {new Date(motion.decisionTime).toLocaleDateString()}</p>
-                    </div>
-                    <div className={styles.actions}>
-                        {!votingEnded ? (
-                            <>
-                                {votingBegun ? (
-                                    // Display these buttons when voting has begun
-                                    <>
-                                        {!alreadyVoted ? (
-                                            <>
-                                                <button onClick={() => userPerformsVote(true)} data-button-type="primary">
-                                                    Vote in Favor
-                                                </button>
-                                                <button onClick={() => userPerformsVote(false)} data-button-type="primary" data-button-context="critical">
-                                                    Vote Against
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <></>
+                        <div>
+                            <header className={styles.title}>
+                                <h1>{motion.title}</h1>
+                                {motion.flag.length > 0 && <span>{capitalize(motion.flag)}</span>}
+                            </header>
+                            <p>{motion.description || 'No motion description provided.'}</p>
+                            <br />
+                            <div style={{ marginTop: 'auto' }}>
+                                {hasVoted ? (
+                                    <div className={styles.cancelVote}>
+                                        <span>Voting ends {new Date(motion.decisionTime).toLocaleDateString()}</span>
+                                        <button onClick={() => removeVote()}>Cancel Vote</button>
+                                        {(user.role == 'owner' || user.role == 'chair') && (
+                                            <button onClick={() => endVoting()} data-button-type="primary" data-button-context="critical">
+                                                End Voting
+                                            </button>
                                         )}
-                                    </>
+                                    </div>
                                 ) : (
-                                    <>
-                                        <div>
-                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'positive' })} data-button-type="primary">
-                                                Comment For
-                                            </button>
-                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'negative' })} data-button-type="primary" data-button-context="critical">
-                                                Comment Against
-                                            </button>
-                                            <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'neutral' })} data-button-type="secondary">
-                                                Neutral Comment
-                                            </button>
-                                        </div>
-                                        <div className={styles.modify}>
-                                            <button className={styles.postpone} data-button-type="secondary">
-                                                Postpone Vote
-                                            </button>
-                                            <button className={styles.amend} data-button-type="secondary">
-                                                Amend Motion
-                                            </button>
-                                        </div>
-                                    </>
+                                    <span>Vote on Motion by {new Date(motion.decisionTime).toLocaleDateString()}</span>
                                 )}
-                            </>
+                            </div>
+                        </div>
+                        {!hasVoted ? (
+                            <div className={styles.voteButtons}>
+                                <button onClick={() => userPerformsVote(true)} data-button-type="primary">
+                                    Vote in Favor
+                                </button>
+                                <button onClick={() => userPerformsVote(false)} data-button-type="primary" data-button-context="critical">
+                                    Vote Against
+                                </button>
+                            </div>
                         ) : (
-                            <>
-                                {!discusionHasBeenWritten ? (
-                                    <button onClick={() => addDiscusionSummary()} data-button-type="primary">
-                                        Write Summary
-                                    </button>
+                            <div>
+                                {showLiveVotes ? (
+                                    <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={Math.ceil(committee.members.length / 2)} totalUsers={committee.members.length} />
                                 ) : (
-                                    <div className={styles.discusionBox}>
-                                        <p>Discusion Summary</p>
-                                        <p className={styles.textBox}>{discusionSummary}</p>
-                                        <p>Pros</p>
-                                        <p className={styles.textBox}>{pros}</p>
-                                        <p>Cons</p>
-                                        <p className={styles.textBox}>{cons}</p>
+                                    <div className={styles.hiddenResults}>
+                                        <span>Results are hidden during the voting period.</span>
                                     </div>
                                 )}
+                            </div>
+                        )}
+                    </div>
+                    <div className={styles.actions}>
+                        {activeMotion && motion.flag != 'special' && (
+                            <>
+                                <div>
+                                    <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'positive' })} data-button-type="primary">
+                                        Comment For
+                                    </button>
+                                    <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'negative' })} data-button-type="primary" data-button-context="critical">
+                                        Comment Against
+                                    </button>
+                                    <button onClick={() => setReplyingTo({ id: motion.id, sentiment: 'neutral' })} data-button-type="secondary">
+                                        Neutral Comment
+                                    </button>
+                                </div>
+                                <div className={styles.modify}>
+                                    {allowPostponing && (
+                                        <button className={styles.postpone} data-button-type="secondary">
+                                            Postpone Vote
+                                        </button>
+                                    )}
+                                    <button className={styles.amend} data-button-type="secondary">
+                                        Amend Motion
+                                    </button>
+                                </div>
                             </>
                         )}
                     </div>
                     {replyingTo?.id == motion.id && createReplyBox(replyingTo)}
                 </div>
-                <div style={{ marginLeft: '10%' }}>
-                    {!votingBegun ? (
-                        <button style={{ marginTop: '100px' }} onClick={() => setVotingBegun(true)} data-button-type="secondary">
-                            Cast Vote
-                        </button>
-                    ) : (
-                        <VoteDisplay yeas={votesInfavor} nays={votesAgainst} threshold={threshold} totalUsers={totalUsers} />
-                    )}
-                </div>
             </div>
-            <div className={styles.comments}>
-                {sortedComments
-                    .filter((comment: MotionComment) => !comment.parentCommentId)
-                    .map((comment: MotionComment) => {
-                        const replies = sortedComments.filter((reply: MotionComment) => comment.id == reply.parentCommentId).reverse();
+            {motion.flag != 'special' ? (
+                <div className={styles.comments}>
+                    {sortedComments
+                        .filter((comment: MotionComment) => !comment.parentCommentId)
+                        .map((comment: MotionComment) => {
+                            const replies = sortedComments.filter((reply: MotionComment) => comment.id == reply.parentCommentId).reverse();
 
-                        return (
-                            <div key={comment.id} className={styles.commentContainer}>
-                                <div className={styles.comment} data-comment-type={comment.sentiment}>
-                                    <div className={styles.info}>
-                                        <div>
-                                            <b>{comment.author || comment.authorId}</b>
-                                            <span>Commented {new Date(comment.creationDate).toLocaleDateString()}</span>
-                                        </div>
-                                        <div>
-                                            {comment.authorId == user.id && (
-                                                <button data-button-type="ghost" onClick={() => removeComment(`${comment.id}`)}>
-                                                    <DeleteIcon />
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <p>{comment.content || 'No comment message.'}</p>
-                                    {
-                                        <div className={styles.actions}>
-                                            <button onClick={() => setReplyingTo({ id: comment.id, sentiment: 'neutral' })} data-button-type="ghost">
-                                                Reply
-                                            </button>
-                                        </div>
-                                    }
-                                </div>
-                                {replyingTo?.id == comment.id && createReplyBox(replyingTo, comment.id)}
-                                {replies.length > 0 && (
-                                    <div className={styles.replies}>
-                                        {replies.map((reply) => (
-                                            <div key={reply.id} className={styles.replyContainer}>
-                                                <div className={styles.reply} data-comment-type={reply.sentiment}>
-                                                    <div className={styles.info}>
-                                                        <div>
-                                                            <b>{reply.author || reply.authorId}</b>
-                                                            <span>Replied {new Date(reply.creationDate).toLocaleDateString()}</span>
-                                                        </div>
-                                                        <div>
-                                                            {reply.authorId == user.id && (
-                                                                <button data-button-type="ghost" onClick={() => removeComment(`${reply.id}`)}>
-                                                                    <DeleteIcon />
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <p>{reply.content || 'No reply message.'}</p>
-                                                </div>
+                            return (
+                                <div key={comment.id} className={styles.commentContainer}>
+                                    <div className={styles.comment} data-comment-type={comment.sentiment}>
+                                        <div className={styles.info}>
+                                            <div>
+                                                <b>{comment.author || comment.authorId}</b>
+                                                <span>Commented {new Date(comment.creationDate).toLocaleDateString()}</span>
                                             </div>
-                                        ))}
+                                            <div>
+                                                {comment.authorId == id && (
+                                                    <button data-button-type="ghost" onClick={() => removeComment(`${comment.id}`)}>
+                                                        <DeleteIcon />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <p>{comment.content || 'No comment message.'}</p>
+                                        {
+                                            <div className={styles.actions}>
+                                                <button onClick={() => setReplyingTo({ id: comment.id, sentiment: 'neutral' })} data-button-type="ghost">
+                                                    Reply
+                                                </button>
+                                            </div>
+                                        }
                                     </div>
-                                )}
-                            </div>
-                        );
-                    })}
-            </div>
-
-            {createDiscusionModal && (
-                <Modal>
-                    <h2>Add Discusion Summary</h2>
-                    <form id="add User" onSubmit={handleAddDiscusion}>
-                        <fieldset>
-                            <label htmlFor="discusion">Enter Discusion</label>
-                            <textarea className={styles.textAreaStyle} id="discusion" required={true} onChange={(ev) => setDiscusionSummary(ev.target.value)} value={discusionSummary} />
-                            <label htmlFor="pros">Enter Pros</label>
-                            <textarea className={styles.textAreaStyle} id="pros" required={true} onChange={(ev) => setPros(ev.target.value)} value={pros} />
-                            <label htmlFor="cons">Enter Cons</label>
-                            <textarea className={styles.textAreaStyle} id="cons" required={true} onChange={(ev) => setCons(ev.target.value)} value={cons} />
-                        </fieldset>
-                        <Modal.Actions>
-                            <button type="button" onClick={() => setCreateDiscusionModal(false)}>
-                                Cancel
-                            </button>
-                            <button type="submit" id="submitUserButton" data-button-type="primary">
-                                Submit
-                            </button>
-                        </Modal.Actions>
-                    </form>
-                </Modal>
+                                    {replyingTo?.id == comment.id && createReplyBox(replyingTo, comment.id)}
+                                    {replies.length > 0 && (
+                                        <div className={styles.replies}>
+                                            {replies.map((reply) => (
+                                                <div key={reply.id} className={styles.replyContainer}>
+                                                    <div className={styles.reply} data-comment-type={reply.sentiment}>
+                                                        <div className={styles.info}>
+                                                            <div>
+                                                                <b>{reply.author || reply.authorId}</b>
+                                                                <span>Replied {new Date(reply.creationDate).toLocaleDateString()}</span>
+                                                            </div>
+                                                            <div>
+                                                                {reply.authorId == id && (
+                                                                    <button data-button-type="ghost" onClick={() => removeComment(`${reply.id}`)}>
+                                                                        <DeleteIcon />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <p>{reply.content || 'No reply message.'}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                </div>
+            ) : (
+                <div className={styles.noDiscussion}>
+                    <p>No discussion is permitted on special motions. For more information please contact the committee chair.</p>
+                </div>
             )}
         </section>
     );

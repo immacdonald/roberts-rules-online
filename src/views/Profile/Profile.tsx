@@ -16,7 +16,7 @@ const Profile: FC = () => {
 
     const [loading, setLoading] = useState<boolean>(false);
 
-    const submit = () => {
+    const submit = (): void => {
         socket!.emit('updateUserName', editContents);
         setLoading(true);
         setTimeout(() => {
