@@ -40,6 +40,7 @@ const ControlPanel: FC = () => {
     }, [optimisticFlag]);
 
     useEffect(() => {
+        console.log(currentCommittee);
         setOptimisticFlag(currentCommittee.flag);
     }, [currentCommittee.flag]);
 

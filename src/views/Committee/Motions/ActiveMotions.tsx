@@ -24,7 +24,12 @@ const ActiveMotions: FC = () => {
     const user = useMemo(() => currentCommittee.members.find((member) => member.id == id)!, [id, currentCommittee]);
 
     const [motionTitle, setMotionTitle] = useState<string>('');
-    const [motionDesc, setMotionDesc] = useState<string>('');
+    const [motionDescription, setMotionDescription] = useState<string>('');
+    const [proceduralMotion, setProceduralMotion] = useState<boolean>(false);
+    const [specialMotion, setSpecialMotion] = useState<boolean>(false);
+
+    const { id } = useSelector(selectUser)!;
+    const user = useMemo(() => currentCommittee.members.find((member) => member.id == id)!, [id, currentCommittee]);
 
     const [motionDesc, setMotionDesc] = useState<string>('');
 
@@ -48,8 +53,7 @@ const ActiveMotions: FC = () => {
         event.preventDefault();
         setCreateModal(false);
         console.log('Creating new motion:', motionTitle);
-        //TODO: have this also send isProcedural and isSpecial
-        socket!.emit('createMotion', currentCommittee.id!, motionTitle, motionDesc);
+        socket!.emit('createMotion', currentCommittee.id!, motionTitle, motionDescription, proceduralMotion ? 'procedural' : specialMotion ? 'special' : null);
     };
 
     const activeMotions = useMemo(() => {
@@ -57,9 +61,10 @@ const ActiveMotions: FC = () => {
     }, [currentCommittee?.motions]);
 
     const displayMotions = useMemo(() => {
-        return currentCommittee.motions!.map((motion: MotionData) => {
+        return activeMotions.map((motion: MotionData) => {
             return (
-                <div className={clsx(styles.row, styles.motion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
+                <div className={clsx(styles.row, styles.motion)} key={motion.id} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
+                    <span>{capitalize(motion.flag || 'normal')}</span>
                     <h3>{motion.title}</h3>
                     <span>{motion.author || motion.authorId}</span>
                     <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
@@ -95,8 +100,8 @@ const ActiveMotions: FC = () => {
                     </button>
                 </header>
                 {currentCommittee?.motions ? (
-                    currentCommittee.motions.length > 0 ? (
-                        <div className={styles.motionTable} style={{ '--table-layout': '1fr 200px 200px 200px' } as CSSProperties}>
+                    activeMotions.length > 0 ? (
+                        <div className={styles.motionTable} style={{ '--table-layout': '140px 1fr 100px 140px 100px' } as CSSProperties}>
                             <div className={clsx(styles.row, styles.tableHeader)}>
                                 <span>Type</span>
                                 <span>Title</span>
@@ -121,19 +126,48 @@ const ActiveMotions: FC = () => {
                     <h2>Create New Motion</h2>
                     <form id="createMotion" onSubmit={handleCreateMotion}>
                         <fieldset>
-                            <label htmlFor="committeeName">Motion Title</label>
-                            <input type="text" name="motionTitle" id="motionTitle" required={true} onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} />
-                            <label htmlFor="committeeDesc">Motion Description</label>
-                            <textarea className={styles.textAreaStyle} name="motionDesc" id="motionDesc" required={true} onChange={(ev) => setMotionDesc(ev.target.value)} value={motionDesc} />
-                            <label htmlFor="procedural">Procedural</label>
-                            <Toggle id="procedureMotionToggle" defaultChecked={isProcedural} icons={false} onChange={handleProcedureMotionChange} />
-                            <label htmlFor="special">Special</label>
-                            <Toggle id="specialMotionToggle" defaultChecked={isSpecial} icons={false} onChange={handleSpecialMotionChange} />
+                            <label htmlFor="motionTitle">Motion Title</label>
+                            <input type="text" name="motionTitle" id="motionTitle" required onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} placeholder="Title" />
                         </fieldset>
                         <fieldset>
-                            <label htmlFor="password">Motion Description</label>
-                            <input type="text" id="motionDesc" required={true} onChange={(ev) => setMotionDesc(ev.target.value)} value={motionDesc} />
+                            <label htmlFor="motionDescription">Motion Description</label>
+                            <Textbox
+                                autoResize
+                                type="text"
+                                name="motionDescription"
+                                id="motionDescription"
+                                required
+                                onChange={(ev: ChangeEvent<HTMLTextAreaElement>) => setMotionDescription(ev.target.value)}
+                                value={motionDescription}
+                                placeholder="Description..."
+                            />
                         </fieldset>
+                        {(canMakeSpecialMotion || canMakeProceduralMotion) && (
+                            <div className={styles.toggles}>
+                                {canMakeSpecialMotion && (
+                                    <div>
+                                        <span>Special Motion</span>
+                                        <Toggle
+                                            icons={false}
+                                            checked={specialMotion}
+                                            onChange={(event: ChangeEvent<HTMLInputElement>) => setSpecialMotion(event.target.checked)}
+                                            disabled={proceduralMotion}
+                                        />
+                                    </div>
+                                )}
+                                {canMakeProceduralMotion && (
+                                    <div>
+                                        <span>Procedural Motion</span>
+                                        <Toggle
+                                            icons={false}
+                                            checked={proceduralMotion}
+                                            onChange={(event: ChangeEvent<HTMLInputElement>) => setProceduralMotion(event.target.checked)}
+                                            disabled={specialMotion}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <Modal.Actions>
                             <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">
                                 Cancel

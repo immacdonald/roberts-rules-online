@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { CommitteeMember, CommitteeRole, MotionData, Sentiment } from '../../types';
+import { CommitteeMember, CommitteeRole, MotionData, MotionFlag, MotionSummary, Sentiment, Vote } from '../../types';
 import { addOrReplaceInArrayById } from '../../utility';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
@@ -72,6 +72,12 @@ export class Committee {
             } else if (action == 'removeUser') {
                 return member.role == 'chair';
             } else if (action == 'changeUserRole') {
+                return member.role == 'chair';
+            } else if (action == 'updateFlag') {
+                return member.role == 'chair';
+            } else if (action == 'writeMotionSummary') {
+                return member.role == 'chair';
+            } else if (action == 'endMotionVoting') {
                 return member.role == 'chair';
             }
         } else {
@@ -162,29 +168,6 @@ export class Committee {
         }
     };
 
-    public changeUserRole = async (originatorId: string, userId: string, role: CommitteeRole): Promise<void> => {
-        if (this.canUserDoAction(originatorId, 'changeUserRole')) {
-            if (userId != this.owner && this.isMember(userId)) {
-                const updatedMember = this.members.find((member) => member.id == userId);
-                if (updatedMember && updatedMember.role != 'owner') {
-                    updatedMember.role = role;
-                    this.members = addOrReplaceInArrayById(this.members, updatedMember);
-
-                    await sql.query(
-                        `
-                    UPDATE committees
-                    SET members = ?
-                    WHERE id = '${this.id}';
-                    `,
-                        [this.getMembersForDatabase()]
-                    );
-
-                    this.sendUpdatedCommittee();
-                }
-            }
-        }
-    };
-
     public updateFlag = async (originatorId: string, flag: string): Promise<void> => {
         if (this.canUserDoAction(originatorId, 'updateFlag')) {
             this.flag = flag;
@@ -219,8 +202,11 @@ export class Committee {
             name: this.name,
             description: this.description,
             owner: this.owner,
-            members: this.members
+            members: this.members,
+            motions: motions.filter((motion, index, self) => self.findIndex((m) => m.id === motion.id) === index),
+            flag: this.flag
         };
+
         await this.sendToAllMembers('updatedCommittee', data);
     };
 

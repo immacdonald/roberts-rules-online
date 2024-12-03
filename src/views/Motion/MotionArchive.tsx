@@ -40,15 +40,20 @@ const MotionArchive: FC = () => {
         setCreateSummaryModal(true);
     };
 
-    const motionThreshold = motion.flag == 'procedural' || motion.flag == 'special' ? Math.ceil(committee.members.length * 0.66) : Math.ceil(committee.members.length * 0.5);
-
     const calculateIfMotionPassed = (): boolean => {
-        return votesInFavor > motionThreshold;
+        if (motion.flag == 'procedural') {
+            return votesAgainst < (votesInFavor + votesAgainst) / 3;
+        } else if (motion.flag == 'special') {
+            return votesAgainst < (votesInFavor + votesAgainst) / 3;
+        } else {
+            return votesAgainst < (votesInFavor + votesAgainst) / 2;
+        }
     };
     const [passed] = useState<boolean>(calculateIfMotionPassed());
 
     const handleAddDiscusion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+        console.log('Adding summary for motion');
         socket!.emit('setMotionSummary', motion.committeeId, motion.id, passed, summary, pros, cons);
         setCreateSummaryModal(false);
     };
@@ -94,7 +99,7 @@ const MotionArchive: FC = () => {
                             </div>
                         </div>
                         <div>
-                            <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={motionThreshold} totalUsers={committee.members.length} />
+                            <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={Math.ceil(committee.members.length / 2)} totalUsers={committee.members.length} />
                         </div>
                     </div>
                 </div>
