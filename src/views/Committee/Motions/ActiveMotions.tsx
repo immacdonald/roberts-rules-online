@@ -20,28 +20,13 @@ const ActiveMotions: FC = () => {
     const currentCommittee = useSelector(selectCurrentCommittee)!;
     const navigate = useNavigate();
     const [createModal, setCreateModal] = useState<boolean>(false);
+    const { id } = useSelector(selectUser)!;
+    const user = useMemo(() => currentCommittee.members.find((member) => member.id == id)!, [id, currentCommittee]);
 
     const [motionTitle, setMotionTitle] = useState<string>('');
     const [motionDescription, setMotionDescription] = useState<string>('');
     const [proceduralMotion, setProceduralMotion] = useState<boolean>(false);
     const [specialMotion, setSpecialMotion] = useState<boolean>(false);
-
-    const { id } = useSelector(selectUser)!;
-    const user = useMemo(() => currentCommittee.members.find((member) => member.id == id)!, [id, currentCommittee]);
-
-    const [motionDesc, setMotionDesc] = useState<string>('');
-
-    const [isProcedural, setIsProcedural] = useState<boolean>(false);
-
-    const [isSpecial, setIsSpecial] = useState<boolean>(false);
-
-    const handleProcedureMotionChange = (): void => {
-        setIsProcedural(!isProcedural);
-    };
-
-    const handleSpecialMotionChange = (): void => {
-        setIsSpecial(!isSpecial);
-    };
 
     const createMotion = (): void => {
         setCreateModal(true);
