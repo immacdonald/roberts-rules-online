@@ -114,19 +114,13 @@
     align-items: center;
 }
 
-.toggles {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-bottom: var(--space);
+.textAreaStyle {
+    width: 100%;
+    height: 100px;
+    padding: var(--space-sm);
     border: var(--border);
-    border-radius: var(--border-radius);
-    padding-block: var(--space-sm);
-
-    > div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: var(--space-sm);
-    }
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-size: var(--font-md);
+    border-radius: 4px; /* Rounded corners */
 }

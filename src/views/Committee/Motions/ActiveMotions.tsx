@@ -26,6 +26,20 @@ const ActiveMotions: FC = () => {
     const [motionTitle, setMotionTitle] = useState<string>('');
     const [motionDesc, setMotionDesc] = useState<string>('');
 
+    const [motionDesc, setMotionDesc] = useState<string>('');
+
+    const [isProcedural, setIsProcedural] = useState<boolean>(false);
+
+    const [isSpecial, setIsSpecial] = useState<boolean>(false);
+
+    const handleProcedureMotionChange = (): void => {
+        setIsProcedural(!isProcedural);
+    };
+
+    const handleSpecialMotionChange = (): void => {
+        setIsSpecial(!isSpecial);
+    };
+
     const createMotion = (): void => {
         setCreateModal(true);
     };
@@ -34,7 +48,8 @@ const ActiveMotions: FC = () => {
         event.preventDefault();
         setCreateModal(false);
         console.log('Creating new motion:', motionTitle);
-        socket!.emit('createMotion', currentCommittee.id!, motionTitle);
+        //TODO: have this also send isProcedural and isSpecial
+        socket!.emit('createMotion', currentCommittee.id!, motionTitle, motionDesc);
     };
 
     const activeMotions = useMemo(() => {
@@ -106,8 +121,14 @@ const ActiveMotions: FC = () => {
                     <h2>Create New Motion</h2>
                     <form id="createMotion" onSubmit={handleCreateMotion}>
                         <fieldset>
-                            <label htmlFor="motionTitle">Motion Title</label>
-                            <input type="text" name="motionTitle" id="motionTitle" required onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} placeholder="Title" />
+                            <label htmlFor="committeeName">Motion Title</label>
+                            <input type="text" name="motionTitle" id="motionTitle" required={true} onChange={(ev) => setMotionTitle(ev.target.value)} value={motionTitle} />
+                            <label htmlFor="committeeDesc">Motion Description</label>
+                            <textarea className={styles.textAreaStyle} name="motionDesc" id="motionDesc" required={true} onChange={(ev) => setMotionDesc(ev.target.value)} value={motionDesc} />
+                            <label htmlFor="procedural">Procedural</label>
+                            <Toggle id="procedureMotionToggle" defaultChecked={isProcedural} icons={false} onChange={handleProcedureMotionChange} />
+                            <label htmlFor="special">Special</label>
+                            <Toggle id="specialMotionToggle" defaultChecked={isSpecial} icons={false} onChange={handleSpecialMotionChange} />
                         </fieldset>
                         <fieldset>
                             <label htmlFor="password">Motion Description</label>
