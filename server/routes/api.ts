@@ -40,7 +40,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('signup', async (req, res) => {
+router.post('/signup', async (req, res) => {
     const { username, email, password, displayname } = req.body;
 
     const [validUsername, error] = isUsernameValid(username);
