@@ -5,3 +5,4 @@ export * from './Committee';
 export * from './Profile';
 export * from './ViewCommittees';
 export * from './Motion';
+export * from './Legal';
