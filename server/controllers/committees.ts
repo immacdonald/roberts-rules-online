@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import { CommitteeMember, CommitteeRole } from '../../types';
+import { cleanTextForDatabase } from '../../utility';
 import { Database } from '../db';
 import { Committee } from '../interfaces/committee';
 import { User } from '../interfaces/user';
@@ -43,23 +44,27 @@ const createCommittee = (name: string, description: string, owner: string, membe
                 console.log('ID already exists');
             } else {
                 console.log('Creating committee: ', name, owner, members);
-                sql.query('INSERT INTO committees (id, name, description, owner, members, flag) VALUES (?, ?, ?, ?, ?, ?)', [id, name, description, owner, memberData, '1111'], async (err) => {
-                    if (!err) {
-                        const committee = new Committee(id, name, description, owner, memberData, '1111');
+                sql.query(
+                    'INSERT INTO committees (id, name, description, owner, members, flag) VALUES (?, ?, ?, ?, ?, ?)',
+                    [id, cleanTextForDatabase(name), cleanTextForDatabase(description), owner, memberData, '1111'],
+                    async (err) => {
+                        if (!err) {
+                            const committee = new Committee(id, name, description, owner, memberData, '1111');
 
-                        for (let i = 0; i < committee.members.length; i++) {
-                            const user: User | null = await findUserById(committee.members[i].id);
+                            for (let i = 0; i < committee.members.length; i++) {
+                                const user: User | null = await findUserById(committee.members[i].id);
 
-                            if (user) {
-                                committee.members[i].displayname = user.displayname;
-                                committee.members[i].username = user.username;
+                                if (user) {
+                                    committee.members[i].displayname = user.displayname;
+                                    committee.members[i].username = user.username;
+                                }
                             }
-                        }
 
-                        committee.sendUpdatedCommittee();
-                        addToCache(committee);
+                            committee.sendUpdatedCommittee();
+                            addToCache(committee);
+                        }
                     }
-                });
+                );
             }
         }
     });

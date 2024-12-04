@@ -19,7 +19,7 @@ const MotionView: FC<MotionViewProps> = ({ children }) => {
         }
     }, [motion]);
 
-    if (!currentMotion) {
+    if (!currentMotion || motion != currentMotion.id) {
         return <Loading />;
     }
 

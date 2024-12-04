@@ -20,10 +20,17 @@ const CommitteeNav: FC = () => {
         return active ? 'primary' : 'secondary';
     };
 
+    const backlink =
+        pathname.includes('/motions') && !pathname.endsWith('/motions')
+            ? `/committees/${currentCommittee.id}/motions`
+            : pathname.includes('/past-motions') && !pathname.endsWith('/past-motions')
+              ? `/committees/${currentCommittee.id}/past-motions`
+              : '/committees';
+
     return (
         <header className={styles.header}>
             <div className={styles.committee}>
-                <Link to="/committees" data-button-type="ghost" style={{ color: 'var(--color-text' }}>
+                <Link to={backlink} data-button-type="ghost" style={{ color: 'var(--color-text' }}>
                     <BackArrowIcon />
                 </Link>
                 <span>{currentCommittee.name}</span>

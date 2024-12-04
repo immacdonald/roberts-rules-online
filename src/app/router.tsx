@@ -16,6 +16,7 @@ import {
     MotionVote,
     MotionView,
     MotionArchive,
+    PrivacyPolicy,
     TermsOfUse
 } from '../views';
 import { RoutedApp } from './RoutedApp';
@@ -41,10 +42,6 @@ const router = createBrowserRouter(
                 {
                     path: '/profile',
                     element: <Profile />
-                },
-                {
-                    path: '/terms-of-use',
-                    element: <TermsOfUse />
                 },
                 {
                     path: '/committees',
@@ -117,6 +114,14 @@ const router = createBrowserRouter(
                             ]
                         }
                     ]
+                },
+                {
+                    path: '/privacy-policy',
+                    element: <PrivacyPolicy />
+                },
+                {
+                    path: '/terms-of-use',
+                    element: <TermsOfUse />
                 },
                 {
                     path: '*',

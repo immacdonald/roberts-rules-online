@@ -1,4 +1,5 @@
 import { MotionData } from '../../types';
+import { cleanTextForDatabase } from '../../utility';
 import { Database } from '../db';
 import { Motion } from '../interfaces/motion';
 
@@ -51,7 +52,7 @@ export class Motions {
 
         await sql.query(`
             INSERT INTO motions (id, committeeId, authorId, title, flag, description, comments, vote, summary, relatedId, status, decisionTime, creationDate)
-            VALUES ('${data.id}', '${data.committeeId}', '${data.authorId}', '${data.title}', '${data.flag}', '${data.description}', '${JSON.stringify(data.comments)}', '${JSON.stringify(data.vote)}', '${data.summary}', '${data.relatedId}', '${data.status}', '${data.decisionTime}', '${data.creationDate}')
+            VALUES ('${data.id}', '${data.committeeId}', '${data.authorId}', '${cleanTextForDatabase(data.title)}', '${data.flag}', '${cleanTextForDatabase(data.description)}', '${JSON.stringify(data.comments)}', '${JSON.stringify(data.vote)}', '${data.summary}', '${data.relatedId}', '${data.status}', '${data.decisionTime}', '${data.creationDate}')
         `);
         return motion;
     }

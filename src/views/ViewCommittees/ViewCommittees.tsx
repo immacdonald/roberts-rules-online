@@ -1,9 +1,9 @@
-import { FC, FormEvent, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { CommitteeData } from 'types';
-import { Page } from '../../components';
+import { Page, Textbox } from '../../components';
 import { Modal } from '../../components/Modal';
 import { selectCommittees } from '../../features/committeesSlice';
 import { socket } from '../../socket';
@@ -47,23 +47,25 @@ const ViewCommittees: FC = () => {
                     </header>
                     {committees ? (
                         <div className={styles.committeeList} id="committeeList">
-                            {committees.map((committee: CommitteeData) => {
-                                return (
-                                    <div className={styles.committee} key={committee.id} onClick={() => navigate(`/committees/${committee.id}/home`)}>
-                                        <div className={styles.committeeHeader}>
-                                            <h3>{committee.name}</h3>
+                            {[...committees]
+                                .sort((a, b) => a.name.localeCompare(b.name))
+                                .map((committee: CommitteeData) => {
+                                    return (
+                                        <div className={styles.committee} key={committee.id} onClick={() => navigate(`/committees/${committee.id}/home`)}>
+                                            <div className={styles.committeeHeader}>
+                                                <h3>{committee.name}</h3>
+                                            </div>
+                                            <p>{committee.description || 'No description provided for this committee. Please contact the committee chair for more information.'}</p>
+                                            <br />
+                                            <div className={styles.committeeCardFooter}>
+                                                <p>
+                                                    <b>Members: </b>
+                                                    {committee.members && committee.members.length > 0 ? committee.members.map((member) => member.displayname || member.id).join(', ') : 'No Members'}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <p>{committee.description || 'No description provided for this committee. Please contact the committee chair for more information.'}</p>
-                                        <br />
-                                        <div className={styles.committeeCardFooter}>
-                                            <p>
-                                                <b>Members: </b>
-                                                {committee.members && committee.members.length > 0 ? committee.members.map((member) => member.displayname || member.id).join(', ') : 'No Members'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
                         </div>
                     ) : (
                         <p>Unable to load committees, please reload and try again.</p>
@@ -79,8 +81,15 @@ const ViewCommittees: FC = () => {
                             <input type="text" name="committeeName" id="committeeName" required={true} onChange={(ev) => setCommitteeName(ev.target.value)} value={committeeName} />
                         </fieldset>
                         <fieldset>
-                            <label htmlFor="password">Committee Description</label>
-                            <input type="text" id="committeeDesc" required={true} onChange={(ev) => setCommitteeDesc(ev.target.value)} value={committeeDesc} />
+                            <label htmlFor="committeeDesc">Committee Description</label>
+                            <Textbox
+                                autoResize
+                                type="text"
+                                id="committeeDesc"
+                                required={true}
+                                onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setCommitteeDesc(event.target.value)}
+                                value={committeeDesc}
+                            />
                         </fieldset>
                         <Modal.Actions>
                             <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">

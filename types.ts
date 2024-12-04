@@ -23,7 +23,7 @@ type Vote = 'yea' | 'nay' | 'abstain';
 
 type MotionStatus = 'pending' | 'open' | 'complete' | 'passed' | 'failed';
 
-type MotionFlag = '' | 'special' | 'procedural' | 'amendment' | 'overturn';
+type MotionFlag = '' | 'special' | 'procedural' | 'amend' | 'overturn';
 
 type MotionSummary = {
     summary: string;

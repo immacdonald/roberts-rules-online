@@ -319,6 +319,20 @@ export class Committee {
             if (this.canUserDoAction(userId, 'writeMotionSummary')) {
                 await motion.setSummary(summary);
                 await motion.setStatus(passed ? 'passed' : 'failed');
+
+                if (motion.flag == 'amend' && passed) {
+                    const parentMotion = await this.getMotionById(motion.relatedId);
+                    if (parentMotion) {
+                        await parentMotion.setDescription(motion.description);
+                    }
+                } else if (motion.flag == 'overturn' && passed) {
+                    const parentMotion = await this.getMotionById(motion.relatedId);
+                    if (parentMotion) {
+                        await parentMotion.alterTitle(`[OVERTURNED] ${parentMotion.title}`);
+                        await parentMotion.setStatus('failed');
+                    }
+                }
+
                 await this.sendUpdatedMotions();
             }
         }

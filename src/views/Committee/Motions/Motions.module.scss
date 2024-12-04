@@ -32,9 +32,6 @@
 
 .motionTable {
     width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    text-align: left;
 }
 
 .tableHeader {
@@ -64,6 +61,31 @@
     &:hover {
         box-shadow: var(--shadow);
         cursor: pointer;
+    }
+
+    > * {
+        &:not(:first-child) {
+            margin-inline-start: var(--space-sm);
+        }
+
+        &:not(:last-child) {
+            margin-inline-end: var(--space-sm);
+        }
+    }
+}
+
+.submotion {
+    grid-template-columns: var(--table-submotion-layout) !important;
+    border: var(--border);
+    border-radius: var(--border-radius);
+    padding: var(--space);
+    margin-bottom: var(--space);
+    transition: 0.25s linear box-shadow;
+    margin-left: 120px;
+    background-color: var(--color-background);
+
+    &:hover {
+        box-shadow: var(--shadow);
     }
 
     > * {

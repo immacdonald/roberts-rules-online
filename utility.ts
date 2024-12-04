@@ -15,4 +15,13 @@ const capitalize = (str: string): string => {
     return str[0].toUpperCase() + str.slice(1);
 };
 
-export { addOrReplaceInArrayById, capitalize };
+const cleanTextForDatabase = (str: string): string => {
+    return str
+        .replace(/'/g, "''") // Escape single quotes
+        .replace(/"/g, '""') // Escape double quotes (optional, depending on DB)
+        .replace(/\[/g, '\\[') // Escape opening square brackets
+        .replace(/\]/g, '\\]') // Escape closing square brackets
+        .replace(/\?/g, '\\?'); // Escape question marks
+};
+
+export { addOrReplaceInArrayById, capitalize, cleanTextForDatabase };

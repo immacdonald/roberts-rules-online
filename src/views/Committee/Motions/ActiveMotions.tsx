@@ -1,5 +1,5 @@
-import { ChangeEvent, CSSProperties, FC, FormEvent, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { ChangeEvent, CSSProperties, FC, FormEvent, Fragment, useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Toggle from 'react-toggle';
 import clsx from 'clsx';
@@ -7,7 +7,7 @@ import { MotionData } from 'types';
 import { capitalize } from '../../../../utility';
 import { Loading, Textbox } from '../../../components';
 import { Modal } from '../../../components/Modal';
-import { selectCurrentCommittee } from '../../../features/committeesSlice';
+import { selectCurrentCommittee, setCurrentMotion } from '../../../features/committeesSlice';
 import { selectUser } from '../../../features/userSlice';
 import { isFlagged } from '../../../flags';
 import { socket } from '../../../socket';
@@ -40,29 +40,55 @@ const ActiveMotions: FC = () => {
     };
 
     const activeMotions = useMemo(() => {
-        return (currentCommittee?.motions || []).filter((motion) => motion.decisionTime > Date.now());
+        return (currentCommittee?.motions || []).filter((motion) => motion.decisionTime > Date.now()).sort((a, b) => b.creationDate - a.creationDate);
     }, [currentCommittee?.motions]);
 
     const displayMotions = useMemo(() => {
         return activeMotions.map((motion: MotionData) => {
-            if (motion.relatedId) {
+            if (motion.relatedId && motion.flag != 'overturn') {
                 return false;
             }
 
+            const submotions = currentCommittee!.motions!.filter((submotion) => submotion.relatedId == motion.id && submotion.flag != 'overturn');
+
             return (
-                <div className={clsx(styles.row, styles.motion)} key={motion.id} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
-                    <span>{capitalize(motion.flag || 'normal')}</span>
-                    <h3>{motion.title}</h3>
-                    <span>{motion.author || motion.authorId}</span>
-                    <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
-                    <span>{motion.decisionTime && new Date(motion.decisionTime).toLocaleDateString()}</span>
-                </div>
+                <Fragment key={motion.id}>
+                    <div className={clsx(styles.row, styles.motion)} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
+                        <span>
+                            {motion.flag && (
+                                <b>
+                                    <i>{capitalize(motion.flag)}</i>
+                                </b>
+                            )}
+                        </span>
+                        <h3>{motion.title || 'Untitled Motion'}</h3>
+                        <span>{motion.author || motion.authorId}</span>
+                        <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
+                        <span>{motion.decisionTime && new Date(motion.decisionTime).toLocaleDateString()}</span>
+                    </div>
+                    {submotions.length > 0 &&
+                        submotions.map((submotion) => {
+                            return (
+                                <div className={clsx(styles.row, styles.submotion)} key={submotion.id} onClick={() => navigate(`/committees/${currentCommittee!.id}/motions/${submotion.id}`)}>
+                                    <h3>{submotion.title || 'Untitled Submotion'}</h3>
+                                    <span>{submotion.author || submotion.authorId}</span>
+                                    <span>{submotion.creationDate && new Date(submotion.creationDate).toLocaleDateString()}</span>
+                                    <span>{submotion.decisionTime && new Date(submotion.decisionTime).toLocaleDateString()}</span>
+                                </div>
+                            );
+                        })}
+                </Fragment>
             );
         });
     }, [activeMotions]);
 
     const canMakeSpecialMotion = isFlagged(currentCommittee.flag, specialMotionIndex) || user.role == 'owner' || user.role == 'chair';
     const canMakeProceduralMotion = isFlagged(currentCommittee.flag, proceduralMotionIndex) || user.role == 'owner' || user.role == 'chair';
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(setCurrentMotion(null));
+    }, []);
 
     return (
         <>
@@ -75,7 +101,7 @@ const ActiveMotions: FC = () => {
                 </header>
                 {currentCommittee?.motions ? (
                     activeMotions.length > 0 ? (
-                        <div className={styles.motionTable} style={{ '--table-layout': '140px 1fr 100px 140px 100px' } as CSSProperties}>
+                        <div className={styles.motionTable} style={{ '--table-layout': '100px 1fr 100px 140px 100px', '--table-submotion-layout': '1fr 100px 140px 100px' } as CSSProperties}>
                             <div className={clsx(styles.row, styles.tableHeader)}>
                                 <span>Type</span>
                                 <span>Title</span>
@@ -145,7 +171,7 @@ const ActiveMotions: FC = () => {
                             <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">
                                 Cancel
                             </button>
-                            <button type="submit" id="createButton" data-button-type="primary">
+                            <button type="submit" id="createButton" data-button-type="primary" disabled={motionTitle.length == 0 || motionDescription.length == 0}>
                                 Create Motion
                             </button>
                         </Modal.Actions>

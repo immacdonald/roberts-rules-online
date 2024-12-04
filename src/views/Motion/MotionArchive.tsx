@@ -1,7 +1,10 @@
 import { ChangeEvent, FC, FormEvent, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import Toggle from 'react-toggle';
 import { MotionComment } from '../../../types';
 import { capitalize } from '../../../utility';
+import { CloseIcon, EditIcon } from '../../assets/icons';
 import { Textbox } from '../../components';
 import { Modal } from '../../components/Modal';
 import { VoteDisplay } from '../../components/Vote';
@@ -35,6 +38,7 @@ const MotionArchive: FC = () => {
     const [summary, setSummary] = useState<string>('');
     const [pros, setPros] = useState<string>('');
     const [cons, setCons] = useState<string>('');
+    const [editVote, setEditVote] = useState<boolean>(false);
 
     const writeSummary = (): void => {
         setCreateSummaryModal(true);
@@ -43,15 +47,18 @@ const MotionArchive: FC = () => {
     const motionThreshold = motion.flag == 'procedural' || motion.flag == 'special' ? Math.ceil(committee.members.length * 0.66) : Math.ceil(committee.members.length * 0.5);
 
     const calculateIfMotionPassed = (): boolean => {
-        return votesInFavor > motionThreshold;
+        return votesInFavor >= motionThreshold;
     };
-    const [passed] = useState<boolean>(calculateIfMotionPassed());
+    const [passed, setPassed] = useState<boolean>(calculateIfMotionPassed());
 
     const handleAddDiscusion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+        //console.log('Adding summary for motion');
         socket!.emit('setMotionSummary', motion.committeeId, motion.id, passed, summary, pros, cons);
         setCreateSummaryModal(false);
     };
+
+    const isSubmotion = useMemo(() => !!motion.relatedId, [motion]);
 
     return (
         <section>
@@ -82,7 +89,12 @@ const MotionArchive: FC = () => {
                     <div className={styles.overview}>
                         <div>
                             <header className={styles.title}>
-                                <h1>{motion.title}</h1>
+                                <h1>{motion.title || 'Untitled Motion'}</h1>
+                                {isSubmotion && (
+                                    <span style={{ fontSize: 'var(--font-lg)' }}>
+                                        Submotion of <Link to={`/committees/${committee.id}/motions/${motion.relatedId}`}>{committee.motions!.find((m) => m.id == motion.relatedId)?.title}</Link>
+                                    </span>
+                                )}
                                 {motion.flag.length > 0 && <span>{capitalize(motion.flag)}</span>}
                             </header>
                             <p>{motion.description || 'No motion description provided.'}</p>
@@ -94,7 +106,7 @@ const MotionArchive: FC = () => {
                             </div>
                         </div>
                         <div>
-                            <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={motionThreshold} totalUsers={committee.members.length} />
+                            <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={Math.ceil(committee.members.length / 2)} totalUsers={committee.members.length} />
                         </div>
                     </div>
                 </div>
@@ -112,12 +124,18 @@ const MotionArchive: FC = () => {
                     )
                 ) : (
                     <>
-                        <h4>Overall</h4>
-                        <p>{motion.summary.summary}</p>
-                        <h5>Pros</h5>
-                        <p>{motion.summary.pros}</p>
-                        <h5>Cons</h5>
-                        <p>{motion.summary.cons}</p>
+                        <div className={styles.summary}>
+                            <h4>Overall</h4>
+                            <p>{motion.summary.summary}</p>
+                        </div>
+                        <div className={styles.summary}>
+                            <h4>Pros</h4>
+                            <p>{motion.summary.pros}</p>
+                        </div>
+                        <div className={styles.summary}>
+                            <h4>Cons</h4>
+                            <p>{motion.summary.cons}</p>
+                        </div>
                     </>
                 )}
             </div>
@@ -185,16 +203,36 @@ const MotionArchive: FC = () => {
                             <Textbox autoResize className={styles.textarea} id="cons" required onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setCons(event.target.value)} value={cons} />
                         </fieldset>
                         <div className={styles.comment} data-comment-type={passed ? 'positive' : 'negative'}>
-                            <p>
-                                Motion <b>{passed ? 'has successfully passed' : 'failed to pass'}</b> with <b>{votesInFavor}</b> votes in favor and <b>{votesAgainst}</b> votes against.
-                            </p>
+                            <div className={styles.summaryStatus}>
+                                <p>
+                                    Motion <b>{passed ? 'has successfully passed' : 'failed to pass'}</b> with <b>{votesInFavor}</b> votes in favor and <b>{votesAgainst}</b> votes against.
+                                </p>
+                                <button type="button" data-button-type="ghost" onClick={() => setEditVote(!editVote)}>
+                                    {editVote ? <CloseIcon /> : <EditIcon />}
+                                </button>
+                            </div>
+                            {editVote && (
+                                <div className={styles.summaryStatus}>
+                                    <p>
+                                        Change motion vote outcome from {calculateIfMotionPassed() ? 'passed' : 'failed'} to {calculateIfMotionPassed() ? 'failed' : 'passed'}? This should rarely be
+                                        done and only applied in special circumstances.
+                                    </p>
+                                    <Toggle icons={false} onChange={() => setPassed(!passed)} />
+                                </div>
+                            )}
                         </div>
                         <br />
                         <Modal.Actions>
-                            <button type="button" onClick={() => setCreateSummaryModal(false)}>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setPassed(calculateIfMotionPassed());
+                                    setCreateSummaryModal(false);
+                                }}
+                            >
                                 Cancel
                             </button>
-                            <button type="submit" id="submitUserButton" data-button-type="primary">
+                            <button type="submit" id="submitUserButton" data-button-type="primary" disabled={summary.length == 0 || pros.length == 0 || cons.length == 0}>
                                 Submit & Conclude Motion
                             </button>
                         </Modal.Actions>
