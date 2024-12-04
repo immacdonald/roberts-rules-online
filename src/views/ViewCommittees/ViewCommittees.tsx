@@ -95,7 +95,7 @@ const ViewCommittees: FC = () => {
                             <button type="button" onClick={() => setCreateModal(false)} data-button-type="secondary">
                                 Cancel
                             </button>
-                            <button type="submit" id="createButton" data-button-type="primary">
+                            <button type="submit" id="createButton" data-button-type="primary" disabled={committeeName.length == 0 || committeeDesc.length == 0}>
                                 Create Committee
                             </button>
                         </Modal.Actions>

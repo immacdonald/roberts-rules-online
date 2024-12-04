@@ -108,6 +108,7 @@ const updateUserName = async (id: string, name: string): Promise<void> => {
                 userInCommittee.username = user.username;
 
                 committees[i].members = addOrReplaceInArrayById(committees[i].members, userInCommittee);
+                committees[i].motions.motions.map((motion) => motion.initializeAuthors());
                 await committees[i].sendUpdatedCommittee();
             }
         }
