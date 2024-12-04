@@ -87,6 +87,10 @@ input {
     &:focus {
         outline: var(--color-primary) solid 2px;
     }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
 }
 
 button,
@@ -153,7 +157,7 @@ button,
 
     &[disabled] {
         cursor: not-allowed;
-        filter: grayscale(0.4) brightness(0.9);
+        filter: grayscale(0.4) brightness(0.8);
     }
 
     &:not([disabled]):hover {

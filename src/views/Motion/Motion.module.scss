@@ -6,6 +6,7 @@
         display: flex;
         gap: var(--space);
         margin-top: var(--space);
+        margin-bottom: var(--space-sm);
         justify-content: space-between;
         align-items: center;
 
@@ -43,7 +44,7 @@
 .overview {
     min-height: 256px;
     display: grid;
-    grid-template-columns: 1fr 256px;
+    grid-template-columns: 1fr 300px;
     grid-column-gap: var(--space-sm);
     justify-content: start;
     align-items: start;
@@ -226,6 +227,31 @@
     border: var(--border);
     border-radius: var(--border-radius);
     background-color: var(--color-foreground);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.inlineSubmotionContainer {
+    margin-top: var(--space);
+}
+
+.inlineSubmotion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space);
+    border: var(--border);
+    border-radius: var(--border-radius);
+    padding: var(--space);
+    margin-bottom: var(--space);
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.summaryStatus {
     display: flex;
     justify-content: center;
     align-items: center;

@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import { MotionComment, MotionData, MotionFlag, MotionStatus, MotionSummary, Sentiment, Vote } from '../../types';
+import { cleanTextForDatabase } from '../../utility';
 import { findUserById } from '../controllers/users';
 import { Database } from '../db';
 
@@ -175,7 +176,7 @@ export class Motion {
             id,
             authorId: userId,
             sentiment,
-            content: comment || '',
+            content: cleanTextForDatabase(comment || ''),
             creationDate: Date.now(),
             parentCommentId: parentCommentId || ''
         };

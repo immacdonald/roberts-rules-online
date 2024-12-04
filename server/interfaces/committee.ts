@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { CommitteeMember, CommitteeRole, MotionData, Sentiment } from '../../types';
+import { CommitteeMember, CommitteeRole, MotionData, MotionFlag, MotionSummary, Sentiment, Vote } from '../../types';
 import { addOrReplaceInArrayById } from '../../utility';
 import { getUserConnection } from '../controllers/connections';
 import { Motions } from '../controllers/motions';
@@ -24,13 +24,14 @@ export class Committee {
     public motions: Motions;
     public flag: string | null;
 
-    constructor(id: string, name: string, description: string, owner: string, members: string | CommitteeMember[]) {
+    constructor(id: string, name: string, description: string, owner: string, members: string | CommitteeMember[], flag: string | null) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.owner = owner;
         this.members = typeof members == 'string' ? (JSON.parse(members) as CommitteeMember[]) : members;
         this.motions = new Motions(id);
+        this.flag = flag;
     }
 
     public sendToMember = (event: string, data: any, id: string): void => {
@@ -72,6 +73,12 @@ export class Committee {
                 return member.role == 'chair';
             } else if (action == 'changeUserRole') {
                 return member.role == 'chair';
+            } else if (action == 'updateFlag') {
+                return member.role == 'chair';
+            } else if (action == 'writeMotionSummary') {
+                return member.role == 'chair';
+            } else if (action == 'endMotionVoting') {
+                return member.role == 'chair';
             }
         } else {
             console.log('User not member');
@@ -104,7 +111,6 @@ export class Committee {
 
             if (user && !this.isMember(user.id)) {
                 this.members.push({ id: user.id, role: 'member', username: user.username, displayname: user.displayname });
-
                 await sql.query(
                     `
                     UPDATE committees
@@ -162,8 +168,25 @@ export class Committee {
         }
     };
 
+    public updateFlag = async (originatorId: string, flag: string): Promise<void> => {
+        if (this.canUserDoAction(originatorId, 'updateFlag')) {
+            this.flag = flag;
+
+            await sql.query(
+                `
+                    UPDATE committees
+                    SET flag = ?
+                    WHERE id = '${this.id}';
+                    `,
+                [this.flag]
+            );
+
+            await this.sendUpdatedCommittee();
+        }
+    };
+
     public getMotions = async (): Promise<Motion[]> => {
-        const motions = await this.motions.getMotions();
+        const motions = (await this.motions.getMotions()).filter((motion, index, self) => self.findIndex((m) => m.id === motion.id) === index);
         return motions;
     };
 
@@ -172,13 +195,18 @@ export class Committee {
     };
 
     public sendUpdatedCommittee = async (): Promise<void> => {
+        const motions = await this.getMotions();
+
         const data = {
             id: this.id,
             name: this.name,
             description: this.description,
             owner: this.owner,
-            members: this.members
+            members: this.members,
+            motions: motions.filter((motion, index, self) => self.findIndex((m) => m.id === motion.id) === index),
+            flag: this.flag
         };
+
         await this.sendToAllMembers('updatedCommittee', data);
     };
 
@@ -291,6 +319,20 @@ export class Committee {
             if (this.canUserDoAction(userId, 'writeMotionSummary')) {
                 await motion.setSummary(summary);
                 await motion.setStatus(passed ? 'passed' : 'failed');
+
+                if (motion.flag == 'amend' && passed) {
+                    const parentMotion = await this.getMotionById(motion.relatedId);
+                    if (parentMotion) {
+                        await parentMotion.setDescription(motion.description);
+                    }
+                } else if (motion.flag == 'overturn' && passed) {
+                    const parentMotion = await this.getMotionById(motion.relatedId);
+                    if (parentMotion) {
+                        await parentMotion.alterTitle(`(Overturned) ${parentMotion.title}`);
+                        await parentMotion.setStatus('failed');
+                    }
+                }
+
                 await this.sendUpdatedMotions();
             }
         }

@@ -32,9 +32,6 @@
 
 .motionTable {
     width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    text-align: left;
 }
 
 .tableHeader {
@@ -78,14 +75,14 @@
 }
 
 .submotion {
+    grid-template-columns: var(--table-submotion-layout) !important;
     border: var(--border);
     border-radius: var(--border-radius);
     padding: var(--space);
     margin-bottom: var(--space);
     transition: 0.25s linear box-shadow;
-    margin-left: var(--space-xl);
+    margin-left: 120px;
     background-color: var(--color-background);
-    color: grey;
 
     &:hover {
         box-shadow: var(--shadow);
@@ -114,13 +111,19 @@
     align-items: center;
 }
 
-.textAreaStyle {
-    width: 100%;
-    height: 100px;
-    padding: var(--space-sm);
+.toggles {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: var(--space);
     border: var(--border);
-    background-color: var(--color-background);
-    color: var(--color-text);
-    font-size: var(--font-md);
-    border-radius: 4px; /* Rounded corners */
+    border-radius: var(--border-radius);
+    padding-block: var(--space-sm);
+
+    > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-sm);
+    }
 }
