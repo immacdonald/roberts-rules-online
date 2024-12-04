@@ -15,7 +15,14 @@ const PastMotions: FC = () => {
     const { id } = useSelector(selectUser)!;
     const navigate = useNavigate();
 
-    const [viewPassedMotions, setViewPassedMotions] = useState<boolean | null>(null);
+    const enum PastMotionStatus {
+        All,
+        Pending,
+        Passed,
+        Failed
+    }
+
+    const [viewPassedMotions, setViewPassedMotions] = useState<PastMotionStatus>(PastMotionStatus.All);
 
     const pastMotions = useMemo(() => {
         if (currentCommittee && currentCommittee.motions) {
@@ -26,10 +33,18 @@ const PastMotions: FC = () => {
     }, [currentCommittee?.motions, viewPassedMotions]);
 
     const filteredPastMotions = useMemo(() => {
-        if (viewPassedMotions !== null) {
-            return pastMotions.filter((motion) => motion.status == (viewPassedMotions ? 'passed' : 'failed'));
+        switch (viewPassedMotions) {
+            case PastMotionStatus.All:
+                return pastMotions;
+            case PastMotionStatus.Pending:
+                return pastMotions.filter((motion) => motion.status == 'open');
+            case PastMotionStatus.Passed:
+                return pastMotions.filter((motion) => motion.status == 'passed');
+            case PastMotionStatus.Failed:
+                return pastMotions.filter((motion) => motion.status == 'failed');
+            default:
+                return pastMotions;
         }
-        return pastMotions;
     }, [pastMotions, viewPassedMotions]);
 
     const overturnMotion = (motionId: string): void => {
@@ -83,15 +98,29 @@ const PastMotions: FC = () => {
                     <h1>Past Motions</h1>
                     <div className={styles.filter}>
                         <button
-                            className={viewPassedMotions === true ? styles.selected : undefined}
-                            onClick={() => setViewPassedMotions(viewPassedMotions === true ? null : true)}
+                            className={viewPassedMotions === PastMotionStatus.All ? styles.selected : undefined}
+                            onClick={() => setViewPassedMotions(PastMotionStatus.All)}
+                            disabled={!(pastMotions.length > 0)}
+                        >
+                            All
+                        </button>
+                        <button
+                            className={viewPassedMotions === PastMotionStatus.Pending ? styles.selected : undefined}
+                            onClick={() => setViewPassedMotions(PastMotionStatus.Pending)}
+                            disabled={!(pastMotions.length > 0)}
+                        >
+                            Pending
+                        </button>
+                        <button
+                            className={viewPassedMotions === PastMotionStatus.Passed ? styles.selected : undefined}
+                            onClick={() => setViewPassedMotions(PastMotionStatus.Passed)}
                             disabled={!(pastMotions.length > 0)}
                         >
                             Passed
                         </button>
                         <button
-                            className={viewPassedMotions === false ? styles.selected : undefined}
-                            onClick={() => setViewPassedMotions(viewPassedMotions === false ? null : false)}
+                            className={viewPassedMotions === PastMotionStatus.Failed ? styles.selected : undefined}
+                            onClick={() => setViewPassedMotions(PastMotionStatus.Failed)}
                             disabled={!(pastMotions.length > 0)}
                         >
                             Failed
