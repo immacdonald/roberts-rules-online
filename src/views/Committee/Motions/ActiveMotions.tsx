@@ -28,23 +28,6 @@ const ActiveMotions: FC = () => {
     const [proceduralMotion, setProceduralMotion] = useState<boolean>(false);
     const [specialMotion, setSpecialMotion] = useState<boolean>(false);
 
-    const { id } = useSelector(selectUser)!;
-    const user = useMemo(() => currentCommittee.members.find((member) => member.id == id)!, [id, currentCommittee]);
-
-    const [motionDesc, setMotionDesc] = useState<string>('');
-
-    const [isProcedural, setIsProcedural] = useState<boolean>(false);
-
-    const [isSpecial, setIsSpecial] = useState<boolean>(false);
-
-    const handleProcedureMotionChange = (): void => {
-        setIsProcedural(!isProcedural);
-    };
-
-    const handleSpecialMotionChange = (): void => {
-        setIsSpecial(!isSpecial);
-    };
-
     const createMotion = (): void => {
         setCreateModal(true);
     };
@@ -52,7 +35,7 @@ const ActiveMotions: FC = () => {
     const handleCreateMotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         setCreateModal(false);
-        console.log('Creating new motion:', motionTitle);
+        //console.log('Creating new motion:', motionTitle);
         socket!.emit('createMotion', currentCommittee.id!, motionTitle, motionDescription, proceduralMotion ? 'procedural' : specialMotion ? 'special' : null);
     };
 

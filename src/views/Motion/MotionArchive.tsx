@@ -44,6 +44,8 @@ const MotionArchive: FC = () => {
         setCreateSummaryModal(true);
     };
 
+    const motionThreshold = motion.flag == 'procedural' || motion.flag == 'special' ? Math.ceil(committee.members.length * 0.66) : Math.ceil(committee.members.length * 0.5);
+
     const calculateIfMotionPassed = (): boolean => {
         return votesInFavor >= motionThreshold;
     };
@@ -51,7 +53,7 @@ const MotionArchive: FC = () => {
 
     const handleAddDiscusion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        console.log('Adding summary for motion');
+        //console.log('Adding summary for motion');
         socket!.emit('setMotionSummary', motion.committeeId, motion.id, passed, summary, pros, cons);
         setCreateSummaryModal(false);
     };

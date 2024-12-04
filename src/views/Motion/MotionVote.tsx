@@ -51,7 +51,6 @@ const MotionVote: FC = () => {
     const [submotionAmend, setSubmotionAmend] = useState<boolean>(false);
 
     const createSubmotion = (amend: boolean): void => {
-        console.log('Create a new submotion');
         setSubmotionAmend(amend);
         if (amend) {
             setSubmotionTitle(`Amend ${motion.title}`);
@@ -62,7 +61,7 @@ const MotionVote: FC = () => {
     const handleCreateSubmotion = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         setCreateModal(false);
-        console.log('Creating new submotion:', submotionTitle, submotionDesc);
+        //console.log('Creating new submotion:', submotionTitle, submotionDesc);
         socket!.emit('createMotion', committee.id, submotionTitle, submotionDesc, submotionAmend ? 'amend' : null, motion.id);
     };
 
@@ -126,7 +125,6 @@ const MotionVote: FC = () => {
     const showLiveVotes = isFlagged(committee.flag, showActiveMotionVotesIndex);
 
     useEffect(() => {
-        console.log('Motion is active', activeMotion);
         if (!activeMotion) {
             navigate(`/committees/${committee.id}/past-motions/${motion.id}`);
         }
@@ -143,6 +141,8 @@ const MotionVote: FC = () => {
     }, [committee.motions, isSubmotion]);
 
     const resolvedSubmotions = useMemo(() => (submotions ? !submotions.some((submotion) => submotion.status == 'open') : true), [submotions]);
+
+    const motionThreshold = motion.flag == 'procedural' || motion.flag == 'special' ? Math.ceil(committee.members.length * 0.66) : Math.ceil(committee.members.length * 0.5);
 
     return (
         <>
@@ -194,7 +194,7 @@ const MotionVote: FC = () => {
                                 </div>
                             ) : (
                                 <div>
-                                    {showLiveVotes ? (
+                                    {showLiveVotes || user.role == 'owner' || user.role == 'chair' ? (
                                         <VoteDisplay yeas={votesInFavor} nays={votesAgainst} threshold={motionThreshold} totalUsers={committee.members.length} />
                                     ) : (
                                         <div className={styles.hiddenResults}>

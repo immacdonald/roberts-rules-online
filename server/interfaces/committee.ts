@@ -328,7 +328,7 @@ export class Committee {
                 } else if (motion.flag == 'overturn' && passed) {
                     const parentMotion = await this.getMotionById(motion.relatedId);
                     if (parentMotion) {
-                        await parentMotion.alterTitle(`(Overturned) ${parentMotion.title}`);
+                        await parentMotion.alterTitle(`[OVERTURNED] ${parentMotion.title}`);
                         await parentMotion.setStatus('failed');
                     }
                 }
