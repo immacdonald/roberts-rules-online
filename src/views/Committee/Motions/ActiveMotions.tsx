@@ -42,6 +42,19 @@ const ActiveMotions: FC = () => {
         });
     }, [currentCommittee?.motions]);
 
+    const displaySubmotions = useMemo(() => {
+        return currentCommittee!.motions!.map((motion: MotionData) => {
+            return (
+                <div className={clsx(styles.row, styles.submotion)} key={motion.title} onClick={() => navigate(`/committees/${currentCommittee!.id}/motions/${motion.id}`)}>
+                    <h3>{motion.title}</h3>
+                    <span>{motion.author || motion.authorId}</span>
+                    <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>
+                    <span>{motion.decisionTime && new Date(motion.decisionTime).toLocaleDateString()}</span>
+                </div>
+            );
+        });
+    }, [currentCommittee?.motions]);
+
     return (
         <>
             <section>
@@ -61,6 +74,7 @@ const ActiveMotions: FC = () => {
                                 <span>Vote By</span>
                             </div>
                             {displayMotions}
+                            {displaySubmotions}
                         </div>
                     ) : (
                         <div className={styles.empty}>

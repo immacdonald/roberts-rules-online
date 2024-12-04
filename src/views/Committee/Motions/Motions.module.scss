@@ -64,6 +64,31 @@
     }
 }
 
+.submotion {
+    border: var(--border);
+    border-radius: var(--border-radius);
+    padding: var(--space);
+    margin-bottom: var(--space);
+    transition: 0.25s linear box-shadow;
+    margin-left: var(--space-xl);
+    background-color: var(--color-background);
+    color: grey;
+
+    &:hover {
+        box-shadow: var(--shadow);
+    }
+
+    > * {
+        &:not(:first-child) {
+            margin-inline-start: var(--space-sm);
+        }
+
+        &:not(:last-child) {
+            margin-inline-end: var(--space-sm);
+        }
+    }
+}
+
 .empty {
     background-color: var(--color-background);
     width: 80%;
