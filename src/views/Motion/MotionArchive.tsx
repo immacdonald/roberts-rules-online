@@ -124,12 +124,18 @@ const MotionArchive: FC = () => {
                     )
                 ) : (
                     <>
-                        <h4>Overall</h4>
-                        <p>{motion.summary.summary}</p>
-                        <h5>Pros</h5>
-                        <p>{motion.summary.pros}</p>
-                        <h5>Cons</h5>
-                        <p>{motion.summary.cons}</p>
+                        <div className={styles.summary}>
+                            <h4>Overall</h4>
+                            <p>{motion.summary.summary}</p>
+                        </div>
+                        <div className={styles.summary}>
+                            <h4>Pros</h4>
+                            <p>{motion.summary.pros}</p>
+                        </div>
+                        <div className={styles.summary}>
+                            <h4>Cons</h4>
+                            <p>{motion.summary.cons}</p>
+                        </div>
                     </>
                 )}
             </div>

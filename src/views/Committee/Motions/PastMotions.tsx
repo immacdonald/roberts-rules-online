@@ -12,12 +12,19 @@ import { selectUser } from '../../../features/userSlice';
 import { socket } from '../../../socket';
 import styles from './Motions.module.scss';
 
+const enum PastMotionStatus {
+    All,
+    Pending,
+    Passed,
+    Failed
+}
+
 const PastMotions: FC = () => {
     const currentCommittee = useSelector(selectCurrentCommittee)!;
     const { id } = useSelector(selectUser)!;
     const navigate = useNavigate();
 
-    const [viewPassedMotions, setViewPassedMotions] = useState<boolean | null>(null);
+    const [viewPassedMotions, setViewPassedMotions] = useState<PastMotionStatus>(PastMotionStatus.All);
 
     const pastMotions = useMemo(() => {
         if (currentCommittee && currentCommittee.motions) {
@@ -28,10 +35,18 @@ const PastMotions: FC = () => {
     }, [currentCommittee?.motions, viewPassedMotions]);
 
     const filteredPastMotions = useMemo(() => {
-        if (viewPassedMotions !== null) {
-            return pastMotions.filter((motion) => motion.status == (viewPassedMotions ? 'passed' : 'failed'));
+        switch (viewPassedMotions) {
+            case PastMotionStatus.All:
+                return pastMotions;
+            case PastMotionStatus.Pending:
+                return pastMotions.filter((motion) => motion.status == 'open');
+            case PastMotionStatus.Passed:
+                return pastMotions.filter((motion) => motion.status == 'passed');
+            case PastMotionStatus.Failed:
+                return pastMotions.filter((motion) => motion.status == 'failed');
+            default:
+                return pastMotions;
         }
-        return pastMotions;
     }, [pastMotions, viewPassedMotions]);
 
     const [createModal, setCreateModal] = useState<boolean>(false);
@@ -85,9 +100,14 @@ const PastMotions: FC = () => {
                         <h3>{motion.title || 'Untitled Motion'}</h3>
                         <span>{motion.author || motion.authorId}</span>
                         <span>
-                            <b>
-                                <i>{capitalize(motion.status == 'open' ? 'pending' : motion.status)}</i>
-                            </b>
+                            <b>{capitalize(motion.status == 'open' ? 'pending' : motion.status)}</b>
+                        </span>
+                        <span>
+                            {motion.flag && (
+                                <b>
+                                    <i>{capitalize(motion.flag)}</i>
+                                </b>
+                            )}
                         </span>
                         <span>{motion.decisionTime && new Date(motion.decisionTime).toLocaleDateString()}</span>
                     </div>
@@ -98,8 +118,11 @@ const PastMotions: FC = () => {
                                     <h3>{submotion.title || 'Untitled Submotion'}</h3>
                                     <span>{submotion.author || submotion.authorId}</span>
                                     <span>
+                                        <b>{capitalize(submotion.status == 'open' ? 'pending' : submotion.status)}</b>
+                                    </span>
+                                    <span>
                                         <b>
-                                            <i>{capitalize(submotion.status == 'open' ? 'pending' : submotion.status)}</i>
+                                            <i>{capitalize(submotion.flag || 'submotion')}</i>
                                         </b>
                                     </span>
                                     <span>{submotion.decisionTime && new Date(submotion.decisionTime).toLocaleDateString()}</span>
@@ -118,15 +141,29 @@ const PastMotions: FC = () => {
                     <h1>Past Motions</h1>
                     <div className={styles.filter}>
                         <button
-                            className={viewPassedMotions === true ? styles.selected : undefined}
-                            onClick={() => setViewPassedMotions(viewPassedMotions === true ? null : true)}
+                            className={viewPassedMotions === PastMotionStatus.All ? styles.selected : undefined}
+                            onClick={() => setViewPassedMotions(PastMotionStatus.All)}
+                            disabled={!(pastMotions.length > 0)}
+                        >
+                            All
+                        </button>
+                        <button
+                            className={viewPassedMotions === PastMotionStatus.Pending ? styles.selected : undefined}
+                            onClick={() => setViewPassedMotions(PastMotionStatus.Pending)}
+                            disabled={!(pastMotions.length > 0)}
+                        >
+                            Pending
+                        </button>
+                        <button
+                            className={viewPassedMotions === PastMotionStatus.Passed ? styles.selected : undefined}
+                            onClick={() => setViewPassedMotions(PastMotionStatus.Passed)}
                             disabled={!(pastMotions.length > 0)}
                         >
                             Passed
                         </button>
                         <button
-                            className={viewPassedMotions === false ? styles.selected : undefined}
-                            onClick={() => setViewPassedMotions(viewPassedMotions === false ? null : false)}
+                            className={viewPassedMotions === PastMotionStatus.Failed ? styles.selected : undefined}
+                            onClick={() => setViewPassedMotions(PastMotionStatus.Failed)}
                             disabled={!(pastMotions.length > 0)}
                         >
                             Failed
@@ -135,12 +172,16 @@ const PastMotions: FC = () => {
                 </header>
                 {currentCommittee?.motions ? (
                     pastMotions.length > 0 ? (
-                        <div className={styles.motionTable} style={{ '--table-layout': '100px 1fr 200px 200px 160px', '--table-submotion-layout': '1fr 200px 200px 160px' } as CSSProperties}>
+                        <div
+                            className={styles.motionTable}
+                            style={{ '--table-layout': '100px 1fr 200px 100px 120px 160px', '--table-submotion-layout': '1fr 200px 100px 120px 160px' } as CSSProperties}
+                        >
                             <div className={clsx(styles.row, styles.tableHeader)}>
                                 <span>Overturn</span>
                                 <span>Title</span>
                                 <span>Author</span>
                                 <span>Status</span>
+                                <span>Type</span>
                                 <span>Decided</span>
                             </div>
                             {displayMotions}

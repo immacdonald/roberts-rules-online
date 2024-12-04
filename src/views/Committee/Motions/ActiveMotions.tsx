@@ -54,7 +54,13 @@ const ActiveMotions: FC = () => {
             return (
                 <Fragment key={motion.id}>
                     <div className={clsx(styles.row, styles.motion)} onClick={() => navigate(`/committees/${currentCommittee.id}/motions/${motion.id}`)}>
-                        <span>{capitalize(motion.flag || 'normal')}</span>
+                        <span>
+                            {motion.flag && (
+                                <b>
+                                    <i>{capitalize(motion.flag)}</i>
+                                </b>
+                            )}
+                        </span>
                         <h3>{motion.title || 'Untitled Motion'}</h3>
                         <span>{motion.author || motion.authorId}</span>
                         <span>{motion.creationDate && new Date(motion.creationDate).toLocaleDateString()}</span>

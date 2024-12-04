@@ -18,8 +18,6 @@ const setFlag = (flag: string, index: number, active: boolean): string => {
             current += flag[i];
         }
     }
-
-    console.log(`Set ${flag} to ${current}`);
     return current;
 };
 
@@ -35,7 +33,6 @@ const invertFlag = (flag: string, index: number): string => {
         }
     }
 
-    console.log(`Inverted ${flag} bit ${index} to ${current}`);
     return current;
 };
 

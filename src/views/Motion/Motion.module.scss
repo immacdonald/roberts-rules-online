@@ -254,3 +254,9 @@
     justify-content: center;
     align-items: center;
 }
+
+.summary {
+    border: var(--border);
+    border-radius: var(--border-radius);
+    padding: var(--space);
+}
