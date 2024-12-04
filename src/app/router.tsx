@@ -15,7 +15,8 @@ import {
     CommitteeHome,
     MotionVote,
     MotionView,
-    MotionArchive
+    MotionArchive,
+    PrivacyPolicy
 } from '../views';
 import { RoutedApp } from './RoutedApp';
 
@@ -112,6 +113,10 @@ const router = createBrowserRouter(
                             ]
                         }
                     ]
+                },
+                {
+                    path: '/privacy-policy',
+                    element: <PrivacyPolicy />
                 },
                 {
                     path: '*',
